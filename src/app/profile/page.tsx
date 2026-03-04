@@ -156,18 +156,18 @@ export default function ProfilePage() {
     <>
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
         {/* Profile Header Background */}
-        <div className="h-40 gradient-bg relative shadow-lg">
-          <div className="absolute top-6 left-8 text-white text-2xl font-black uppercase tracking-tighter opacity-90">SwiftMatch</div>
+        <div className="h-28 gradient-bg relative shadow-lg">
+          <div className="absolute top-5 left-8 text-white text-2xl font-black uppercase tracking-tighter opacity-90">SwiftMatch</div>
           <Link 
             href="/settings"
-            className="absolute top-6 right-8 text-white/90 p-2.5 bg-black/10 rounded-full hover:bg-black/20 transition-colors backdrop-blur-sm shadow-sm"
+            className="absolute top-5 right-8 text-white/90 p-2.5 bg-black/10 rounded-full hover:bg-black/20 transition-colors backdrop-blur-sm shadow-sm"
           >
             <Settings size={22} />
           </Link>
         </div>
 
         {/* Profile Info */}
-        <div className="px-6 -mt-16 text-center">
+        <div className="px-6 -mt-12 text-center">
           <div className="relative inline-block mb-6">
             <div 
               onClick={() => openPhotoViewer(0)}
