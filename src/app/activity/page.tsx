@@ -85,22 +85,22 @@ export default function ActivityPage() {
         </div>
 
         <Tabs defaultValue="all" className="w-full mb-8" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0 gap-2.5 border-0 shadow-none">
+          <TabsList className="grid w-full grid-cols-3 bg-transparent h-auto p-0 gap-3 border-0 shadow-none">
             <TabsTrigger 
               value="all" 
-              className="h-12 rounded-2xl bg-white border border-border/50 text-[11px] font-black uppercase tracking-widest text-muted-foreground data-[state=active]:gradient-bg data-[state=active]:text-white data-[state=active]:border-0 data-[state=active]:shadow-lg transition-all duration-300"
+              className="h-12 rounded-2xl bg-white border border-border/50 text-[11px] font-black uppercase tracking-widest text-muted-foreground data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#fe3c72] data-[state=active]:to-[#ff8e53] data-[state=active]:text-white data-[state=active]:border-0 data-[state=active]:shadow-lg transition-all duration-300"
             >
               Все
             </TabsTrigger>
             <TabsTrigger 
               value="likes" 
-              className="h-12 rounded-2xl bg-white border border-border/50 text-[11px] font-black uppercase tracking-widest text-muted-foreground data-[state=active]:gradient-bg data-[state=active]:text-white data-[state=active]:border-0 data-[state=active]:shadow-lg transition-all duration-300"
+              className="h-12 rounded-2xl bg-white border border-border/50 text-[11px] font-black uppercase tracking-widest text-muted-foreground data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#fe3c72] data-[state=active]:to-[#ff8e53] data-[state=active]:text-white data-[state=active]:border-0 data-[state=active]:shadow-lg transition-all duration-300"
             >
               Лайки
             </TabsTrigger>
             <TabsTrigger 
               value="visits" 
-              className="h-12 rounded-2xl bg-white border border-border/50 text-[11px] font-black uppercase tracking-widest text-muted-foreground data-[state=active]:gradient-bg data-[state=active]:text-white data-[state=active]:border-0 data-[state=active]:shadow-lg transition-all duration-300"
+              className="h-12 rounded-2xl bg-white border border-border/50 text-[11px] font-black uppercase tracking-widest text-muted-foreground data-[state=active]:bg-gradient-to-br data-[state=active]:from-[#fe3c72] data-[state=active]:to-[#ff8e53] data-[state=active]:text-white data-[state=active]:border-0 data-[state=active]:shadow-lg transition-all duration-300"
             >
               Визиты
             </TabsTrigger>
