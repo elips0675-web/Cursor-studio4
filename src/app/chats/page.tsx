@@ -14,12 +14,12 @@ import { cn } from "@/lib/utils";
 import { generateIcebreakerSuggestions } from "@/ai/flows/ai-chat-icebreaker-suggestions";
 
 const CHAT_THEMES = [
-  { id: 'romantic', label: 'Романтика', icon: Heart, color: 'text-pink-500', mood: 'Romantic and sweet' },
-  { id: 'funny', label: 'Юмор', icon: Laugh, color: 'text-orange-500', mood: 'Funny and lighthearted' },
-  { id: 'hobbies', label: 'О хобби', icon: Compass, color: 'text-blue-500', mood: 'About shared hobbies and activities' },
-  { id: 'daily', label: 'Про день', icon: Coffee, color: 'text-amber-600', mood: 'Casual daily talk' },
-  { id: 'deep', label: 'Глубокое', icon: MessageSquareQuote, color: 'text-purple-500', mood: 'Deep and philosophical questions' },
-  { id: 'bold', label: 'Смело', icon: Zap, color: 'text-yellow-500', mood: 'Bold, direct and flirty' },
+  { id: 'romantic', label: 'Романтика', icon: Heart, color: 'text-pink-500', mood: 'Romantic, sweet and poetic' },
+  { id: 'funny', label: 'Юмор', icon: Laugh, color: 'text-orange-500', mood: 'Funny, witty and lighthearted' },
+  { id: 'hobbies', label: 'О хобби', icon: Compass, color: 'text-blue-500', mood: 'Focus on shared interests and activities' },
+  { id: 'daily', label: 'Про день', icon: Coffee, color: 'text-amber-600', mood: 'Casual, relaxed daily life conversation' },
+  { id: 'deep', label: 'Глубокое', icon: MessageSquareQuote, color: 'text-purple-500', mood: 'Deep, philosophical and meaningful questions' },
+  { id: 'bold', label: 'Смело', icon: Zap, color: 'text-yellow-500', mood: 'Bold, confident and slightly flirty' },
 ];
 
 const ALL_DEMO_USERS = [
