@@ -1,9 +1,10 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
 import { MessageCircle, Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile } from "lucide-react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { AppHeader } from "@/components/layout/app-header";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -49,13 +50,22 @@ const CHATS_DATA = [
   },
 ];
 
+// Дополнительные данные пользователей из поиска для реализации мэтча
+const SEARCH_USERS = [
+  { id: 4, name: 'Мария', img: PlaceHolderImages[3].imageUrl, interests: ['Танцы', 'Театр'], bio: 'Жизнь - это танец!' },
+  { id: 5, name: 'София', img: PlaceHolderImages[5].imageUrl, interests: ['Спорт', 'Музыка'], bio: 'Музыка и спорт — моя жизнь.' }
+];
+
 const INITIAL_MESSAGES = [
   { id: 1, text: "Привет! 👋 Видел твой профиль, у нас много общих интересов.", sender: "other", time: "10:00" },
   { id: 2, text: "Привет! Да, я тоже заметила. Ты тоже любишь кофе?", sender: "me", time: "10:02" },
   { id: 3, text: "О да, без него утро не начинается! Знаешь какое-нибудь уютное место?", sender: "other", time: "10:05" },
 ];
 
-export default function ChatsPage() {
+function ChatsContent() {
+  const searchParams = useSearchParams();
+  const matchId = searchParams.get('matchId');
+
   const [selectedChat, setSelectedChat] = useState<any>(null);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState("");
@@ -73,6 +83,28 @@ export default function ChatsPage() {
       scrollToBottom();
     }
   }, [messages, selectedChat]);
+
+  // Эффект для обработки входящего мэтча
+  useEffect(() => {
+    if (matchId) {
+      const id = parseInt(matchId);
+      let chat = CHATS_DATA.find(c => c.id === id) || SEARCH_USERS.find(u => u.id === id);
+      
+      if (chat) {
+        setSelectedChat(chat);
+        // Если это новый мэтч, добавляем первое сообщение от нас
+        setMessages([
+          { 
+            id: Date.now(), 
+            text: "Привет! Это совпадение, рад(а) знакомству! 😊", 
+            sender: "me", 
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+          }
+        ]);
+        loadIcebreakers(chat);
+      }
+    }
+  }, [matchId]);
 
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
@@ -109,8 +141,8 @@ export default function ChatsPage() {
       const res = await generateIcebreakerSuggestions({
         currentUserInterests: ["Спорт", "Кофе", "Кино"],
         matchedUserName: chat.name,
-        matchedUserInterests: chat.interests,
-        matchedUserBio: chat.bio
+        matchedUserInterests: chat.interests || [],
+        matchedUserBio: chat.bio || ""
       });
       setIcebreakers(res.suggestions);
     } catch (e) {
@@ -294,5 +326,13 @@ export default function ChatsPage() {
       </main>
       <BottomNav />
     </>
+  );
+}
+
+export default function ChatsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-screen font-bold">Загрузка...</div>}>
+      <ChatsContent />
+    </Suspense>
   );
 }

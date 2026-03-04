@@ -4,6 +4,7 @@
 import { useState, useMemo } from "react";
 import { Heart, MapPin, Sparkles, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -55,6 +56,7 @@ const ALL_USERS = [
 const INTEREST_OPTIONS = ["Фотография", "Путешествия", "Кофе", "Искусство", "Книги", "Вино", "Танцы", "Театр", "Пицца", "Спорт", "Музыка"];
 
 export default function SearchPage() {
+  const router = useRouter();
   const [index, setIndex] = useState(0);
   const [matchUser, setMatchUser] = useState<any>(null);
   const [compatibility, setCompatibility] = useState("");
@@ -119,6 +121,13 @@ export default function SearchPage() {
         ? prev.filter(i => i !== interest) 
         : [...prev, interest]
     );
+  };
+
+  const handleStartChat = () => {
+    if (matchUser) {
+      // Переходим в чаты с параметром ID пользователя
+      router.push(`/chats?matchId=${matchUser.id}`);
+    }
   };
 
   return (
@@ -319,7 +328,7 @@ export default function SearchPage() {
             </div>
 
             <div className="flex flex-col gap-3 w-full">
-              <Button className="w-full h-12 rounded-full gradient-bg text-white font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+              <Button onClick={handleStartChat} className="w-full h-12 rounded-full gradient-bg text-white font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
                 Написать первым
               </Button>
               <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-11 text-muted-foreground font-semibold hover:bg-muted">
