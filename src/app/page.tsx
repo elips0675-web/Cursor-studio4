@@ -96,7 +96,7 @@ export default function Home() {
       <AppHeader />
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
         {/* Hero Section */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-10">
           <Badge variant="secondary" className="mb-3 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
             <Flame size={12} fill="currentColor" /> Популярное сейчас
           </Badge>
@@ -107,70 +107,22 @@ export default function Home() {
           <p className="text-muted-foreground text-sm font-medium">Знакомься, общайся и находи любовь</p>
         </div>
 
-        {/* Action Buttons & Filters */}
-        <div className="space-y-4 mb-10">
-          <div className="flex gap-3">
-            <Button 
-              asChild
-              className="flex-1 h-14 rounded-2xl gradient-bg text-white font-bold text-lg app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0"
-            >
-              <Link href="/search">
-                <Search size={20} className="mr-2 stroke-[3px]" /> Свайпы
-              </Link>
-            </Button>
-            <Button 
-              onClick={() => setIsFilterDialogOpen(true)}
-              className="w-14 h-14 rounded-2xl bg-white border-2 border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all app-shadow p-0"
-            >
-              <Zap size={24} fill={isAutoSearching ? "currentColor" : "none"} className={isAutoSearching ? "animate-pulse text-primary" : ""} />
-            </Button>
-          </div>
-          
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsFilterDialogOpen(true)}
-              className={cn(
-                "rounded-xl border-muted bg-white h-9 text-[10px] font-bold uppercase tracking-tight gap-1.5 shadow-sm shrink-0 transition-all",
-                (selectedInterests.length > 0 || selectedCity !== "Все" || selectedZodiac !== "Все") && "border-primary text-primary"
-              )}
-            >
-              <Zap size={12} /> Автопоиск
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => setIsFilterDialogOpen(true)}
-              className="rounded-xl bg-white border border-border h-9 text-[10px] font-bold uppercase tracking-tight shadow-sm shrink-0"
-            >
-              Интересы {selectedInterests.length > 0 && `(${selectedInterests.length})`}
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => setIsFilterDialogOpen(true)}
-              className="rounded-xl bg-white border border-border h-9 text-[10px] font-bold uppercase tracking-tight shadow-sm shrink-0"
-            >
-              Возраст ({ageRange[0]}-{ageRange[1]})
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => setIsFilterDialogOpen(true)}
-              className="rounded-xl bg-white border border-border h-9 text-[10px] font-bold uppercase tracking-tight shadow-sm shrink-0"
-            >
-              {selectedCity === "Все" ? "Город" : selectedCity}
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={() => setIsFilterDialogOpen(true)}
-              className="rounded-xl bg-white border border-border h-9 text-[10px] font-bold uppercase tracking-tight shadow-sm shrink-0"
-            >
-              {selectedZodiac === "Все" ? "Зодиак" : selectedZodiac}
-            </Button>
-          </div>
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-4 mb-10">
+          <Button 
+            asChild
+            className="h-14 rounded-2xl gradient-bg text-white font-black text-base app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-tight"
+          >
+            <Link href="/search">
+              <Search size={20} className="mr-2 stroke-[3px]" /> Свайпы
+            </Link>
+          </Button>
+          <Button 
+            onClick={() => setIsFilterDialogOpen(true)}
+            className="h-14 rounded-2xl bg-white border-2 border-primary text-primary font-black text-base app-shadow hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-tight"
+          >
+            <Zap size={20} fill={isAutoSearching ? "currentColor" : "none"} className={cn("mr-2", isAutoSearching && "animate-pulse")} /> Автопоиск
+          </Button>
         </div>
 
         {/* Featured Users */}
