@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Edit2, Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell } from "lucide-react";
@@ -57,18 +56,14 @@ export default function ProfilePage() {
 
           {/* Stats */}
           <div className="bg-white rounded-3xl p-6 app-shadow mb-6">
-            <div className="grid grid-cols-3">
+            <div className="grid grid-cols-2">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">128</div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Лайков</div>
               </div>
-              <div className="text-center border-x border-border/50">
+              <div className="text-center border-l border-border/50">
                 <div className="text-2xl font-bold text-primary">45</div>
                 <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Мэтчей</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary">12</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Групп</div>
               </div>
             </div>
           </div>

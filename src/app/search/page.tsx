@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useState } from "react";
-import { X, Heart, Star, SlidersHorizontal, MapPin, Sparkles } from "lucide-react";
+import { Heart, MapPin, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
@@ -14,11 +13,9 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription,
-  DialogFooter
+  DialogDescription
 } from "@/components/ui/dialog";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
-import { useToast } from "@/hooks/use-toast";
 
 const users = [
   { 
@@ -46,21 +43,17 @@ const users = [
 
 export default function SearchPage() {
   const [index, setIndex] = useState(0);
-  const [showFilters, setShowFilters] = useState(false);
   const [matchUser, setMatchUser] = useState<any>(null);
   const [compatibility, setCompatibility] = useState("");
   const [loadingAi, setLoadingAi] = useState(false);
-  const { toast } = useToast();
 
   const user = users[index % users.length];
 
-  const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'right') {
-      // Simulate match logic
-      if (Math.random() > 0.5) {
-        setMatchUser(user);
-        getAiInsight(user);
-      }
+  const handleSwipeRight = async () => {
+    // Simulate match logic
+    if (Math.random() > 0.5) {
+      setMatchUser(user);
+      getAiInsight(user);
     }
     setIndex(prev => prev + 1);
   };
@@ -90,16 +83,10 @@ export default function SearchPage() {
     }
   };
 
-  const superLike = () => {
-    toast({ title: "⭐ Супер-лайк отправлен!", description: `Вы выделились для ${user.name}!` });
-    handleSwipe('right');
-  };
-
   return (
     <>
       <AppHeader />
       <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col">
-        {/* Filters Toggle (Visual Only) */}
         <div className="flex items-center justify-between mb-4">
           <div className="bg-white/80 p-3 rounded-2xl flex items-center gap-2 text-sm text-primary font-bold border border-primary/10 w-full shadow-sm">
             <Sparkles size={16} />
@@ -107,7 +94,6 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Swipe Deck */}
         <div className="relative flex-1 mb-6">
           <div key={user.id} className="absolute inset-0 bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="relative flex-[1.4]">
@@ -145,30 +131,16 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex items-center justify-center">
           <button 
-            onClick={() => handleSwipe('left')}
-            className="w-16 h-16 rounded-full bg-white border-2 border-red-500 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-lg active:scale-90"
+            onClick={handleSwipeRight}
+            className="w-20 h-20 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-xl active:scale-95"
           >
-            <X size={28} />
-          </button>
-          <button 
-            onClick={superLike}
-            className="w-12 h-12 rounded-full bg-white border-2 border-blue-400 text-blue-400 flex items-center justify-center hover:bg-blue-400 hover:text-white transition-all shadow-md active:scale-90"
-          >
-            <Star size={20} />
-          </button>
-          <button 
-            onClick={() => handleSwipe('right')}
-            className="w-16 h-16 rounded-full bg-white border-2 border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-lg active:scale-90"
-          >
-            <Heart size={28} />
+            <Heart size={36} fill="currentColor" />
           </button>
         </div>
       </main>
 
-      {/* Match Dialog */}
       <Dialog open={!!matchUser} onOpenChange={() => setMatchUser(null)}>
         <DialogContent className="max-w-[360px] rounded-[2rem] border-0 bg-black/95 text-white">
           <div className="flex flex-col items-center py-6 text-center">
@@ -198,10 +170,7 @@ export default function SearchPage() {
               <Button variant="outline" onClick={() => setMatchUser(null)} className="rounded-full border-white/20 hover:bg-white/10 text-white">
                 Позже
               </Button>
-              <Button className="rounded-full gradient-bg text-white font-bold" onClick={() => {
-                setMatchUser(null);
-                // Redirect logic normally
-              }}>
+              <Button className="rounded-full gradient-bg text-white font-bold" onClick={() => setMatchUser(null)}>
                 Написать
               </Button>
             </div>

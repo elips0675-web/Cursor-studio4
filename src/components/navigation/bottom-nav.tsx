@@ -1,9 +1,8 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, MessageCircle, Users, User } from "lucide-react";
+import { Home, Search, MessageCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
@@ -13,7 +12,6 @@ export function BottomNav() {
     { href: "/", label: "Главная", icon: Home },
     { href: "/search", label: "Поиск", icon: Search },
     { href: "/chats", label: "Чаты", icon: MessageCircle, badge: 2 },
-    { href: "/groups", label: "Группы", icon: Users },
     { href: "/profile", label: "Профиль", icon: User },
   ];
 

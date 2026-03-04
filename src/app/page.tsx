@@ -1,14 +1,13 @@
-
 "use client";
 
-import { Flame, Search, Users } from "lucide-react";
-import Image from "next/image";
+import { Flame, Search } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 const users = [
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, online: true, distance: 2 },
@@ -35,14 +34,9 @@ export default function Home() {
         </div>
 
         <div className="flex gap-3 mb-8">
-          <Button asChild className="flex-1 gradient-bg text-white h-12 rounded-full font-bold shadow-lg shadow-primary/20">
+          <Button asChild className="w-full gradient-bg text-white h-12 rounded-full font-bold shadow-lg shadow-primary/20">
             <Link href="/search">
-              <Search size={18} className="mr-2" /> Поиск
-            </Link>
-          </Button>
-          <Button asChild variant="outline" className="flex-1 h-12 rounded-full font-bold border-2 border-border hover:border-primary hover:text-primary transition-all">
-            <Link href="/groups">
-              <Users size={18} className="mr-2" /> Группы
+              <Search size={18} className="mr-2" /> Начать поиск
             </Link>
           </Button>
         </div>
