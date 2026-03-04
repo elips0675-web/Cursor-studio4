@@ -27,7 +27,7 @@ export default function Home() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
         {/* Hero Section */}
         <div className="text-center mb-8">
           <Badge variant="secondary" className="mb-3 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
@@ -49,14 +49,16 @@ export default function Home() {
           </Button>
         </div>
 
-        {/* Featured Users - Horizontal Scroll */}
+        {/* Featured Users - Grid instead of scroll */}
         <section className="mb-10">
-          <div className="flex justify-between items-end mb-4">
+          <div className="flex justify-between items-center mb-4">
             <h5 className="font-black text-xl font-headline">🔥 Топ недели</h5>
-            <Link href="/search" className="text-xs font-bold text-primary hover:underline">Все</Link>
+            <Button asChild variant="ghost" size="sm" className="text-primary font-bold hover:bg-primary/5 text-xs h-8 px-3 rounded-full">
+               <Link href="/search">Все</Link>
+            </Button>
           </div>
-          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-5 px-5">
-            {ALL_DEMO_USERS.slice(0, 3).map((u) => (
+          <div className="grid grid-cols-2 gap-4">
+            {ALL_DEMO_USERS.slice(0, 4).map((u) => (
               <FeaturedCard key={u.id} user={u} />
             ))}
           </div>
@@ -66,10 +68,10 @@ export default function Home() {
         <section>
           <div className="flex justify-between items-end mb-4">
             <h5 className="font-black text-xl font-headline">✨ Рекомендуем</h5>
-            <Badge variant="outline" className="text-[10px] font-bold text-muted-foreground border-muted">Рядом</Badge>
+            <Badge variant="outline" className="text-[10px] font-bold text-muted-foreground border-muted px-3 py-0.5 rounded-full uppercase tracking-tighter">Рядом</Badge>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {ALL_DEMO_USERS.slice(3).map((u) => (
+            {ALL_DEMO_USERS.slice(4).map((u) => (
               <ProfilePreviewCard key={u.id} user={u} />
             ))}
           </div>
@@ -82,8 +84,8 @@ export default function Home() {
 
 function FeaturedCard({ user }: { user: any }) {
   return (
-    <Link href={`/search`} className="flex-shrink-0 w-40 group active:scale-[0.98] transition-all">
-      <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-lg border-2 border-white group-hover:border-primary/20 transition-colors">
+    <Link href={`/search`} className="w-full group active:scale-[0.98] transition-all">
+      <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-lg border-2 border-white group-hover:border-primary/20 transition-colors bg-muted">
         <Image 
           src={user.img} 
           alt={user.name} 
@@ -92,14 +94,14 @@ function FeaturedCard({ user }: { user: any }) {
           data-ai-hint="user portrait"
         />
         <div className="absolute top-2 right-2">
-           <Badge className="bg-primary text-white text-[8px] border-0 px-1.5 py-0.5 font-black uppercase">
+           <Badge className="bg-primary text-white text-[8px] border-0 px-1.5 py-0.5 font-black uppercase shadow-sm">
              {user.match}%
            </Badge>
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
-          <p className="text-white font-bold text-sm leading-tight">{user.name}, {user.age}</p>
-          <div className="flex items-center gap-1 text-white/70 text-[9px] mt-0.5">
-            <MapPin size={10} className="text-primary" /> {user.distance} км
+          <p className="text-white font-bold text-xs leading-tight">{user.name}, {user.age}</p>
+          <div className="flex items-center gap-1 text-white/70 text-[8px] mt-0.5 font-bold uppercase tracking-tight">
+            <MapPin size={8} className="text-primary" /> {user.distance} км
           </div>
         </div>
       </div>
@@ -110,7 +112,7 @@ function FeaturedCard({ user }: { user: any }) {
 function ProfilePreviewCard({ user }: { user: any }) {
   return (
     <Link href={`/search`} className="bg-white rounded-[2rem] overflow-hidden app-shadow group active:scale-[0.98] transition-all border border-transparent hover:border-primary/10">
-      <div className="relative aspect-square">
+      <div className="relative aspect-square bg-muted">
         <Image 
           src={user.img} 
           alt={user.name} 
