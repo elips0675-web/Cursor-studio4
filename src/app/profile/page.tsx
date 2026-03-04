@@ -27,7 +27,8 @@ import {
   Moon,
   Sun,
   Target,
-  Sparkles
+  Sparkles,
+  Heart
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -140,6 +141,17 @@ export default function ProfilePage() {
     { label: "Жаворонок", icon: Sun },
   ];
 
+  // Разделение интересов на "Стиль жизни" и "Хобби"
+  const lifestyleKeywords = ["Рост:", "Сова", "Жаворонок", "Собаки", "Кошки"];
+  
+  const lifestyleDetails = profile.interests.filter(i => 
+    lifestyleKeywords.some(key => i.includes(key))
+  );
+  
+  const generalInterests = profile.interests.filter(i => 
+    !lifestyleKeywords.some(key => i.includes(key))
+  );
+
   return (
     <>
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
@@ -185,9 +197,6 @@ export default function ProfilePage() {
               <div className="flex flex-wrap justify-center gap-2 mt-1">
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-0 gap-2 py-1.5 px-4 font-black text-[9px] rounded-full uppercase tracking-widest shadow-sm">
                   <Target size={12} /> {profile.datingGoal}
-                </Badge>
-                <Badge variant="secondary" className="bg-orange-100 text-orange-600 border-0 gap-2 py-1.5 px-4 font-black text-[9px] rounded-full uppercase tracking-widest shadow-sm">
-                  <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
                 </Badge>
               </div>
             </div>
@@ -269,16 +278,32 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Interests & Details */}
+          {/* Lifestyle & Details */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
-            <h4 className="font-black text-xs uppercase tracking-widest mb-6">Обо мне</h4>
+            <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-6">Стиль жизни</h4>
             <div className="flex flex-wrap gap-3">
               <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl shadow-sm">
                 <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
               </Badge>
-              {profile.interests.map((interest) => {
-                const mapItem = interestMap.find(m => interest.includes(m.label));
+              {lifestyleDetails.map((detail) => {
+                const mapItem = interestMap.find(m => detail.includes(m.label));
                 const Icon = mapItem?.icon || Star;
+                return (
+                  <Badge key={detail} variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl shadow-sm">
+                    <Icon size={16} /> {detail}
+                  </Badge>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Interests Section */}
+          <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
+            <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-6">Интересы</h4>
+            <div className="flex flex-wrap gap-3">
+              {generalInterests.map((interest) => {
+                const mapItem = interestMap.find(m => interest.includes(m.label));
+                const Icon = mapItem?.icon || Heart;
                 return (
                   <Badge key={interest} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl hover:bg-muted transition-colors shadow-sm">
                     <Icon size={16} className="text-primary" /> {interest}
@@ -290,7 +315,7 @@ export default function ProfilePage() {
 
           {/* Bio Section */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
-            <h4 className="font-black text-xs uppercase tracking-widest mb-4">Биография</h4>
+            <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-4">Биография</h4>
             <p className="text-sm text-muted-foreground leading-relaxed font-medium">
               {profile.bio}
             </p>
