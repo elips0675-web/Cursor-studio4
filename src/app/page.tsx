@@ -121,7 +121,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Grid Section */}
+        {/* Grid Section - Ограничено до 4 анкет */}
         <section ref={recommendRef} className="scroll-mt-6">
           <div className="flex justify-between items-end mb-4">
             <h5 className="font-black text-xl font-headline">✨ Рекомендуем</h5>
@@ -131,7 +131,7 @@ export default function Home() {
             "grid grid-cols-2 gap-4 transition-opacity duration-500",
             isAutoSearching ? "opacity-40" : "opacity-100"
           )}>
-            {ALL_DEMO_USERS.slice(4).map((u) => (
+            {ALL_DEMO_USERS.slice(4, 8).map((u) => (
               <ProfilePreviewCard key={u.id} user={u} />
             ))}
           </div>
