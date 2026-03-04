@@ -14,17 +14,9 @@ import {
   DialogContent, 
   DialogHeader, 
   DialogTitle, 
-  DialogDescription
+  DialogDescription,
+  DialogFooter
 } from "@/components/ui/dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-} from "@/components/ui/sheet";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
@@ -89,7 +81,6 @@ export default function SearchPage() {
 
   const handleSwipeRight = async () => {
     if (!user) return;
-    // Simulate match
     if (Math.random() > 0.3) {
       setMatchUser(user);
       getAiInsight(user);
@@ -133,88 +124,29 @@ export default function SearchPage() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col">
-        <div className="flex items-center justify-between mb-4 gap-2">
-          <div className="bg-white/80 p-3 rounded-2xl flex items-center gap-2 text-sm text-primary font-bold border border-primary/10 flex-1 shadow-sm">
-            <Sparkles size={16} />
-            <strong>Подбор:</strong> {filteredUsers.length} человек
+      <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col items-center">
+        {/* Centered Top Filter Toggle */}
+        <div className="flex flex-col items-center gap-3 mb-6 w-full max-w-sm">
+          <div className="flex items-center gap-2">
+            <div className="bg-white/90 px-4 py-2 rounded-2xl flex items-center gap-2 text-sm text-primary font-bold border border-primary/5 shadow-sm">
+              <Sparkles size={16} />
+              <span>Подбор: {filteredUsers.length} человек</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setIsFilterOpen(true)}
+              className="rounded-2xl h-10 w-10 bg-white border-primary/10 shadow-sm hover:bg-primary/5 transition-colors"
+            >
+              <SlidersHorizontal size={18} className="text-primary" />
+            </Button>
           </div>
-          <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-2xl h-11 w-11 bg-white border-primary/10 shadow-sm">
-                <SlidersHorizontal size={18} className="text-primary" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="rounded-t-[2.5rem] h-[85vh] px-6">
-              <SheetHeader className="mb-6">
-                <SheetTitle className="text-2xl font-bold font-headline">Фильтры поиска</SheetTitle>
-                <SheetDescription>Настройте параметры для идеального мэтча</SheetDescription>
-              </SheetHeader>
-              
-              <div className="space-y-8 overflow-y-auto max-h-[60vh] pb-6 no-scrollbar">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm font-bold">Возраст</Label>
-                    <span className="text-sm text-primary font-bold">{ageRange[0]} - {ageRange[1]}</span>
-                  </div>
-                  <Slider 
-                    value={ageRange} 
-                    onValueChange={setAgeRange} 
-                    min={18} 
-                    max={60} 
-                    step={1} 
-                    className="py-4"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Label className="text-sm font-bold">Расстояние (км)</Label>
-                    <span className="text-sm text-primary font-bold">до {maxDistance[0]} км</span>
-                  </div>
-                  <Slider 
-                    value={maxDistance} 
-                    onValueChange={setMaxDistance} 
-                    min={1} 
-                    max={100} 
-                    step={1} 
-                    className="py-4"
-                  />
-                </div>
-
-                <div className="space-y-4">
-                  <Label className="text-sm font-bold">Интересы</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {INTEREST_OPTIONS.map(interest => (
-                      <Badge 
-                        key={interest}
-                        variant={selectedInterests.includes(interest) ? "default" : "secondary"}
-                        className={`cursor-pointer px-3 py-1.5 rounded-full transition-all ${
-                          selectedInterests.includes(interest) 
-                            ? "gradient-bg text-white border-0" 
-                            : "bg-muted text-muted-foreground hover:bg-border border-0"
-                        }`}
-                        onClick={() => toggleInterest(interest)}
-                      >
-                        {interest}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <SheetFooter className="mt-4">
-                <Button className="w-full h-12 rounded-full gradient-bg text-white font-bold" onClick={() => setIsFilterOpen(false)}>
-                  Применить
-                </Button>
-              </SheetFooter>
-            </SheetContent>
-          </Sheet>
         </div>
 
-        <div className="relative flex-1 mb-6">
+        {/* Swipe Card Area */}
+        <div className="relative w-full flex-1 mb-8 max-w-[400px]">
           {filteredUsers.length > 0 ? (
-            <div key={user.id} className="absolute inset-0 bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div key={user.id} className="absolute inset-0 bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col animate-in fade-in zoom-in-95 duration-500">
               <div className="relative flex-[1.4]">
                 <Image 
                   src={user.img} 
@@ -224,26 +156,26 @@ export default function SearchPage() {
                   data-ai-hint="dating profile photo"
                 />
                 <div className="absolute top-4 left-4">
-                   <Badge className="bg-[#2ecc71] text-white border-0 px-2 py-0.5 text-[10px]">Онлайн</Badge>
+                   <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold">Онлайн</Badge>
                 </div>
                 <div className="absolute top-4 right-4">
-                   <Badge className="gradient-bg text-white border-0 px-2 py-1 font-bold">{user.match}% совпадение</Badge>
+                   <Badge className="gradient-bg text-white border-0 px-3 py-1 font-bold shadow-md">{user.match}% совпадение</Badge>
                 </div>
               </div>
               
               <div className="flex-1 p-6 text-center bg-white flex flex-col justify-center">
                 <h3 className="text-2xl font-bold font-headline mb-1">{user.name}, {user.age}</h3>
-                <p className="text-muted-foreground text-sm mb-3 flex items-center justify-center gap-1">
+                <p className="text-muted-foreground text-sm mb-4 flex items-center justify-center gap-1">
                   <MapPin size={14} className="text-primary" /> {user.distance} км от вас
                 </p>
                 
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
+                <div className="flex flex-wrap justify-center gap-2 mb-5">
                   {user.interests.map(i => (
-                    <span key={i} className="px-3 py-1 bg-muted text-xs rounded-full font-semibold">{i}</span>
+                    <span key={i} className="px-3 py-1 bg-muted text-[10px] rounded-full font-bold text-foreground/70 uppercase tracking-tight">{i}</span>
                   ))}
                 </div>
                 
-                <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2 italic">
+                <p className="text-muted-foreground text-xs leading-relaxed italic px-4 line-clamp-3">
                   "{user.bio}"
                 </p>
               </div>
@@ -254,29 +186,97 @@ export default function SearchPage() {
                 <X size={32} className="text-muted-foreground" />
               </div>
               <h4 className="text-lg font-bold mb-2">Никого не нашли</h4>
-              <p className="text-sm text-muted-foreground mb-6">Попробуйте изменить параметры фильтров, чтобы увидеть больше людей</p>
+              <p className="text-sm text-muted-foreground mb-6">Попробуйте изменить параметры фильтров</p>
               <Button variant="outline" className="rounded-full px-8" onClick={() => {
                 setAgeRange([18, 40]);
                 setMaxDistance([50]);
                 setSelectedInterests([]);
               }}>
-                Сбросить фильтры
+                Сбросить
               </Button>
             </div>
           )}
         </div>
 
+        {/* Swipe Buttons */}
         <div className="flex items-center justify-center">
           <button 
             disabled={filteredUsers.length === 0}
             onClick={handleSwipeRight}
-            className="w-20 h-20 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:bg-primary hover:text-white transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-20 h-20 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed group"
           >
-            <Heart size={36} fill="currentColor" />
+            <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
           </button>
         </div>
       </main>
 
+      {/* Centered Filter Dialog */}
+      <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0">
+          <DialogHeader className="p-6 bg-muted/30">
+            <DialogTitle className="text-xl font-bold font-headline">Фильтры поиска</DialogTitle>
+            <DialogDescription>Настройте параметры для идеального мэтча</DialogDescription>
+          </DialogHeader>
+          
+          <div className="p-6 space-y-8 overflow-y-auto max-h-[60vh] no-scrollbar">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Возраст</Label>
+                <span className="text-sm text-primary font-black">{ageRange[0]} - {ageRange[1]}</span>
+              </div>
+              <Slider 
+                value={ageRange} 
+                onValueChange={setAgeRange} 
+                min={18} 
+                max={60} 
+                step={1} 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Расстояние</Label>
+                <span className="text-sm text-primary font-black">до {maxDistance[0]} км</span>
+              </div>
+              <Slider 
+                value={maxDistance} 
+                onValueChange={setMaxDistance} 
+                min={1} 
+                max={100} 
+                step={1} 
+              />
+            </div>
+
+            <div className="space-y-4">
+              <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Интересы</Label>
+              <div className="flex flex-wrap gap-2">
+                {INTEREST_OPTIONS.map(interest => (
+                  <Badge 
+                    key={interest}
+                    variant={selectedInterests.includes(interest) ? "default" : "secondary"}
+                    className={`cursor-pointer px-4 py-2 rounded-full transition-all border-0 font-bold text-[10px] ${
+                      selectedInterests.includes(interest) 
+                        ? "gradient-bg text-white shadow-sm" 
+                        : "bg-muted text-muted-foreground hover:bg-border"
+                    }`}
+                    onClick={() => toggleInterest(interest)}
+                  >
+                    {interest}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="p-6 pt-0">
+            <Button className="w-full h-12 rounded-full gradient-bg text-white font-bold shadow-lg shadow-primary/20" onClick={() => setIsFilterOpen(false)}>
+              Применить
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Match Dialog */}
       <Dialog open={!!matchUser} onOpenChange={() => setMatchUser(null)}>
         <DialogContent className="max-w-[360px] rounded-[2.5rem] border-0 bg-white p-0 overflow-hidden shadow-2xl">
           <div className="relative h-32 gradient-bg flex items-center justify-center">
@@ -285,7 +285,6 @@ export default function SearchPage() {
           </div>
 
           <div className="px-6 py-8 text-center -mt-10">
-            {/* Avatars Pair */}
             <div className="flex items-center justify-center gap-0 mb-6 relative">
                <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden relative z-10 -mr-4 bg-muted">
                   <Image src={PlaceHolderImages[9].imageUrl} alt="Вы" fill className="object-cover" />
