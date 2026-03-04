@@ -477,6 +477,9 @@ function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
           <p className="text-white font-bold text-sm leading-tight truncate">{user.name}, {user.age}</p>
+          <div className="text-white/80 text-[10px] flex items-center gap-1 font-medium mt-0.5">
+            <MapPin size={10} /> {user.distance} км
+          </div>
         </div>
       </Link>
       <div className="p-3 mt-auto">
@@ -524,11 +527,11 @@ function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; 
       <div className="p-3 flex-1 flex flex-col justify-between">
         <div className="mb-2">
           <div className="flex justify-between items-center mb-0.5">
-            <span className="font-bold text-sm truncate pr-1">{user.name}</span>
+            <span className="font-bold text-sm truncate pr-1">{user.name}, {user.age}</span>
             <span className="text-primary text-[10px] font-black">{user.match}%</span>
           </div>
           <div className="text-muted-foreground text-[10px] flex items-center gap-1 font-medium truncate">
-            <MapPin size={10} /> {user.distance}км
+            <MapPin size={10} /> {user.distance} км
           </div>
         </div>
 
