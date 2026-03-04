@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, Search } from "lucide-react";
+import { Flame, Search, Heart, MapPin } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
@@ -10,18 +10,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-// Консистентный список из 10 демо-пользователей
+// Консистентный список из 10 демо-пользователей (5 женщин, 5 мужчин)
 const ALL_DEMO_USERS = [
-  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, online: true, distance: 2, gender: 'female' },
-  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, online: true, distance: 5, gender: 'male' },
-  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, online: false, distance: 3, gender: 'female' },
-  { id: 4, name: 'Дмитрий', age: 31, img: PlaceHolderImages[3].imageUrl, online: false, distance: 12, gender: 'male' },
-  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, online: true, distance: 7, gender: 'female' },
-  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, online: true, distance: 4, gender: 'male' },
-  { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, online: true, distance: 1, gender: 'female' },
-  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, online: false, distance: 15, gender: 'male' },
-  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, online: true, distance: 6, gender: 'female' },
-  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, online: false, distance: 9, gender: 'male' }
+  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, online: true, distance: 2, match: 87 },
+  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, online: true, distance: 5, match: 92 },
+  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, online: false, distance: 3, match: 81 },
+  { id: 4, name: 'Дмитрий', age: 31, img: PlaceHolderImages[3].imageUrl, online: false, distance: 12, match: 75 },
+  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, online: true, distance: 7, match: 88 },
+  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, online: true, distance: 4, match: 69 },
+  { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, online: true, distance: 1, match: 94 },
+  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, online: false, distance: 15, match: 72 },
+  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, online: true, distance: 6, match: 83 },
+  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, online: false, distance: 9, match: 77 }
 ];
 
 export default function Home() {
@@ -29,37 +29,48 @@ export default function Home() {
     <>
       <AppHeader />
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
-        <div className="text-center mb-6">
-          <Badge variant="secondary" className="mb-2 bg-muted text-foreground gap-1.5 px-3 py-1">
-            <Flame size={14} className="text-primary" /> Популярное
+        {/* Hero Section */}
+        <div className="text-center mb-8">
+          <Badge variant="secondary" className="mb-3 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
+            <Flame size={12} fill="currentColor" /> Популярное сейчас
           </Badge>
-          <h2 className="text-3xl font-bold font-headline mb-1">
-            Найди свою <span className="gradient-text">половинку</span>
+          <h2 className="text-3xl font-black font-headline mb-2 leading-tight">
+            Твой идеальный <br />
+            <span className="gradient-text">мэтч</span> ждет тебя
           </h2>
-          <p className="text-muted-foreground text-sm">Или новых друзей по интересам</p>
+          <p className="text-muted-foreground text-sm font-medium">Знакомься, общайся и находи любовь</p>
         </div>
 
-        <div className="flex gap-3 mb-8">
-          <Button asChild className="w-full gradient-bg text-white h-12 rounded-full font-bold shadow-lg shadow-primary/20">
+        {/* Action Button */}
+        <div className="mb-10">
+          <Button asChild className="w-full h-14 rounded-full gradient-bg text-white font-bold text-lg shadow-xl shadow-primary/25 hover:scale-[1.02] active:scale-95 transition-all">
             <Link href="/search">
-              <Search size={18} className="mr-2" /> Начать поиск
+              <Search size={20} className="mr-2 stroke-[3px]" /> Найти половинку
             </Link>
           </Button>
         </div>
 
-        <section className="mb-6">
-          <h5 className="font-bold mb-4 text-lg">🔥 Топ пользователей</h5>
-          <div className="grid grid-cols-2 gap-4">
-            {ALL_DEMO_USERS.slice(0, 2).map((u) => (
-              <ProfilePreviewCard key={u.id} user={u} />
+        {/* Featured Users - Horizontal Scroll */}
+        <section className="mb-10">
+          <div className="flex justify-between items-end mb-4">
+            <h5 className="font-black text-xl font-headline">🔥 Топ недели</h5>
+            <Link href="/search" className="text-xs font-bold text-primary hover:underline">Все</Link>
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-5 px-5">
+            {ALL_DEMO_USERS.slice(0, 4).map((u) => (
+              <FeaturedCard key={u.id} user={u} />
             ))}
           </div>
         </section>
 
+        {/* Grid Section */}
         <section>
-          <h5 className="font-bold mb-4 text-lg mt-8">✨ Новые анкеты</h5>
+          <div className="flex justify-between items-end mb-4">
+            <h5 className="font-black text-xl font-headline">✨ Рекомендуем</h5>
+            <Badge variant="outline" className="text-[10px] font-bold text-muted-foreground border-muted">Рядом</Badge>
+          </div>
           <div className="grid grid-cols-2 gap-4">
-            {ALL_DEMO_USERS.slice(2, 10).map((u) => (
+            {ALL_DEMO_USERS.slice(4).map((u) => (
               <ProfilePreviewCard key={u.id} user={u} />
             ))}
           </div>
@@ -70,10 +81,37 @@ export default function Home() {
   );
 }
 
+function FeaturedCard({ user }: { user: any }) {
+  return (
+    <Link href={`/search`} className="flex-shrink-0 w-40 group active:scale-[0.98] transition-all">
+      <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden shadow-lg border-2 border-white group-hover:border-primary/20 transition-colors">
+        <Image 
+          src={user.img} 
+          alt={user.name} 
+          fill 
+          className="object-cover group-hover:scale-110 transition-transform duration-500"
+          data-ai-hint="user portrait"
+        />
+        <div className="absolute top-2 right-2">
+           <Badge className="bg-primary text-white text-[8px] border-0 px-1.5 py-0.5 font-black uppercase">
+             {user.match}%
+           </Badge>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+          <p className="text-white font-bold text-sm leading-tight">{user.name}, {user.age}</p>
+          <div className="flex items-center gap-1 text-white/70 text-[9px] mt-0.5">
+            <MapPin size={10} className="text-primary" /> {user.distance} км
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
 function ProfilePreviewCard({ user }: { user: any }) {
   return (
-    <Link href={`/search`} className="bg-white rounded-3xl overflow-hidden app-shadow group active:scale-[0.98] transition-all">
-      <div className="relative aspect-[3/4]">
+    <Link href={`/search`} className="bg-white rounded-[2rem] overflow-hidden app-shadow group active:scale-[0.98] transition-all border border-transparent hover:border-primary/10">
+      <div className="relative aspect-square">
         <Image 
           src={user.img} 
           alt={user.name} 
@@ -82,16 +120,19 @@ function ProfilePreviewCard({ user }: { user: any }) {
           data-ai-hint="user portrait"
         />
         {user.online && (
-          <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-[#2ecc71] text-white text-[10px] font-bold rounded-full border border-white">
-            Онлайн
-          </span>
+          <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/20 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/20">
+            <span className="w-1.5 h-1.5 bg-[#2ecc71] rounded-full"></span>
+            <span className="text-white text-[8px] font-bold uppercase tracking-tight">Онлайн</span>
+          </div>
         )}
       </div>
-      <div className="p-3">
-        <div className="font-bold text-sm">{user.name}, {user.age}</div>
-        <div className="text-muted-foreground text-[11px] flex items-center gap-1">
-          <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-          {user.distance} км
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-1">
+          <span className="font-bold text-sm">{user.name}, {user.age}</span>
+          <Heart size={14} className="text-muted-foreground/30 group-hover:text-primary transition-colors" />
+        </div>
+        <div className="text-muted-foreground text-[10px] flex items-center gap-1 font-medium">
+          <MapPin size={10} /> {user.distance} км от вас
         </div>
       </div>
     </Link>
