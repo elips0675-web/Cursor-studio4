@@ -166,47 +166,47 @@ export default function Home() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
+      <main className="flex-1 overflow-y-auto px-4 pt-6 pb-24 bg-[#f8f9fb]">
         {/* Hero Section */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <Badge variant="secondary" className="mb-3 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
             <Flame size={12} fill="currentColor" /> Популярное сейчас
           </Badge>
-          <h2 className="text-3xl font-black font-headline mb-2 leading-tight">
+          <h2 className="text-2xl font-black font-headline mb-2 leading-tight">
             Твой идеальный <br />
             <span className="gradient-text">мэтч</span> ждет тебя
           </h2>
-          <p className="text-muted-foreground text-sm font-medium">Знакомься, общайся и находи любовь</p>
+          <p className="text-muted-foreground text-xs font-medium">Знакомься, общайся и находи любовь</p>
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-4 mb-10">
+        <div className="grid grid-cols-2 gap-3 mb-10">
           <Button 
             asChild
-            className="h-14 rounded-2xl gradient-bg text-white font-black text-base app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-tight"
+            className="h-12 rounded-2xl gradient-bg text-white font-black text-sm app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-tight"
           >
             <Link href="/search">
-              <Search size={20} className="mr-2 stroke-[3px]" /> Свайпы
+              <Search size={18} className="mr-2 stroke-[3px]" /> Свайпы
             </Link>
           </Button>
           <Button 
             onClick={() => setIsFilterDialogOpen(true)}
-            className="h-14 rounded-2xl bg-white border-2 border-primary text-primary font-black text-base app-shadow hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-tight"
+            className="h-12 rounded-2xl bg-white border-2 border-primary text-primary font-black text-sm app-shadow hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-tight"
           >
-            <Zap size={20} fill={isAutoSearching ? "currentColor" : "none"} className={cn("mr-2", isAutoSearching && "animate-pulse")} /> Автопоиск
+            <Zap size={18} fill={isAutoSearching ? "currentColor" : "none"} className={cn("mr-2", isAutoSearching && "animate-pulse")} /> Автопоиск
           </Button>
         </div>
 
         {/* Featured Users */}
         <section className="mb-10">
           <div className="flex justify-between items-center mb-4">
-            <h5 className="font-black text-xl font-headline">🔥 Топ недели</h5>
-            <Button asChild variant="outline" className="text-primary font-black uppercase tracking-widest text-[10px] h-9 px-6 rounded-full border-primary/20 hover:bg-primary/5 bg-white transition-all shadow-sm">
+            <h5 className="font-black text-lg font-headline">🔥 Топ недели</h5>
+            <Button asChild variant="outline" className="text-primary font-black uppercase tracking-widest text-[9px] h-8 px-4 rounded-full border-primary/20 hover:bg-primary/5 bg-white transition-all shadow-sm">
                <Link href="/search">Все</Link>
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {ALL_DEMO_USERS.slice(0, 4).map((u) => (
+          <div className="grid grid-cols-3 gap-3">
+            {ALL_DEMO_USERS.slice(0, 6).map((u) => (
               <FeaturedCard key={u.id} user={u} onLike={() => handleLikeUser(u)} />
             ))}
           </div>
@@ -215,11 +215,11 @@ export default function Home() {
         {/* Recommended Section */}
         <section className="scroll-mt-6 mb-10">
           <div className="flex justify-between items-end mb-4">
-            <h5 className="font-black text-xl font-headline">✨ Рекомендуем</h5>
-            <Badge variant="outline" className="text-[10px] font-bold text-muted-foreground border-muted px-3 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">Рядом</Badge>
+            <h5 className="font-black text-lg font-headline">✨ Рекомендуем</h5>
+            <Badge variant="outline" className="text-[9px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">Рядом</Badge>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {ALL_DEMO_USERS.slice(4, 8).map((u) => (
+          <div className="grid grid-cols-3 gap-3">
+            {ALL_DEMO_USERS.slice(6, 12).map((u) => (
               <ProfilePreviewCard key={u.id} user={u} showActions onLike={() => handleLikeUser(u)} />
             ))}
           </div>
@@ -229,8 +229,8 @@ export default function Home() {
         <div ref={resultsRef} className="scroll-mt-24">
           {isAutoSearching && (
             <div className="py-12 flex flex-col items-center justify-center space-y-4">
-              <div className="w-16 h-16 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
-              <p className="text-sm font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Ищем лучших для вас...</p>
+              <div className="w-12 h-12 rounded-full border-4 border-primary border-t-transparent animate-spin"></div>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Ищем лучших для вас...</p>
             </div>
           )}
 
@@ -238,32 +238,32 @@ export default function Home() {
             <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h5 className="font-black text-xl font-headline">🚀 Результаты автопоиска</h5>
-                  <p className="text-[10px] text-primary font-bold uppercase tracking-wider">Найдено: {searchResults.length}</p>
+                  <h5 className="font-black text-lg font-headline">🚀 Результаты</h5>
+                  <p className="text-[9px] text-primary font-bold uppercase tracking-wider">Найдено: {searchResults.length}</p>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setShowResults(false)}
-                  className="text-muted-foreground text-[10px] font-bold uppercase"
+                  className="text-muted-foreground text-[9px] font-bold uppercase"
                 >
                   Очистить
                 </Button>
               </div>
               
               {searchResults.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-3">
                   {searchResults.map((u) => (
                     <ProfilePreviewCard key={u.id} user={u} showActions onLike={() => handleLikeUser(u)} />
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-[2rem] p-8 text-center app-shadow border border-dashed border-muted">
-                  <p className="text-sm text-muted-foreground font-medium mb-4">К сожалению, по вашим параметрам пока никого нет.</p>
+                <div className="bg-white rounded-[2rem] p-6 text-center app-shadow border border-dashed border-muted">
+                  <p className="text-xs text-muted-foreground font-medium mb-4 leading-tight">По вашим параметрам пока никого нет.</p>
                   <Button 
                     variant="outline" 
                     onClick={() => setIsFilterDialogOpen(true)}
-                    className="rounded-full text-[10px] font-black uppercase tracking-widest"
+                    className="rounded-full text-[9px] font-black uppercase tracking-widest h-9 px-6"
                   >
                     Изменить фильтры
                   </Button>
@@ -462,7 +462,7 @@ export default function Home() {
 
 function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
   return (
-    <div className="bg-white rounded-[2rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
+    <div className="bg-white rounded-[1.25rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
       <Link href={`/search`} className="relative aspect-[3/4] bg-muted block overflow-hidden cursor-pointer">
         <Image 
           src={user.img} 
@@ -470,33 +470,33 @@ function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
           fill 
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-3 right-3">
-             <Badge className="bg-primary text-white text-[8px] border-0 px-2 py-1 font-black uppercase shadow-lg">
+        <div className="absolute top-1.5 right-1.5">
+             <Badge className="bg-primary text-white text-[7px] border-0 px-1 py-0.5 font-black uppercase shadow-lg">
                {user.match}%
              </Badge>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-          <p className="text-white font-bold text-xs leading-tight">{user.name}, {user.age}</p>
+        <div className="absolute bottom-0 left-0 right-0 p-1.5 bg-gradient-to-t from-black/80 to-transparent">
+          <p className="text-white font-bold text-[10px] leading-tight truncate">{user.name}</p>
         </div>
       </Link>
-      <div className="p-3 mt-auto">
-        <div className="grid grid-cols-2 gap-2">
+      <div className="p-1.5 mt-auto">
+        <div className="grid grid-cols-2 gap-1">
           <Button 
             variant="outline" 
             size="sm" 
-            className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm"
+            className="h-7 rounded-lg border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm p-0"
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onLike(); }}
           >
-            <Heart size={14} className="group-hover/heart:fill-current" />
+            <Heart size={12} className="group-hover/heart:fill-current" />
           </Button>
           <Button 
             asChild
             variant="outline" 
             size="sm" 
-            className="h-9 rounded-xl border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm"
+            className="h-7 rounded-lg border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm p-0"
           >
             <Link href={`/chats?matchId=${user.id}`}>
-              <MessageCircle size={14} />
+              <MessageCircle size={12} />
             </Link>
           </Button>
         </div>
@@ -507,7 +507,7 @@ function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
 
 function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; showActions?: boolean; onLike: () => void }) {
   return (
-    <div className="bg-white rounded-[2rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
+    <div className="bg-white rounded-[1.25rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
       <Link href={`/search`} className="relative aspect-square bg-muted block overflow-hidden cursor-pointer">
         <Image 
           src={user.img} 
@@ -516,43 +516,40 @@ function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; 
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
         {user.online && (
-          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
-            <span className="w-1.5 h-1.5 bg-[#2ecc71] rounded-full animate-pulse"></span>
-            <span className="text-white text-[8px] font-bold uppercase tracking-tight">Онлайн</span>
+          <div className="absolute top-1.5 left-1.5">
+            <span className="flex h-1.5 w-1.5 rounded-full bg-[#2ecc71] border border-white shadow-sm"></span>
           </div>
         )}
       </Link>
-      <div className="p-4 flex-1 flex flex-col justify-between">
-        <div className="mb-3">
-          <div className="flex justify-between items-center mb-1">
-            <span className="font-bold text-sm">{user.name}, {user.age}</span>
-            <Badge variant="secondary" className="bg-primary/10 text-primary text-[8px] border-0 h-5 px-1.5 font-black uppercase">
-              {user.match}%
-            </Badge>
+      <div className="p-2 flex-1 flex flex-col justify-between">
+        <div className="mb-2">
+          <div className="flex justify-between items-center mb-0.5">
+            <span className="font-bold text-[10px] truncate pr-1">{user.name}</span>
+            <span className="text-primary text-[8px] font-black">{user.match}%</span>
           </div>
-          <div className="text-muted-foreground text-[10px] flex items-center gap-1.5 font-medium">
-            <MapPin size={10} className="text-primary/60" /> {user.distance} км от вас
+          <div className="text-muted-foreground text-[8px] flex items-center gap-1 font-medium truncate">
+            <MapPin size={8} /> {user.distance}км
           </div>
         </div>
 
         {showActions && (
-          <div className="grid grid-cols-2 gap-2 mt-auto">
+          <div className="grid grid-cols-2 gap-1 mt-auto">
             <Button 
               variant="outline" 
               size="sm" 
-              className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm"
+              className="h-7 rounded-lg border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm p-0"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onLike(); }}
             >
-              <Heart size={14} className="group-hover/heart:fill-current" />
+              <Heart size={12} className="group-hover/heart:fill-current" />
             </Button>
             <Button 
               asChild
               variant="outline" 
               size="sm" 
-              className="h-9 rounded-xl border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm"
+              className="h-7 rounded-lg border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm p-0"
             >
               <Link href={`/chats?matchId=${user.id}`}>
-                <MessageCircle size={14} />
+                <MessageCircle size={12} />
               </Link>
             </Button>
           </div>
