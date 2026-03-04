@@ -54,7 +54,6 @@ export default function ActivityPage() {
 
   const handleWatchAd = () => {
     setIsAdLoading(true);
-    // Симуляция просмотра рекламы 3 секунды
     setTimeout(() => {
       setIsAdLoading(false);
       setShowAd(false);
@@ -75,119 +74,148 @@ export default function ActivityPage() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold font-headline">Активность</h2>
-          <Badge className="bg-primary text-white rounded-full">5 новых</Badge>
+          <div>
+            <h2 className="text-2xl font-black font-headline tracking-tight">Активность</h2>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">Твои новые события</p>
+          </div>
+          <Badge className="gradient-bg text-white rounded-full px-3 border-0">5 новых</Badge>
         </div>
 
-        <Tabs defaultValue="all" className="w-full mb-6" onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 bg-muted rounded-2xl h-11 p-1">
-            <TabsTrigger value="all" className="rounded-xl text-xs font-bold data-[state=active]:gradient-bg data-[state=active]:text-white">Все</TabsTrigger>
-            <TabsTrigger value="likes" className="rounded-xl text-xs font-bold data-[state=active]:gradient-bg data-[state=active]:text-white">Лайки</TabsTrigger>
-            <TabsTrigger value="visits" className="rounded-xl text-xs font-bold data-[state=active]:gradient-bg data-[state=active]:text-white">Просмотры</TabsTrigger>
+        <Tabs defaultValue="all" className="w-full mb-8" onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-sm rounded-full h-12 p-1.5 shadow-sm border border-border/40">
+            <TabsTrigger 
+              value="all" 
+              className="rounded-full text-[11px] font-black uppercase tracking-tight data-[state=active]:gradient-bg data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300"
+            >
+              Все
+            </TabsTrigger>
+            <TabsTrigger 
+              value="likes" 
+              className="rounded-full text-[11px] font-black uppercase tracking-tight data-[state=active]:gradient-bg data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300"
+            >
+              Лайки
+            </TabsTrigger>
+            <TabsTrigger 
+              value="visits" 
+              className="rounded-full text-[11px] font-black uppercase tracking-tight data-[state=active]:gradient-bg data-[state=active]:text-white data-[state=active]:shadow-md transition-all duration-300"
+            >
+              Просмотры
+            </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value={activeTab} className="mt-6 space-y-4 outline-none">
+            {/* Ad Button (Compact) */}
+            <Button 
+              variant="outline" 
+              onClick={() => setShowAd(true)}
+              className="w-full h-11 rounded-2xl border-dashed border-primary/30 text-primary font-bold text-[11px] uppercase tracking-wide gap-2 bg-white/50 hover:bg-primary/5 transition-all shadow-sm mb-2"
+            >
+              <Play size={14} fill="currentColor" /> Посмотреть рекламу
+            </Button>
+
+            {/* List */}
+            {filteredActivity.length > 0 ? (
+              filteredActivity.map((item) => (
+                <ActivityItem key={item.id} item={item} onUnlock={() => setShowAd(true)} />
+              ))
+            ) : (
+              <div className="text-center py-20 opacity-40">
+                <p className="text-sm font-bold">Здесь пока пусто</p>
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
 
         {/* Premium Banner */}
         <div 
           onClick={() => setShowPremium(true)}
-          className="gradient-bg rounded-[2rem] p-5 text-white mb-8 relative overflow-hidden shadow-lg shadow-primary/20 cursor-pointer group active:scale-[0.98] transition-all"
+          className="gradient-bg rounded-[2.5rem] p-6 text-white mb-12 relative overflow-hidden shadow-2xl shadow-primary/20 cursor-pointer group active:scale-[0.98] transition-all"
         >
-          <div className="absolute top-0 right-0 p-4 opacity-20 group-hover:scale-110 transition-transform">
-            <Sparkles size={60} />
+          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-500">
+            <Sparkles size={100} />
           </div>
           <div className="relative z-10">
-            <h4 className="font-bold text-base mb-1">Узнай, кто тебя лайкнул</h4>
-            <p className="text-[10px] text-white/80 mb-4 uppercase tracking-wider font-bold">SwiftMatch Premium</p>
-            <button className="bg-white text-primary text-[10px] font-bold py-2 px-6 rounded-full shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="bg-white/20 p-1.5 rounded-lg backdrop-blur-md">
+                <Star size={16} className="text-yellow-300" fill="currentColor" />
+              </div>
+              <h4 className="font-black text-lg tracking-tight">SwiftMatch Premium</h4>
+            </div>
+            <p className="text-xs text-white/90 mb-5 max-w-[200px] leading-snug">Узнай, кто тебя лайкнул и получи безлимит возможностей</p>
+            <button className="bg-white text-primary text-[10px] font-black uppercase tracking-widest py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all">
               Попробовать сейчас
             </button>
           </div>
-        </div>
-
-        {/* Ad Button */}
-        <div className="mb-6">
-           <Button 
-            variant="outline" 
-            onClick={() => setShowAd(true)}
-            className="w-full h-12 rounded-2xl border-dashed border-primary/40 text-primary font-bold gap-2 hover:bg-primary/5 transition-colors"
-           >
-             <Play size={16} fill="currentColor" /> Посмотреть рекламу за просмотр лайка
-           </Button>
-        </div>
-
-        <div className="space-y-4">
-          {filteredActivity.map((item) => (
-            <ActivityItem key={item.id} item={item} onUnlock={() => setShowAd(true)} />
-          ))}
         </div>
       </main>
 
       {/* Premium Tariffs Dialog */}
       <Dialog open={showPremium} onOpenChange={setShowPremium}>
         <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white shadow-2xl">
-          <div className="relative h-32 gradient-bg flex flex-col items-center justify-center text-white p-6">
-             <Star className="text-yellow-300 mb-1 animate-pulse" size={32} fill="currentColor" />
-             <DialogTitle className="text-xl font-black uppercase tracking-tight">SwiftMatch Premium</DialogTitle>
-             <p className="text-[10px] text-white/80 font-bold uppercase tracking-widest">Выберите ваш тариф</p>
+          <div className="relative h-40 gradient-bg flex flex-col items-center justify-center text-white p-6">
+             <div className="absolute inset-0 bg-black/5"></div>
+             <Star className="text-yellow-300 mb-2 animate-pulse relative z-10" size={40} fill="currentColor" />
+             <DialogTitle className="text-2xl font-black uppercase tracking-tighter relative z-10">Premium</DialogTitle>
+             <p className="text-[10px] text-white/80 font-bold uppercase tracking-[0.2em] relative z-10">Выберите ваш тариф</p>
           </div>
 
-          <div className="p-6 space-y-4">
+          <div className="p-8 space-y-4">
             {PREMIUM_PLANS.map((plan) => (
               <div 
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
                 className={cn(
-                  "relative p-4 rounded-3xl border-2 transition-all cursor-pointer flex justify-between items-center",
+                  "relative p-5 rounded-[1.75rem] border-2 transition-all cursor-pointer flex justify-between items-center group",
                   selectedPlan === plan.id 
                     ? "border-primary bg-primary/5 shadow-md" 
                     : "border-muted hover:border-muted-foreground/20"
                 )}
               >
                 {plan.popular && (
-                  <Badge className="absolute -top-2.5 left-4 bg-primary text-white text-[8px] uppercase font-black border-2 border-white">Популярно</Badge>
+                  <Badge className="absolute -top-3 left-6 bg-primary text-white text-[8px] uppercase font-black border-2 border-white shadow-sm">Популярно</Badge>
                 )}
                 {plan.discount && (
-                  <Badge className="absolute -top-2.5 right-4 bg-[#2ecc71] text-white text-[8px] uppercase font-black border-2 border-white">{plan.discount}</Badge>
+                  <Badge className="absolute -top-3 right-6 bg-[#2ecc71] text-white text-[8px] uppercase font-black border-2 border-white shadow-sm">{plan.discount}</Badge>
                 )}
                 
                 <div>
-                  <h6 className="font-bold text-sm">{plan.name}</h6>
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-black text-foreground">{plan.price}</span>
-                    {plan.oldPrice && <span className="text-[10px] text-muted-foreground line-through">{plan.oldPrice}</span>}
+                  <h6 className="font-bold text-sm text-foreground/80 group-hover:text-foreground">{plan.name}</h6>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-xl font-black text-foreground">{plan.price}</span>
+                    {plan.oldPrice && <span className="text-[10px] text-muted-foreground line-through decoration-primary/40">{plan.oldPrice}</span>}
                   </div>
                 </div>
 
                 <div className={cn(
-                  "w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                  selectedPlan === plan.id ? "border-primary bg-primary text-white" : "border-muted"
+                  "w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all",
+                  selectedPlan === plan.id ? "border-primary bg-primary text-white scale-110 shadow-sm" : "border-muted"
                 )}>
-                  {selectedPlan === plan.id && <Check size={14} strokeWidth={3} />}
+                  {selectedPlan === plan.id && <Check size={16} strokeWidth={4} />}
                 </div>
               </div>
             ))}
 
-            <div className="grid grid-cols-2 gap-3 pt-2">
-               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase">
-                 <Zap size={12} className="text-primary" /> Безлимит лайков
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-muted">
+               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-tighter">
+                 <Zap size={14} className="text-primary" /> Безлимит
                </div>
-               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase">
-                 <Eye size={12} className="text-primary" /> Кто меня лайкнул
+               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-tighter">
+                 <Eye size={14} className="text-primary" /> Просмотры
                </div>
-               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase">
-                 <ShieldCheck size={12} className="text-primary" /> Режим инкогнито
+               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-tighter">
+                 <ShieldCheck size={14} className="text-primary" /> Инкогнито
                </div>
-               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-bold uppercase">
-                 <Sparkles size={12} className="text-primary" /> 5 Супер-лайков
+               <div className="flex items-center gap-2 text-[10px] text-muted-foreground font-black uppercase tracking-tighter">
+                 <Sparkles size={14} className="text-primary" /> 5 Супер-лайков
                </div>
             </div>
           </div>
 
-          <DialogFooter className="p-6 pt-0">
-            <Button className="w-full h-14 rounded-full gradient-bg text-white font-bold shadow-xl shadow-primary/20 active:scale-95 transition-all">
-              Подключить за {PREMIUM_PLANS.find(p => p.id === selectedPlan)?.price}
+          <DialogFooter className="p-8 pt-0">
+            <Button className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all">
+              Подключить
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -195,24 +223,25 @@ export default function ActivityPage() {
 
       {/* Watch Ad Dialog */}
       <Dialog open={showAd} onOpenChange={setShowAd}>
-        <DialogContent className="max-w-[340px] rounded-[2.5rem] p-8 text-center bg-white shadow-2xl">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Play size={32} className="text-primary ml-1" fill="currentColor" />
+        <DialogContent className="max-w-[340px] rounded-[2.5rem] p-10 text-center bg-white shadow-2xl border-0">
+          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8 relative">
+            <div className="absolute inset-0 rounded-full bg-primary/5 animate-ping"></div>
+            <Play size={40} className="text-primary ml-1.5 relative z-10" fill="currentColor" />
           </div>
-          <DialogTitle className="text-xl font-bold mb-2">Бесплатный просмотр</DialogTitle>
-          <DialogDescription className="text-muted-foreground text-sm mb-6">
-            Посмотрите короткое видео (15-30 сек), чтобы открыть этого пользователя на 24 часа.
+          <DialogTitle className="text-2xl font-black mb-3 font-headline tracking-tight">Бонус-просмотр</DialogTitle>
+          <DialogDescription className="text-muted-foreground text-sm mb-8 leading-relaxed">
+            Посмотрите короткое видео, чтобы открыть профиль на <span className="text-primary font-bold">24 часа</span> бесплатно.
           </DialogDescription>
           
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <Button 
               onClick={handleWatchAd}
               disabled={isAdLoading}
-              className="w-full h-12 rounded-full gradient-bg text-white font-bold"
+              className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-lg shadow-primary/20"
             >
-              {isAdLoading ? "Смотрим видео..." : "Смотреть рекламу"}
+              {isAdLoading ? "Загрузка..." : "Смотреть"}
             </Button>
-            <Button variant="ghost" onClick={() => setShowAd(false)} className="rounded-full text-muted-foreground text-xs">
+            <Button variant="ghost" onClick={() => setShowAd(false)} className="rounded-full text-muted-foreground text-xs font-bold uppercase tracking-widest h-10">
               Не сейчас
             </Button>
           </div>
@@ -236,7 +265,7 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
 
   const getBgColor = () => {
     switch (item.type) {
-      case 'like': return 'bg-primary';
+      case 'like': return 'gradient-bg';
       case 'visit': return 'bg-blue-500';
       case 'match': return 'bg-green-500';
       default: return 'bg-muted';
@@ -254,50 +283,59 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
 
   return (
     <div className={cn(
-      "flex items-center gap-4 p-4 rounded-3xl transition-all cursor-pointer group",
-      item.seen ? "bg-white/50 grayscale-[0.3]" : "bg-white app-shadow"
+      "flex items-center gap-4 p-5 rounded-[2rem] transition-all cursor-pointer group relative overflow-hidden",
+      item.seen ? "bg-white/40 opacity-70" : "bg-white shadow-md shadow-black/5 hover:shadow-lg hover:translate-y-[-2px]"
     )}>
+      {!item.seen && (
+        <div className="absolute top-0 left-0 w-1.5 h-full gradient-bg opacity-40"></div>
+      )}
+      
       <div className="relative flex-shrink-0">
         <div className={cn(
-          "w-14 h-14 rounded-full overflow-hidden relative border-2 border-white shadow-sm",
-          item.blurred && "blur-md"
+          "w-16 h-16 rounded-3xl overflow-hidden relative border-2 border-white shadow-md transition-all",
+          item.blurred && "blur-[8px] grayscale"
         )}>
           <Image src={item.img} alt={item.user} fill className="object-cover" />
         </div>
         <div className={cn(
-          "absolute -bottom-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center border-2 border-white shadow-sm",
+          "absolute -bottom-1.5 -right-1.5 w-7 h-7 rounded-2xl flex items-center justify-center border-2 border-white shadow-md z-10",
           getBgColor()
         )}>
           {getIcon()}
         </div>
       </div>
       
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 pr-2">
         <div className="flex justify-between items-start mb-0.5">
-          <p className="text-xs leading-snug">
+          <p className="text-[13px] leading-tight text-foreground/90">
             {item.blurred ? (
-              <span className="font-bold text-foreground">Кто-то {getMessage()}</span>
+              <span className="font-bold">Кто-то <span className="font-medium text-muted-foreground">{getMessage()}</span></span>
             ) : (
               <>
-                <span className="font-bold text-foreground">{item.user}, {item.age}</span> {getMessage()}
+                <span className="font-bold">{item.user}, {item.age}</span> <span className="font-medium text-muted-foreground">{getMessage()}</span>
               </>
             )}
           </p>
-          {!item.seen && <span className="w-2 h-2 bg-primary rounded-full mt-1.5 animate-pulse"></span>}
+          {!item.seen && (
+            <div className="relative flex h-2 w-2 mt-1.5 ml-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </div>
+          )}
         </div>
-        <p className="text-[10px] text-muted-foreground">{item.time}</p>
+        <p className="text-[10px] text-muted-foreground font-bold tracking-tight uppercase opacity-60 mt-0.5">{item.time}</p>
         
         {item.blurred && (
           <button 
             onClick={(e) => { e.stopPropagation(); onUnlock(); }}
-            className="text-[9px] font-bold text-primary flex items-center gap-1 mt-1 hover:underline"
+            className="text-[10px] font-black text-primary flex items-center gap-1.5 mt-2 bg-primary/5 px-3 py-1.5 rounded-full w-fit hover:bg-primary/10 transition-colors uppercase tracking-tight"
           >
-            <Sparkles size={10} /> Узнать кто
+            <Sparkles size={11} /> Узнать кто
           </button>
         )}
       </div>
 
-      <ChevronRight size={18} className="text-muted-foreground/30 group-hover:translate-x-1 transition-transform" />
+      <ChevronRight size={18} className="text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-1 transition-all" />
     </div>
   );
 }
