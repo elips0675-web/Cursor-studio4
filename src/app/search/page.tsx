@@ -1,10 +1,11 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Heart, MapPin, Sparkles, SlidersHorizontal, X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -67,7 +68,15 @@ export default function SearchPage() {
 
   const user = filteredUsers[index % filteredUsers.length];
 
-  const handleSwipeRight = async () => {
+  const handleSwipe = useCallback((direction: 'left' | 'right') => {
+    if (direction === 'right') {
+      handleLike();
+    } else {
+      setIndex(prev => prev + 1);
+    }
+  }, [user, filteredUsers]);
+
+  const handleLike = async () => {
     if (!user) return;
     // Вероятность совпадения 40% для демо
     if (Math.random() > 0.6) {
@@ -117,12 +126,17 @@ export default function SearchPage() {
     }
   };
 
+  // Swipe Helpers
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-25, 25]);
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col items-center">
-        {/* Top bar with count and filters */}
-        <div className="flex items-center justify-between w-full max-w-sm mb-6">
+      <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col items-center relative">
+        {/* Top bar */}
+        <div className="flex items-center justify-between w-full max-w-sm mb-6 z-10">
           <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-2xl flex items-center gap-2 text-[11px] text-primary font-bold border border-primary/5 shadow-sm">
             <Sparkles size={14} />
             <span>{filteredUsers.length} анкет рядом</span>
@@ -138,66 +152,83 @@ export default function SearchPage() {
         </div>
 
         {/* Swipe Card Container */}
-        <div className="relative w-full flex-1 mb-8 max-w-[400px]">
-          {filteredUsers.length > 0 ? (
-            <div key={user.id} className="absolute inset-0 bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col animate-in fade-in zoom-in-95 duration-500">
-              <div className="relative flex-[1.6]">
-                <Image 
-                  src={user.img} 
-                  alt={user.name} 
-                  fill 
-                  className="object-cover"
-                  data-ai-hint="dating profile photo"
-                />
-                <div className="absolute top-4 left-4">
-                   <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold shadow-lg">Онлайн</Badge>
+        <div className="relative w-full flex-1 mb-8 max-w-[400px] flex items-center justify-center">
+          <AnimatePresence mode="popLayout">
+            {filteredUsers.length > 0 ? (
+              <motion.div 
+                key={user.id} 
+                style={{ x, rotate, opacity }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x > 100) {
+                    handleSwipe('right');
+                  } else if (info.offset.x < -100) {
+                    handleSwipe('left');
+                  }
+                }}
+                whileDrag={{ scale: 1.05 }}
+                className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col cursor-grab active:cursor-grabbing"
+              >
+                <div className="relative flex-[1.6] pointer-events-none select-none">
+                  <Image 
+                    src={user.img} 
+                    alt={user.name} 
+                    fill 
+                    className="object-cover"
+                    data-ai-hint="dating profile photo"
+                    priority
+                  />
+                  <div className="absolute top-4 left-4">
+                     <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold shadow-lg">Онлайн</Badge>
+                  </div>
+                  <div className="absolute top-4 right-4">
+                     <Badge className="gradient-bg text-white border-0 px-3 py-1 font-bold shadow-lg">
+                       {user.match}% совпадение
+                     </Badge>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent"></div>
                 </div>
-                <div className="absolute top-4 right-4">
-                   <Badge className="gradient-bg text-white border-0 px-3 py-1 font-bold shadow-lg">
-                     {user.match}% совпадение
-                   </Badge>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent"></div>
-              </div>
-              
-              <div className="p-6 text-center bg-white flex flex-col justify-center relative -mt-4 rounded-t-3xl shadow-2xl">
-                <h3 className="text-2xl font-bold font-headline mb-1">{user.name}, {user.age}</h3>
-                <p className="text-muted-foreground text-xs mb-4 flex items-center justify-center gap-1">
-                  <MapPin size={14} className="text-primary" /> {user.distance} км от вас
-                </p>
                 
-                <div className="flex flex-wrap justify-center gap-2 mb-4">
-                  {user.interests.map(i => (
-                    <span key={i} className="px-3 py-1 bg-muted text-[9px] rounded-full font-bold text-foreground/70 uppercase tracking-tight">{i}</span>
-                  ))}
+                <div className="p-6 text-center bg-white flex flex-col justify-center relative -mt-4 rounded-t-3xl shadow-2xl pointer-events-none select-none">
+                  <h3 className="text-2xl font-bold font-headline mb-1">{user.name}, {user.age}</h3>
+                  <p className="text-muted-foreground text-xs mb-4 flex items-center justify-center gap-1">
+                    <MapPin size={14} className="text-primary" /> {user.distance} км от вас
+                  </p>
+                  
+                  <div className="flex flex-wrap justify-center gap-2 mb-4">
+                    {user.interests.map(i => (
+                      <span key={i} className="px-3 py-1 bg-muted text-[9px] rounded-full font-bold text-foreground/70 uppercase tracking-tight">{i}</span>
+                    ))}
+                  </div>
+                  
+                  <p className="text-muted-foreground text-xs leading-relaxed italic px-2 line-clamp-3">
+                    "{user.bio}"
+                  </p>
                 </div>
-                
-                <p className="text-muted-foreground text-xs leading-relaxed italic px-2 line-clamp-3">
-                  "{user.bio}"
-                </p>
+              </motion.div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full w-full text-center p-8 bg-white/50 rounded-[2.5rem] border-2 border-dashed border-muted">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                  <X size={32} className="text-muted-foreground" />
+                </div>
+                <h4 className="text-lg font-bold mb-2">Никого не нашли</h4>
+                <p className="text-sm text-muted-foreground mb-6">Попробуйте изменить параметры фильтров</p>
+                <Button variant="outline" className="rounded-full px-8" onClick={() => {
+                  setAgeRange([18, 40]);
+                  setMaxDistance([50]);
+                  setSelectedInterests([]);
+                  setSelectedGender('all');
+                }}>
+                  Сбросить
+                </Button>
               </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-white/50 rounded-[2.5rem] border-2 border-dashed border-muted">
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                <X size={32} className="text-muted-foreground" />
-              </div>
-              <h4 className="text-lg font-bold mb-2">Никого не нашли</h4>
-              <p className="text-sm text-muted-foreground mb-6">Попробуйте изменить параметры фильтров</p>
-              <Button variant="outline" className="rounded-full px-8" onClick={() => {
-                setAgeRange([18, 40]);
-                setMaxDistance([50]);
-                setSelectedInterests([]);
-                setSelectedGender('all');
-              }}>
-                Сбросить
-              </Button>
-            </div>
-          )}
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex items-center justify-center gap-6 z-10">
           <button 
             onClick={() => setIndex(prev => prev + 1)}
             className="w-14 h-14 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all shadow-lg"
@@ -206,7 +237,7 @@ export default function SearchPage() {
           </button>
           <button 
             disabled={filteredUsers.length === 0}
-            onClick={handleSwipeRight}
+            onClick={handleLike}
             className="w-20 h-20 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed group"
           >
             <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
