@@ -79,19 +79,19 @@ export default function ProfilePage() {
   return (
     <>
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
-        {/* Profile Header Background */}
-        <div className="h-44 gradient-bg rounded-b-[3rem] relative shadow-lg">
-          <div className="absolute top-8 left-8 text-white text-2xl font-black uppercase tracking-tighter">SwiftMatch</div>
+        {/* Profile Header Background - Rectangular and shorter */}
+        <div className="h-32 gradient-bg relative shadow-lg">
+          <div className="absolute top-6 left-8 text-white text-2xl font-black uppercase tracking-tighter">SwiftMatch</div>
           <Link 
             href="/settings"
-            className="absolute top-8 right-8 text-white/90 p-2.5 bg-black/10 rounded-full hover:bg-black/20 transition-colors backdrop-blur-sm shadow-sm"
+            className="absolute top-6 right-8 text-white/90 p-2.5 bg-black/10 rounded-full hover:bg-black/20 transition-colors backdrop-blur-sm shadow-sm"
           >
             <Settings size={22} />
           </Link>
         </div>
 
         {/* Profile Info */}
-        <div className="px-6 -mt-20 text-center">
+        <div className="px-6 -mt-16 text-center">
           <div className="relative inline-block mb-4">
             <div className="w-36 h-36 rounded-[2.5rem] border-4 border-white app-shadow overflow-hidden relative bg-muted transform -rotate-3">
               <Image src={photos[0] || PlaceHolderImages[0].imageUrl} alt="My Profile" fill className="object-cover" />
