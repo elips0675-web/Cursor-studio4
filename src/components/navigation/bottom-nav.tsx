@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, MessageCircle, User } from "lucide-react";
+import { Home, Search, MessageCircle, User, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
@@ -11,6 +11,7 @@ export function BottomNav() {
   const navItems = [
     { href: "/", label: "Главная", icon: Home },
     { href: "/search", label: "Поиск", icon: Search },
+    { href: "/activity", label: "Активность", icon: Bell, badge: 5 },
     { href: "/chats", label: "Чаты", icon: MessageCircle, badge: 2 },
     { href: "/profile", label: "Профиль", icon: User },
   ];
