@@ -328,34 +328,62 @@ export default function Home() {
 }
 
 function FeaturedCard({ user }: { user: any }) {
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+      title: "Лайк!",
+      description: `Вы лайкнули ${user.name}`,
+    });
+  };
+
   return (
-    <Link href={`/search`} className="w-full group active:scale-[0.98] transition-all">
-      <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden app-shadow border-2 border-white group-hover:border-primary/20 transition-colors bg-muted">
-        <Image 
-          src={user.img} 
-          alt={user.name} 
-          fill 
-          className="object-cover group-hover:scale-110 transition-transform duration-500"
-        />
-        <div className="absolute top-3 right-3">
-           <Badge className="bg-primary text-white text-[8px] border-0 px-2 py-1 font-black uppercase shadow-lg">
-             {user.match}%
-           </Badge>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
-          <p className="text-white font-bold text-sm leading-tight">{user.name}, {user.age}</p>
-          <div className="flex items-center gap-1.5 text-white/80 text-[9px] mt-1 font-bold uppercase tracking-tight">
-            <MapPin size={10} className="text-primary" /> {user.distance} км
+    <div className="w-full group active:scale-[0.98] transition-all relative">
+      <Link href={`/search`} className="block">
+        <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden app-shadow border-2 border-white group-hover:border-primary/20 transition-colors bg-muted">
+          <Image 
+            src={user.img} 
+            alt={user.name} 
+            fill 
+            className="object-cover group-hover:scale-110 transition-transform duration-500"
+          />
+          <div className="absolute top-3 right-3">
+             <Badge className="bg-primary text-white text-[8px] border-0 px-2 py-1 font-black uppercase shadow-lg">
+               {user.match}%
+             </Badge>
+          </div>
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+            <p className="text-white font-bold text-sm leading-tight">{user.name}, {user.age}</p>
+            <div className="flex items-center gap-1.5 text-white/80 text-[9px] mt-1 font-bold uppercase tracking-tight">
+              <MapPin size={10} className="text-primary" /> {user.distance} км
+            </div>
           </div>
         </div>
-      </div>
-    </Link>
+      </Link>
+      
+      {/* Floating Heart Button */}
+      <button 
+        onClick={handleLike}
+        className="absolute bottom-5 right-5 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-primary shadow-xl hover:scale-110 active:scale-90 transition-all z-20"
+      >
+        <Heart size={18} fill="currentColor" />
+      </button>
+    </div>
   );
 }
 
 function ProfilePreviewCard({ user, showActions = false }: { user: any; showActions?: boolean }) {
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toast({
+      title: "Лайк!",
+      description: `Вы лайкнули ${user.name}`,
+    });
+  };
+
   return (
-    <div className="bg-white rounded-[2rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all">
+    <div className="bg-white rounded-[2rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
       <Link href={`/search`} className="relative aspect-square bg-muted block overflow-hidden cursor-pointer">
         <Image 
           src={user.img} 
@@ -379,7 +407,12 @@ function ProfilePreviewCard({ user, showActions = false }: { user: any; showActi
                  {user.match}%
                </Badge>
             ) : (
-              <Heart size={14} className="text-muted-foreground/30 group-hover:text-primary transition-colors" />
+              <button 
+                onClick={handleLike}
+                className="p-1.5 hover:scale-125 active:scale-95 transition-all text-muted-foreground/30 hover:text-primary"
+              >
+                <Heart size={16} />
+              </button>
             )}
           </div>
           <div className="text-muted-foreground text-[10px] flex items-center gap-1.5 font-medium mb-3">
@@ -393,13 +426,7 @@ function ProfilePreviewCard({ user, showActions = false }: { user: any; showActi
               variant="outline" 
               size="sm" 
               className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                toast({
-                  title: "Лайк!",
-                  description: `Вы лайкнули ${user.name}`,
-                });
-              }}
+              onClick={handleLike}
             >
               <Heart size={14} className="group-hover/heart:fill-current" />
             </Button>
