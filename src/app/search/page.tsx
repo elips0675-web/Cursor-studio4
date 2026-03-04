@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 
+// Консистентный список из 10 демо-пользователей (5 женщин, 5 мужчин)
 const ALL_USERS = [
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, interests: ['Фотография', 'Путешествия', 'Кофе'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', distance: 2, match: 87, gender: 'female' },
   { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, interests: ['Спорт', 'IT', 'Книги'], bio: 'Ищу компанию для пробежек и обсуждения технологий.', distance: 5, match: 92, gender: 'male' },
@@ -68,11 +69,13 @@ export default function SearchPage() {
 
   const handleSwipeRight = async () => {
     if (!user) return;
-    if (Math.random() > 0.3) {
+    // Вероятность совпадения 40% для демо
+    if (Math.random() > 0.6) {
       setMatchUser(user);
       getAiInsight(user);
+    } else {
+      setIndex(prev => prev + 1);
     }
-    setIndex(prev => prev + 1);
   };
 
   const getAiInsight = async (targetUser: any) => {
@@ -118,27 +121,27 @@ export default function SearchPage() {
     <>
       <AppHeader />
       <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col items-center">
-        <div className="flex flex-col items-center gap-3 mb-6 w-full max-w-sm">
-          <div className="flex items-center gap-2">
-            <div className="bg-white/90 px-4 py-2 rounded-2xl flex items-center gap-2 text-sm text-primary font-bold border border-primary/5 shadow-sm">
-              <Sparkles size={16} />
-              <span>Подбор: {filteredUsers.length} человек</span>
-            </div>
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => setIsFilterOpen(true)}
-              className="rounded-2xl h-10 w-10 bg-white border-primary/10 shadow-sm hover:bg-primary/5 transition-colors"
-            >
-              <SlidersHorizontal size={18} className="text-primary" />
-            </Button>
+        {/* Top bar with count and filters */}
+        <div className="flex items-center justify-between w-full max-w-sm mb-6">
+          <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-2xl flex items-center gap-2 text-[11px] text-primary font-bold border border-primary/5 shadow-sm">
+            <Sparkles size={14} />
+            <span>{filteredUsers.length} анкет рядом</span>
           </div>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            onClick={() => setIsFilterOpen(true)}
+            className="rounded-2xl h-10 w-10 bg-white border-primary/10 shadow-sm hover:bg-primary/5 transition-colors"
+          >
+            <SlidersHorizontal size={18} className="text-primary" />
+          </Button>
         </div>
 
+        {/* Swipe Card Container */}
         <div className="relative w-full flex-1 mb-8 max-w-[400px]">
           {filteredUsers.length > 0 ? (
             <div key={user.id} className="absolute inset-0 bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col animate-in fade-in zoom-in-95 duration-500">
-              <div className="relative flex-[1.4]">
+              <div className="relative flex-[1.6]">
                 <Image 
                   src={user.img} 
                   alt={user.name} 
@@ -147,26 +150,29 @@ export default function SearchPage() {
                   data-ai-hint="dating profile photo"
                 />
                 <div className="absolute top-4 left-4">
-                   <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold">Онлайн</Badge>
+                   <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold shadow-lg">Онлайн</Badge>
                 </div>
                 <div className="absolute top-4 right-4">
-                   <Badge className="gradient-bg text-white border-0 px-3 py-1 font-bold shadow-md">{user.match}% совпадение</Badge>
+                   <Badge className="gradient-bg text-white border-0 px-3 py-1 font-bold shadow-lg">
+                     {user.match}% совпадение
+                   </Badge>
                 </div>
+                <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent"></div>
               </div>
               
-              <div className="flex-1 p-6 text-center bg-white flex flex-col justify-center">
+              <div className="p-6 text-center bg-white flex flex-col justify-center relative -mt-4 rounded-t-3xl shadow-2xl">
                 <h3 className="text-2xl font-bold font-headline mb-1">{user.name}, {user.age}</h3>
-                <p className="text-muted-foreground text-sm mb-4 flex items-center justify-center gap-1">
+                <p className="text-muted-foreground text-xs mb-4 flex items-center justify-center gap-1">
                   <MapPin size={14} className="text-primary" /> {user.distance} км от вас
                 </p>
                 
-                <div className="flex flex-wrap justify-center gap-2 mb-5">
+                <div className="flex flex-wrap justify-center gap-2 mb-4">
                   {user.interests.map(i => (
-                    <span key={i} className="px-3 py-1 bg-muted text-[10px] rounded-full font-bold text-foreground/70 uppercase tracking-tight">{i}</span>
+                    <span key={i} className="px-3 py-1 bg-muted text-[9px] rounded-full font-bold text-foreground/70 uppercase tracking-tight">{i}</span>
                   ))}
                 </div>
                 
-                <p className="text-muted-foreground text-xs leading-relaxed italic px-4 line-clamp-3">
+                <p className="text-muted-foreground text-xs leading-relaxed italic px-2 line-clamp-3">
                   "{user.bio}"
                 </p>
               </div>
@@ -190,7 +196,14 @@ export default function SearchPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-center">
+        {/* Action Buttons */}
+        <div className="flex items-center justify-center gap-6">
+          <button 
+            onClick={() => setIndex(prev => prev + 1)}
+            className="w-14 h-14 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all shadow-lg"
+          >
+            <X size={24} />
+          </button>
           <button 
             disabled={filteredUsers.length === 0}
             onClick={handleSwipeRight}
@@ -198,11 +211,17 @@ export default function SearchPage() {
           >
             <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
           </button>
+          <button 
+            className="w-14 h-14 rounded-full bg-white text-yellow-500 flex items-center justify-center hover:bg-muted active:scale-90 transition-all shadow-lg"
+          >
+            <Sparkles size={24} />
+          </button>
         </div>
       </main>
 
+      {/* Filters Dialog */}
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0">
+        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white">
           <DialogHeader className="p-6 bg-muted/30">
             <DialogTitle className="text-xl font-bold font-headline">Фильтры поиска</DialogTitle>
             <DialogDescription>Настройте параметры для идеального мэтча</DialogDescription>
@@ -210,19 +229,19 @@ export default function SearchPage() {
           
           <div className="p-6 space-y-8 overflow-y-auto max-h-[60vh] no-scrollbar">
             <div className="space-y-4">
-              <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Пол</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Я ищу</Label>
               <div className="flex gap-2">
                 {[
-                  { id: 'all', label: 'Все' },
-                  { id: 'male', label: 'Мужской' },
-                  { id: 'female', label: 'Женский' }
+                  { id: 'all', label: 'Всех' },
+                  { id: 'male', label: 'Парней' },
+                  { id: 'female', label: 'Девушек' }
                 ].map((g) => (
                   <Button
                     key={g.id}
                     variant={selectedGender === g.id ? 'default' : 'outline'}
                     className={cn(
-                      "flex-1 rounded-full text-[10px] font-bold uppercase",
-                      selectedGender === g.id ? "gradient-bg text-white border-0" : "border-primary/10 text-muted-foreground"
+                      "flex-1 rounded-xl text-[10px] font-bold h-11",
+                      selectedGender === g.id ? "gradient-bg text-white border-0" : "border-muted text-muted-foreground"
                     )}
                     onClick={() => setSelectedGender(g.id)}
                   >
@@ -234,8 +253,8 @@ export default function SearchPage() {
 
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Возраст</Label>
-                <span className="text-sm text-primary font-black">{ageRange[0]} - {ageRange[1]}</span>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Возраст</Label>
+                <span className="text-xs text-primary font-black">{ageRange[0]} - {ageRange[1]}</span>
               </div>
               <Slider 
                 value={ageRange} 
@@ -248,8 +267,8 @@ export default function SearchPage() {
 
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Расстояние</Label>
-                <span className="text-sm text-primary font-black">до {maxDistance[0]} км</span>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Расстояние</Label>
+                <span className="text-xs text-primary font-black">до {maxDistance[0]} км</span>
               </div>
               <Slider 
                 value={maxDistance} 
@@ -261,17 +280,18 @@ export default function SearchPage() {
             </div>
 
             <div className="space-y-4">
-              <Label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Интересы</Label>
+              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Интересы</Label>
               <div className="flex flex-wrap gap-2">
                 {INTEREST_OPTIONS.map(interest => (
                   <Badge 
                     key={interest}
                     variant={selectedInterests.includes(interest) ? "default" : "secondary"}
-                    className={`cursor-pointer px-4 py-2 rounded-full transition-all border-0 font-bold text-[10px] ${
+                    className={cn(
+                      "cursor-pointer px-4 py-2 rounded-full transition-all border-0 font-bold text-[9px] uppercase tracking-tight",
                       selectedInterests.includes(interest) 
                         ? "gradient-bg text-white shadow-sm" 
                         : "bg-muted text-muted-foreground hover:bg-border"
-                    }`}
+                    )}
                     onClick={() => toggleInterest(interest)}
                   >
                     {interest}
@@ -289,19 +309,22 @@ export default function SearchPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Match Dialog */}
       <Dialog open={!!matchUser} onOpenChange={() => setMatchUser(null)}>
         <DialogContent className="max-w-[360px] rounded-[2.5rem] border-0 bg-white p-0 overflow-hidden shadow-2xl">
           <div className="relative h-32 gradient-bg flex items-center justify-center">
              <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-             <Heart className="text-white animate-pulse" size={48} fill="currentColor" />
+             <div className="relative z-10 bg-white p-3 rounded-full shadow-xl">
+               <Heart className="text-primary animate-pulse" size={32} fill="currentColor" />
+             </div>
           </div>
 
-          <div className="px-6 py-8 text-center -mt-10">
+          <div className="px-6 py-8 text-center -mt-12 bg-white rounded-t-[2.5rem] relative">
             <div className="flex items-center justify-center gap-0 mb-6 relative">
-               <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden relative z-10 -mr-4 bg-muted">
+               <div className="w-24 h-24 rounded-full border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-4 bg-muted">
                   <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill className="object-cover" />
                </div>
-               <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg overflow-hidden relative z-0 bg-muted">
+               <div className="w-24 h-24 rounded-full border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted">
                   <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name} fill className="object-cover" />
                </div>
                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white rounded-full p-2 shadow-md z-20">
@@ -309,32 +332,35 @@ export default function SearchPage() {
                </div>
             </div>
 
-            <DialogTitle className="text-2xl font-black font-headline mb-2 gradient-text">Это совпадение!</DialogTitle>
-            <DialogDescription className="text-muted-foreground text-sm mb-6 px-4">
+            <DialogTitle className="text-2xl font-black font-headline mb-2 gradient-text uppercase tracking-tight">Это совпадение!</DialogTitle>
+            <DialogDescription className="text-muted-foreground text-sm mb-6 px-4 leading-relaxed">
               Вы с <span className="font-bold text-foreground">{matchUser?.name}</span> понравились друг другу. Не заставляйте ждать!
             </DialogDescription>
             
-            <div className="bg-primary/5 p-4 rounded-3xl mb-8 text-left border border-primary/10">
-              <h4 className="text-[10px] font-bold text-primary mb-2 flex items-center gap-1 uppercase tracking-wider">
+            <div className="bg-primary/5 p-5 rounded-[2rem] mb-8 text-left border border-primary/10 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-2 text-primary/20 group-hover:text-primary/40 transition-colors">
+                <Sparkles size={32} />
+              </div>
+              <h4 className="text-[10px] font-bold text-primary mb-2 flex items-center gap-1 uppercase tracking-widest">
                 <Sparkles size={12} /> AI Инсайт
               </h4>
               {loadingAi ? (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground py-1">
                   <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  Анализируем интересы...
+                  Анализируем ваши общие интересы...
                 </div>
               ) : (
-                <p className="text-xs leading-relaxed text-foreground/80 italic">
+                <p className="text-xs leading-relaxed text-foreground/80 italic relative z-10">
                   {compatibility}
                 </p>
               )}
             </div>
 
             <div className="flex flex-col gap-3 w-full">
-              <Button onClick={handleStartChat} className="w-full h-12 rounded-full gradient-bg text-white font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+              <Button onClick={handleStartChat} className="w-full h-14 rounded-full gradient-bg text-white font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                 Написать первым
               </Button>
-              <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-11 text-muted-foreground font-semibold hover:bg-muted">
+              <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-12 text-muted-foreground font-semibold hover:bg-muted">
                 Продолжить поиск
               </Button>
             </div>
