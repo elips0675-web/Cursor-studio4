@@ -40,6 +40,46 @@ const ALL_USERS = [
 
 const INTEREST_OPTIONS = ["Фотография", "Путешествия", "Кофе", "Искусство", "Книги", "Бизнес", "Спорт", "Музыка", "Игры", "Йога", "Мода", "Дизайн", "История"];
 
+// Компонент "Салют из сердец"
+function HeartConfetti() {
+  const hearts = Array.from({ length: 20 });
+  return (
+    <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
+      {hearts.map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ 
+            opacity: 1, 
+            scale: 0, 
+            x: "50%", 
+            y: "50%" 
+          }}
+          animate={{ 
+            opacity: 0, 
+            scale: [0, 1.5, 1], 
+            x: `${Math.random() * 100}%`, 
+            y: `${Math.random() * 100}%`,
+            rotate: Math.random() * 360
+          }}
+          transition={{ 
+            duration: 2.5, 
+            ease: "easeOut",
+            delay: Math.random() * 0.5
+          }}
+          className="absolute"
+          style={{ left: "-5%", top: "-5%" }}
+        >
+          <Heart 
+            size={Math.random() * 20 + 10} 
+            fill={i % 2 === 0 ? "#fe3c72" : "#ff8e53"} 
+            className="text-transparent" 
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function SearchPage() {
   const router = useRouter();
   const [index, setIndex] = useState(0);
@@ -252,7 +292,7 @@ export default function SearchPage() {
 
       {/* Filters Dialog */}
       <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
-        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white">
+        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white shadow-2xl">
           <DialogHeader className="p-6 bg-muted/30">
             <DialogTitle className="text-xl font-bold font-headline">Фильтры поиска</DialogTitle>
             <DialogDescription>Настройте параметры для идеального мэтча</DialogDescription>
@@ -343,6 +383,8 @@ export default function SearchPage() {
       {/* Match Dialog */}
       <Dialog open={!!matchUser} onOpenChange={() => setMatchUser(null)}>
         <DialogContent className="max-w-[360px] rounded-[2.5rem] border-0 bg-white p-0 overflow-hidden shadow-2xl">
+          <HeartConfetti />
+          
           <div className="relative h-32 gradient-bg flex items-center justify-center">
              <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
              <div className="relative z-10 bg-white p-3 rounded-full shadow-xl">
