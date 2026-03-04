@@ -10,7 +10,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: "/", label: "Главная", icon: Home },
-    { href: "/search", label: "Поиск", icon: Search },
+    { href: "/search", label: "Свайпы", icon: Search },
     { href: "/activity", label: "Активность", icon: Bell, badge: 5 },
     { href: "/chats", label: "Чаты", icon: MessageCircle, badge: 2 },
     { href: "/profile", label: "Профиль", icon: User },

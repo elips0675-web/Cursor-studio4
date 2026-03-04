@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -39,6 +38,11 @@ const DATING_GOALS = [
   "Пока не знаю"
 ];
 
+const ZODIAC_SIGNS = [
+  "Овен", "Телец", "Близнецы", "Рак", "Лев", "Дева", 
+  "Весы", "Скорпион", "Стрелец", "Козерог", "Водолей", "Рыбы"
+];
+
 export default function EditProfilePage() {
   const router = useRouter();
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
@@ -49,6 +53,7 @@ export default function EditProfilePage() {
     city: "Москва",
     height: 172,
     datingGoal: "Серьезные отношения",
+    zodiac: "Лев",
     bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Собаки", "Сова"]
   });
@@ -151,22 +156,40 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Dating Preferences */}
-          <div className="space-y-2">
-            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Цель знакомства</Label>
-            <Select 
-              value={profile.datingGoal} 
-              onValueChange={(val) => setProfile({...profile, datingGoal: val})}
-            >
-              <SelectTrigger className="rounded-2xl bg-muted/50 border-0 h-12 focus:ring-primary/20 font-medium">
-                <SelectValue placeholder="Выберите цель" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-0 shadow-2xl">
-                {DATING_GOALS.map(goal => (
-                  <SelectItem key={goal} value={goal} className="font-bold text-sm rounded-xl py-3 cursor-pointer">{goal}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          {/* Dating Preferences & Zodiac */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Знак зодиака</Label>
+              <Select 
+                value={profile.zodiac} 
+                onValueChange={(val) => setProfile({...profile, zodiac: val})}
+              >
+                <SelectTrigger className="rounded-2xl bg-muted/50 border-0 h-12 focus:ring-primary/20 font-medium">
+                  <SelectValue placeholder="Знак" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-0 shadow-2xl max-h-[200px]">
+                  {ZODIAC_SIGNS.map(sign => (
+                    <SelectItem key={sign} value={sign} className="font-bold text-sm rounded-xl py-3 cursor-pointer">{sign}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Цель знакомства</Label>
+              <Select 
+                value={profile.datingGoal} 
+                onValueChange={(val) => setProfile({...profile, datingGoal: val})}
+              >
+                <SelectTrigger className="rounded-2xl bg-muted/50 border-0 h-12 focus:ring-primary/20 font-medium">
+                  <SelectValue placeholder="Цель" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-0 shadow-2xl max-h-[200px]">
+                  {DATING_GOALS.map(goal => (
+                    <SelectItem key={goal} value={goal} className="font-bold text-sm rounded-xl py-3 cursor-pointer">{goal}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="space-y-2">

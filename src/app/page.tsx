@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, Search, Heart, MapPin } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
@@ -8,8 +8,10 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 
-// Консистентный список из 10 демо-пользователей (5 женщин, 5 мужчин)
+// Консистентный список из 10 демо-пользователей
 const ALL_DEMO_USERS = [
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, online: true, distance: 2, match: 87 },
   { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, online: true, distance: 5, match: 92 },
@@ -24,6 +26,20 @@ const ALL_DEMO_USERS = [
 ];
 
 export default function Home() {
+  const [isAutoSearching, setIsAutoSearching] = useState(false);
+
+  const handleAutoSearch = () => {
+    setIsAutoSearching(true);
+    toast({
+      title: "Автопоиск запущен",
+      description: "Мы подбираем лучшие профили на основе ваших предпочтений.",
+    });
+    setTimeout(() => {
+      setIsAutoSearching(false);
+      window.location.href = "/search";
+    }, 2000);
+  };
+
   return (
     <>
       <AppHeader />
@@ -40,20 +56,40 @@ export default function Home() {
           <p className="text-muted-foreground text-sm font-medium">Знакомься, общайся и находи любовь</p>
         </div>
 
-        {/* Action Button */}
-        <div className="mb-10">
-          <Button asChild className="w-full h-14 rounded-full gradient-bg text-white font-bold text-lg app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0">
-            <Link href="/search">
-              <Search size={20} className="mr-2 stroke-[3px]" /> Найти половинку
-            </Link>
-          </Button>
+        {/* Action Buttons & Filters */}
+        <div className="space-y-4 mb-10">
+          <div className="flex gap-3">
+            <Button asChild className="flex-1 h-14 rounded-2xl gradient-bg text-white font-bold text-lg app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0">
+              <Link href="/search">
+                <Search size={20} className="mr-2 stroke-[3px]" /> Найти пару
+              </Link>
+            </Button>
+            <Button 
+              onClick={handleAutoSearch}
+              disabled={isAutoSearching}
+              className="w-14 h-14 rounded-2xl bg-white border-2 border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all app-shadow p-0"
+            >
+              <Zap size={24} fill={isAutoSearching ? "currentColor" : "none"} className={isAutoSearching ? "animate-pulse" : ""} />
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+            <Button variant="outline" size="sm" className="rounded-xl border-muted bg-white h-9 text-[10px] font-bold uppercase tracking-tight gap-1.5 shadow-sm shrink-0">
+              <SlidersHorizontal size={12} /> Фильтры
+            </Button>
+            {['Интересы', 'Возраст', 'Город', 'Зодиак'].map((filter) => (
+              <Button key={filter} variant="secondary" size="sm" className="rounded-xl bg-white border border-border h-9 text-[10px] font-bold uppercase tracking-tight shadow-sm shrink-0">
+                {filter}
+              </Button>
+            ))}
+          </div>
         </div>
 
         {/* Featured Users - 4 Profiles Grid */}
         <section className="mb-10">
           <div className="flex justify-between items-center mb-4">
             <h5 className="font-black text-xl font-headline">🔥 Топ недели</h5>
-            <Button asChild className="gradient-bg text-white font-black uppercase tracking-widest text-[10px] h-9 px-6 rounded-full app-shadow border-0">
+            <Button asChild variant="outline" className="text-primary font-black uppercase tracking-widest text-[10px] h-9 px-6 rounded-full border-primary/20 hover:bg-primary/5 bg-white transition-all shadow-sm">
                <Link href="/search">Все</Link>
             </Button>
           </div>
@@ -68,7 +104,7 @@ export default function Home() {
         <section>
           <div className="flex justify-between items-end mb-4">
             <h5 className="font-black text-xl font-headline">✨ Рекомендуем</h5>
-            <Badge variant="outline" className="text-[10px] font-bold text-muted-foreground border-muted px-3 py-0.5 rounded-full uppercase tracking-tighter">Рядом</Badge>
+            <Badge variant="outline" className="text-[10px] font-bold text-muted-foreground border-muted px-3 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">Рядом</Badge>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {ALL_DEMO_USERS.slice(4).map((u) => (
@@ -91,17 +127,16 @@ function FeaturedCard({ user }: { user: any }) {
           alt={user.name} 
           fill 
           className="object-cover group-hover:scale-110 transition-transform duration-500"
-          data-ai-hint="user portrait"
         />
-        <div className="absolute top-2 right-2">
-           <Badge className="bg-primary text-white text-[8px] border-0 px-1.5 py-0.5 font-black uppercase shadow-sm">
+        <div className="absolute top-3 right-3">
+           <Badge className="bg-primary text-white text-[8px] border-0 px-2 py-1 font-black uppercase shadow-lg">
              {user.match}%
            </Badge>
         </div>
-        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
-          <p className="text-white font-bold text-xs leading-tight">{user.name}, {user.age}</p>
-          <div className="flex items-center gap-1 text-white/70 text-[8px] mt-0.5 font-bold uppercase tracking-tight">
-            <MapPin size={8} className="text-primary" /> {user.distance} км
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
+          <p className="text-white font-bold text-sm leading-tight">{user.name}, {user.age}</p>
+          <div className="flex items-center gap-1.5 text-white/80 text-[9px] mt-1 font-bold uppercase tracking-tight">
+            <MapPin size={10} className="text-primary" /> {user.distance} км
           </div>
         </div>
       </div>
@@ -118,11 +153,10 @@ function ProfilePreviewCard({ user }: { user: any }) {
           alt={user.name} 
           fill 
           className="object-cover group-hover:scale-105 transition-transform duration-500"
-          data-ai-hint="user portrait"
         />
         {user.online && (
-          <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/20 backdrop-blur-sm px-2 py-0.5 rounded-full border border-white/20">
-            <span className="w-1.5 h-1.5 bg-[#2ecc71] rounded-full"></span>
+          <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20">
+            <span className="w-1.5 h-1.5 bg-[#2ecc71] rounded-full animate-pulse"></span>
             <span className="text-white text-[8px] font-bold uppercase tracking-tight">Онлайн</span>
           </div>
         )}
@@ -132,8 +166,8 @@ function ProfilePreviewCard({ user }: { user: any }) {
           <span className="font-bold text-sm">{user.name}, {user.age}</span>
           <Heart size={14} className="text-muted-foreground/30 group-hover:text-primary transition-colors" />
         </div>
-        <div className="text-muted-foreground text-[10px] flex items-center gap-1 font-medium">
-          <MapPin size={10} /> {user.distance} км от вас
+        <div className="text-muted-foreground text-[10px] flex items-center gap-1.5 font-medium">
+          <MapPin size={10} className="text-primary/60" /> {user.distance} км от вас
         </div>
       </div>
     </Link>

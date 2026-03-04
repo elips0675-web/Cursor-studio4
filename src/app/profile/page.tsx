@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -26,7 +25,8 @@ import {
   Ruler,
   Moon,
   Sun,
-  Target
+  Target,
+  Sparkles
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -49,6 +49,15 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+// Zodiac Icons SVG Map
+const ZodiacIcon = ({ sign }: { sign: string }) => {
+  const signs: Record<string, string> = {
+    "Овен": "♈", "Телец": "♉", "Близнецы": "♊", "Рак": "♋", "Лев": "♌", "Дева": "♍",
+    "Весы": "♎", "Скорпион": "♏", "Стрелец": "♐", "Козерог": "♑", "Водолей": "♒", "Рыбы": "♓"
+  };
+  return <span className="text-xl leading-none">{signs[sign] || "✨"}</span>;
+};
+
 export default function ProfilePage() {
   // Profile State
   const [profile] = useState({
@@ -56,6 +65,7 @@ export default function ProfilePage() {
     age: 24,
     city: "Москва",
     datingGoal: "Серьезные отношения",
+    zodiac: "Лев",
     bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки", "Рост: 172 см", "Сова"]
   });
@@ -164,13 +174,18 @@ export default function ProfilePage() {
             <h3 className="text-2xl font-black font-headline mb-1 flex items-center justify-center gap-2">
               {profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" />
             </h3>
-            <div className="flex flex-col items-center gap-1">
+            <div className="flex flex-col items-center gap-2">
               <p className="text-muted-foreground text-[11px] font-bold flex items-center justify-center gap-1.5 uppercase tracking-wider opacity-70">
                 <MapPin size={14} className="text-primary" /> {profile.city}
               </p>
-              <Badge variant="secondary" className="bg-primary/10 text-primary border-0 gap-2 py-1.5 px-4 font-black text-[9px] rounded-full uppercase tracking-widest mt-2 shadow-sm">
-                <Target size={12} /> {profile.datingGoal}
-              </Badge>
+              <div className="flex flex-wrap justify-center gap-2 mt-1">
+                <Badge variant="secondary" className="bg-primary/10 text-primary border-0 gap-2 py-1.5 px-4 font-black text-[9px] rounded-full uppercase tracking-widest shadow-sm">
+                  <Target size={12} /> {profile.datingGoal}
+                </Badge>
+                <Badge variant="secondary" className="bg-orange-100 text-orange-600 border-0 gap-2 py-1.5 px-4 font-black text-[9px] rounded-full uppercase tracking-widest shadow-sm">
+                  <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
+                </Badge>
+              </div>
             </div>
           </div>
 
@@ -254,6 +269,9 @@ export default function ProfilePage() {
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
             <h4 className="font-black text-xs uppercase tracking-widest mb-6">Обо мне</h4>
             <div className="flex flex-wrap gap-3">
+              <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl shadow-sm">
+                <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
+              </Badge>
               {profile.interests.map((interest) => {
                 const mapItem = interestMap.find(m => interest.includes(m.label));
                 const Icon = mapItem?.icon || Star;
