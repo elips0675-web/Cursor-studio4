@@ -148,7 +148,7 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             {ALL_DEMO_USERS.slice(4, 8).map((u) => (
-              <ProfilePreviewCard key={u.id} user={u} />
+              <ProfilePreviewCard key={u.id} user={u} showActions />
             ))}
           </div>
         </section>
@@ -338,36 +338,45 @@ function FeaturedCard({ user }: { user: any }) {
   };
 
   return (
-    <div className="w-full group active:scale-[0.98] transition-all relative">
-      <Link href={`/search`} className="block">
-        <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden app-shadow border-2 border-white group-hover:border-primary/20 transition-colors bg-muted">
-          <Image 
-            src={user.img} 
-            alt={user.name} 
-            fill 
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
-          />
-          <div className="absolute top-3 right-3">
+    <div className="bg-white rounded-[2rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
+      <Link href={`/search`} className="relative aspect-[3/4] bg-muted block overflow-hidden cursor-pointer">
+        <Image 
+          src={user.img} 
+          alt={user.name} 
+          fill 
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <div className="absolute top-3 right-3">
              <Badge className="bg-primary text-white text-[8px] border-0 px-2 py-1 font-black uppercase shadow-lg">
                {user.match}%
              </Badge>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
-            <p className="text-white font-bold text-sm leading-tight">{user.name}, {user.age}</p>
-            <div className="flex items-center gap-1.5 text-white/80 text-[9px] mt-1 font-bold uppercase tracking-tight">
-              <MapPin size={10} className="text-primary" /> {user.distance} км
-            </div>
-          </div>
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
+          <p className="text-white font-bold text-xs leading-tight">{user.name}, {user.age}</p>
         </div>
       </Link>
-      
-      {/* Floating Heart Button */}
-      <button 
-        onClick={handleLike}
-        className="absolute bottom-5 right-5 w-10 h-10 rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-primary shadow-xl hover:scale-110 active:scale-90 transition-all z-20"
-      >
-        <Heart size={18} fill="currentColor" />
-      </button>
+      <div className="p-3 mt-auto">
+        <div className="grid grid-cols-2 gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm"
+            onClick={handleLike}
+          >
+            <Heart size={14} className="group-hover/heart:fill-current" />
+          </Button>
+          <Button 
+            asChild
+            variant="outline" 
+            size="sm" 
+            className="h-9 rounded-xl border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm"
+          >
+            <Link href={`/chats?matchId=${user.id}`}>
+              <MessageCircle size={14} />
+            </Link>
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -399,23 +408,14 @@ function ProfilePreviewCard({ user, showActions = false }: { user: any; showActi
         )}
       </Link>
       <div className="p-4 flex-1 flex flex-col justify-between">
-        <div>
+        <div className="mb-3">
           <div className="flex justify-between items-center mb-1">
             <span className="font-bold text-sm">{user.name}, {user.age}</span>
-            {showActions ? (
-               <Badge variant="secondary" className="bg-primary/10 text-primary text-[8px] border-0 h-5 px-1.5 font-black uppercase">
-                 {user.match}%
-               </Badge>
-            ) : (
-              <button 
-                onClick={handleLike}
-                className="p-1.5 hover:scale-125 active:scale-95 transition-all text-muted-foreground/30 hover:text-primary"
-              >
-                <Heart size={16} />
-              </button>
-            )}
+            <Badge variant="secondary" className="bg-primary/10 text-primary text-[8px] border-0 h-5 px-1.5 font-black uppercase">
+              {user.match}%
+            </Badge>
           </div>
-          <div className="text-muted-foreground text-[10px] flex items-center gap-1.5 font-medium mb-3">
+          <div className="text-muted-foreground text-[10px] flex items-center gap-1.5 font-medium">
             <MapPin size={10} className="text-primary/60" /> {user.distance} км от вас
           </div>
         </div>
