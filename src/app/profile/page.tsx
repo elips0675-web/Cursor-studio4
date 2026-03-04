@@ -20,8 +20,6 @@ import {
   Flower2,
   Briefcase,
   Gamepad2,
-  ChevronLeft,
-  ChevronRight,
   Maximize2,
   X
 } from "lucide-react";
@@ -70,11 +68,11 @@ export default function ProfilePage() {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
   const handleAddPhoto = () => {
-    if (photos.length >= 9) {
+    if (photos.length >= 10) {
       toast({
         variant: "destructive",
         title: "Лимит достигнут",
-        description: "Максимум 9 фотографий в профиле.",
+        description: "Максимум 10 фотографий в профиле.",
       });
       return;
     }
@@ -137,7 +135,7 @@ export default function ProfilePage() {
         {/* Profile Info */}
         <div className="px-6 -mt-16 text-center">
           <div className="relative inline-block mb-8">
-            <div className="relative w-40 h-40 rounded-[2.5rem] border-4 border-white app-shadow overflow-hidden bg-muted transition-transform duration-500 hover:scale-[1.02]">
+            <div className="relative w-32 h-32 rounded-[2rem] border-4 border-white app-shadow overflow-hidden bg-muted transition-transform duration-500 hover:scale-[1.02]">
               <Image 
                 src={photos[0]} 
                 alt={profile.name} 
@@ -145,93 +143,92 @@ export default function ProfilePage() {
                 className="object-cover" 
                 priority
               />
-              {/* Premium Badge on top of image */}
-              <Badge className="absolute top-3 left-3 bg-primary text-white border-0 font-black text-[8px] h-6 px-2 flex items-center justify-center rounded-full shadow-xl z-20 uppercase tracking-widest">
-                PREMIUM 💎
+              <Badge className="absolute top-2 left-2 bg-primary text-white border-0 font-black text-[7px] h-5 px-1.5 flex items-center justify-center rounded-full shadow-xl z-20 uppercase tracking-widest">
+                PRO 💎
               </Badge>
             </div>
           </div>
 
           <div className="mb-8">
-            <h3 className="text-3xl font-black font-headline mb-1 flex items-center justify-center gap-2">
-              {profile.name}, {profile.age} <CheckCircle2 size={24} className="text-primary" fill="currentColor" />
+            <h3 className="text-2xl font-black font-headline mb-1 flex items-center justify-center gap-2">
+              {profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" />
             </h3>
-            <p className="text-muted-foreground text-sm font-bold flex items-center justify-center gap-1.5 uppercase tracking-wider opacity-70">
-              <MapPin size={16} className="text-primary" /> {profile.city}
+            <p className="text-muted-foreground text-[11px] font-bold flex items-center justify-center gap-1.5 uppercase tracking-wider opacity-70">
+              <MapPin size={14} className="text-primary" /> {profile.city}
             </p>
           </div>
 
           <div className="flex justify-center gap-4 mb-10">
             <Button 
               asChild
-              className="rounded-2xl gradient-bg text-white h-14 px-8 font-black uppercase text-[11px] tracking-widest app-shadow active:scale-95 transition-all border-0 flex-1 max-w-[200px]"
+              className="rounded-2xl gradient-bg text-white h-12 px-6 font-black uppercase text-[10px] tracking-widest app-shadow active:scale-95 transition-all border-0 flex-1 max-w-[180px]"
             >
               <Link href="/profile/edit">
-                <Edit2 size={16} className="mr-2" /> Редактировать
+                <Edit2 size={14} className="mr-2" /> Изменить
               </Link>
             </Button>
             <Button 
               asChild
               variant="outline" 
-              className="rounded-2xl h-14 px-6 font-black uppercase text-[11px] tracking-widest border-border text-muted-foreground bg-white shadow-md active:scale-95 transition-all"
+              className="rounded-2xl h-12 px-4 font-black uppercase text-[10px] tracking-widest border-border text-muted-foreground bg-white shadow-md active:scale-95 transition-all"
             >
-              <Link href="/settings"><Settings size={18} /></Link>
+              <Link href="/settings"><Settings size={16} /></Link>
             </Button>
           </div>
 
           {/* Stats */}
-          <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10">
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-10">
             <div className="grid grid-cols-2">
               <div className="text-center">
-                <div className="text-3xl font-black text-primary">128</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-1">Лайков</div>
+                <div className="text-2xl font-black text-primary">128</div>
+                <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1">Лайков</div>
               </div>
               <div className="text-center border-l border-border/50">
-                <div className="text-3xl font-black text-primary">45</div>
-                <div className="text-[10px] text-muted-foreground uppercase font-black tracking-widest mt-1">Мэтчей</div>
+                <div className="text-2xl font-black text-primary">45</div>
+                <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1">Мэтчей</div>
               </div>
             </div>
           </div>
 
-          {/* Photos Management Section */}
+          {/* Photos Management Section - 2 columns grid */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
             <div className="flex justify-between items-center mb-6">
-              <h4 className="font-black text-sm uppercase tracking-widest">Галерея</h4>
+              <h4 className="font-black text-xs uppercase tracking-widest">Галерея</h4>
               <button 
                 onClick={handleAddPhoto}
-                className="text-primary flex items-center gap-1.5 text-[10px] font-black uppercase hover:underline tracking-widest"
+                className="text-primary flex items-center gap-1.5 text-[9px] font-black uppercase hover:underline tracking-widest"
               >
-                <Plus size={18} /> Добавить
+                <Plus size={16} /> Добавить фото
               </button>
             </div>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-5">
               {photos.map((url, idx) => (
                 <div 
                   key={idx} 
                   onClick={() => openPhotoViewer(idx)}
-                  className="relative aspect-square rounded-2xl overflow-hidden bg-muted group shadow-md border border-border/20 cursor-pointer hover:scale-[1.03] transition-transform active:scale-95"
+                  className="relative aspect-[3/4] rounded-[1.75rem] overflow-hidden bg-muted group shadow-lg border border-border/20 cursor-pointer hover:scale-[1.02] transition-transform active:scale-95"
                 >
                   <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <div className="p-2 bg-white/20 backdrop-blur-md text-white rounded-full">
-                      <Maximize2 size={16} />
+                  <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                    <div className="p-2.5 bg-white/20 backdrop-blur-md text-white rounded-full">
+                      <Maximize2 size={18} />
                     </div>
                     <button 
                       onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }}
-                      className="p-2 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-destructive/60 transition-colors"
+                      className="p-2.5 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-destructive/70 transition-colors"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={18} />
                     </button>
                   </div>
                 </div>
               ))}
-              {photos.length < 9 && (
+              {photos.length < 10 && (
                 <button 
                   onClick={handleAddPhoto}
-                  className="aspect-square rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all group shadow-sm"
+                  className="aspect-[3/4] rounded-[1.75rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all group shadow-sm bg-muted/10"
                 >
-                  <Plus size={28} className="group-hover:text-primary transition-colors" />
-                  <span className="text-[8px] font-black mt-1 uppercase tracking-tighter">Новое</span>
+                  <Plus size={32} className="group-hover:text-primary transition-colors" />
+                  <span className="text-[9px] font-black mt-2 uppercase tracking-widest">Добавить</span>
                 </button>
               )}
             </div>
@@ -239,11 +236,11 @@ export default function ProfilePage() {
 
           {/* Interests */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-6">Мои интересы</h4>
+            <h4 className="font-black text-xs uppercase tracking-widest mb-6">Мои интересы</h4>
             <div className="flex flex-wrap gap-3">
               {interestMap.filter(i => profile.interests.includes(i.label)).map((item) => (
-                <Badge key={item.label} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2.5 py-3 px-5 font-bold text-[11px] rounded-2xl hover:bg-muted transition-colors shadow-sm">
-                  <item.icon size={18} className="text-primary" /> {item.label}
+                <Badge key={item.label} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl hover:bg-muted transition-colors shadow-sm">
+                  <item.icon size={16} className="text-primary" /> {item.label}
                 </Badge>
               ))}
             </div>
@@ -251,20 +248,20 @@ export default function ProfilePage() {
 
           {/* Bio Section */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
-            <h4 className="font-black text-sm uppercase tracking-widest mb-4">О себе</h4>
-            <p className="text-base text-muted-foreground leading-relaxed font-medium">
+            <h4 className="font-black text-xs uppercase tracking-widest mb-4">О себе</h4>
+            <p className="text-sm text-muted-foreground leading-relaxed font-medium">
               {profile.bio}
             </p>
           </div>
 
           {/* Premium Banner */}
-          <div className="gradient-bg rounded-[3rem] p-10 text-white text-center app-shadow mb-12 relative overflow-hidden group">
+          <div className="gradient-bg rounded-[3rem] p-8 text-white text-center app-shadow mb-12 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <Star size={100} fill="currentColor" />
+              <Star size={80} fill="currentColor" />
             </div>
-            <h5 className="font-black text-2xl mb-3 relative z-10">SwiftMatch Premium</h5>
-            <p className="text-sm text-white/80 mb-8 max-w-[240px] mx-auto relative z-10 leading-relaxed">Узнайте, кто вами интересуется, и получите безлимит свайпов</p>
-            <Button variant="secondary" className="w-full rounded-2xl h-14 bg-white text-primary font-black uppercase text-[11px] tracking-widest hover:bg-white/90 shadow-xl relative z-10 active:scale-95 transition-all border-0">
+            <h5 className="font-black text-xl mb-2 relative z-10">SwiftMatch Premium</h5>
+            <p className="text-xs text-white/80 mb-6 max-w-[200px] mx-auto relative z-10 leading-relaxed">Узнайте, кто вами интересуется, и получите безлимит</p>
+            <Button variant="secondary" className="w-full rounded-2xl h-12 bg-white text-primary font-black uppercase text-[10px] tracking-widest hover:bg-white/90 shadow-xl relative z-10 active:scale-95 transition-all border-0">
               Стать Premium
             </Button>
           </div>
@@ -301,19 +298,19 @@ export default function ProfilePage() {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="absolute -bottom-12 left-0 right-0 flex justify-center gap-3">
+            <div className="absolute -bottom-10 left-0 right-0 flex justify-center gap-2">
               {photos.map((_, i) => (
                 <div 
                   key={i} 
                   className={cn(
-                    "w-2 h-2 rounded-full transition-all duration-300",
-                    activePhotoIndex === i ? "bg-white scale-150" : "bg-white/30"
+                    "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                    activePhotoIndex === i ? "bg-white scale-125" : "bg-white/30"
                   )} 
                 />
               ))}
             </div>
-            <CarouselPrevious className="left-2 h-14 w-14 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
-            <CarouselNext className="right-2 h-14 w-14 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
+            <CarouselPrevious className="left-2 h-12 w-12 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
+            <CarouselNext className="right-2 h-12 w-12 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
           </Carousel>
         </DialogContent>
       </Dialog>
