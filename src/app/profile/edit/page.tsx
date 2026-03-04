@@ -8,7 +8,11 @@ import {
   Sparkles, 
   Camera, 
   CheckCircle2,
-  User
+  User,
+  Dog,
+  Ruler,
+  Moon,
+  Sun
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -20,7 +24,10 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { generateProfileBio } from "@/ai/flows/ai-generate-profile-bio";
 import { toast } from "@/hooks/use-toast";
 
-const INTEREST_OPTIONS = ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Кино", "Йога", "Бизнес", "Игры"];
+const INTEREST_OPTIONS = [
+  "Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Кино", "Йога", "Бизнес", "Игры",
+  "Собаки", "Кошки", "Жаворонок", "Сова"
+];
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -30,8 +37,9 @@ export default function EditProfilePage() {
     name: "Анна",
     age: 24,
     city: "Москва",
+    height: 172,
     bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
-    interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"]
+    interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Собаки", "Сова"]
   });
 
   const handleGenerateBio = async () => {
@@ -115,18 +123,28 @@ export default function EditProfilePage() {
               <Input 
                 type="number"
                 value={profile.age} 
-                onChange={e => setProfile({...profile, age: parseInt(e.target.value)})}
+                onChange={e => setProfile({...profile, age: parseInt(e.target.value) || 0})}
                 className="rounded-2xl bg-muted/50 border-0 h-12 focus-visible:ring-primary/20"
               />
             </div>
             <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Город</Label>
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Рост (см)</Label>
               <Input 
-                value={profile.city} 
-                onChange={e => setProfile({...profile, city: e.target.value})}
+                type="number"
+                value={profile.height} 
+                onChange={e => setProfile({...profile, height: parseInt(e.target.value) || 0})}
                 className="rounded-2xl bg-muted/50 border-0 h-12 focus-visible:ring-primary/20"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Город</Label>
+            <Input 
+              value={profile.city} 
+              onChange={e => setProfile({...profile, city: e.target.value})}
+              className="rounded-2xl bg-muted/50 border-0 h-12 focus-visible:ring-primary/20"
+            />
           </div>
 
           <div className="space-y-2">
@@ -149,7 +167,7 @@ export default function EditProfilePage() {
           </div>
 
           <div className="space-y-4">
-            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Интересы</Label>
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Интересы, питомцы и режим</Label>
             <div className="flex flex-wrap gap-2">
               {INTEREST_OPTIONS.map(interest => (
                 <Badge 

@@ -21,7 +21,11 @@ import {
   Briefcase,
   Gamepad2,
   Maximize2,
-  X
+  X,
+  Dog,
+  Ruler,
+  Moon,
+  Sun
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,7 +55,7 @@ export default function ProfilePage() {
     age: 24,
     city: "Москва",
     bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
-    interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство"]
+    interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки", "Рост: 172 см", "Сова"]
   });
 
   // Photo Gallery State
@@ -104,7 +108,7 @@ export default function ProfilePage() {
     setIsViewerOpen(true);
   };
 
-  // Карта иконок для всех возможных интересов
+  // Карта иконок для всех возможных интересов и деталей
   const interestMap = [
     { label: "Фотография", icon: Camera },
     { label: "Путешествия", icon: Globe },
@@ -116,12 +120,17 @@ export default function ProfilePage() {
     { label: "Йога", icon: Flower2 },
     { label: "Бизнес", icon: Briefcase },
     { label: "Игры", icon: Gamepad2 },
+    { label: "Собаки", icon: Dog },
+    { label: "Кошки", icon: Dog }, // Можно заменить на Cat если есть, но Dog как пример питомца
+    { label: "Рост:", icon: Ruler },
+    { label: "Сова", icon: Moon },
+    { label: "Жаворонок", icon: Sun },
   ];
 
   return (
     <>
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
-        {/* Profile Header Background - Rectangular and shorter */}
+        {/* Profile Header Background */}
         <div className="h-32 gradient-bg relative shadow-lg">
           <div className="absolute top-6 left-8 text-white text-2xl font-black uppercase tracking-tighter">SwiftMatch</div>
           <Link 
@@ -144,7 +153,6 @@ export default function ProfilePage() {
                 priority
               />
             </div>
-            {/* Badge PRO moved to not cover the face */}
             <Badge className="absolute -bottom-1 -right-1 bg-primary text-white border-2 border-white font-black text-[8px] h-6 px-2 flex items-center justify-center rounded-full shadow-xl z-20 uppercase tracking-widest">
               PRO 💎
             </Badge>
@@ -191,7 +199,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Photos Management Section - 2 columns grid */}
+          {/* Photos Management Section */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
             <div className="flex justify-between items-center mb-6">
               <h4 className="font-black text-xs uppercase tracking-widest">Галерея</h4>
@@ -235,21 +243,25 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Interests */}
+          {/* Interests & Details */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
-            <h4 className="font-black text-xs uppercase tracking-widest mb-6">Мои интересы</h4>
+            <h4 className="font-black text-xs uppercase tracking-widest mb-6">Обо мне</h4>
             <div className="flex flex-wrap gap-3">
-              {interestMap.filter(i => profile.interests.includes(i.label)).map((item) => (
-                <Badge key={item.label} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl hover:bg-muted transition-colors shadow-sm">
-                  <item.icon size={16} className="text-primary" /> {item.label}
-                </Badge>
-              ))}
+              {profile.interests.map((interest) => {
+                const mapItem = interestMap.find(m => interest.includes(m.label));
+                const Icon = mapItem?.icon || Star;
+                return (
+                  <Badge key={interest} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2 py-2.5 px-4 font-bold text-[10px] rounded-xl hover:bg-muted transition-colors shadow-sm">
+                    <Icon size={16} className="text-primary" /> {interest}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
 
           {/* Bio Section */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
-            <h4 className="font-black text-xs uppercase tracking-widest mb-4">О себе</h4>
+            <h4 className="font-black text-xs uppercase tracking-widest mb-4">Биография</h4>
             <p className="text-sm text-muted-foreground leading-relaxed font-medium">
               {profile.bio}
             </p>
