@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
@@ -61,9 +62,9 @@ function HeartConfetti() {
             rotate: Math.random() * 720
           }}
           transition={{ 
-            duration: 3, 
+            duration: 1.5, 
             ease: "easeOut",
-            delay: Math.random() * 0.7
+            delay: Math.random() * 0.3
           }}
           className="absolute"
           style={{ left: "-5%", top: "-5%" }}
@@ -206,6 +207,7 @@ export default function SearchPage() {
                     handleSwipe('left');
                   }
                 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
                 whileDrag={{ scale: 1.05 }}
                 className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col cursor-grab active:cursor-grabbing border-4 border-white"
               >

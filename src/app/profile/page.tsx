@@ -25,7 +25,8 @@ import {
   Dog,
   Ruler,
   Moon,
-  Sun
+  Sun,
+  Target
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -54,6 +55,7 @@ export default function ProfilePage() {
     name: "Анна",
     age: 24,
     city: "Москва",
+    datingGoal: "Серьезные отношения",
     bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки", "Рост: 172 см", "Сова"]
   });
@@ -121,7 +123,7 @@ export default function ProfilePage() {
     { label: "Бизнес", icon: Briefcase },
     { label: "Игры", icon: Gamepad2 },
     { label: "Собаки", icon: Dog },
-    { label: "Кошки", icon: Dog }, // Можно заменить на Cat если есть, но Dog как пример питомца
+    { label: "Кошки", icon: Dog }, 
     { label: "Рост:", icon: Ruler },
     { label: "Сова", icon: Moon },
     { label: "Жаворонок", icon: Sun },
@@ -162,9 +164,14 @@ export default function ProfilePage() {
             <h3 className="text-2xl font-black font-headline mb-1 flex items-center justify-center gap-2">
               {profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" />
             </h3>
-            <p className="text-muted-foreground text-[11px] font-bold flex items-center justify-center gap-1.5 uppercase tracking-wider opacity-70">
-              <MapPin size={14} className="text-primary" /> {profile.city}
-            </p>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-muted-foreground text-[11px] font-bold flex items-center justify-center gap-1.5 uppercase tracking-wider opacity-70">
+                <MapPin size={14} className="text-primary" /> {profile.city}
+              </p>
+              <Badge variant="secondary" className="bg-primary/10 text-primary border-0 gap-2 py-1.5 px-4 font-black text-[9px] rounded-full uppercase tracking-widest mt-2 shadow-sm">
+                <Target size={12} /> {profile.datingGoal}
+              </Badge>
+            </div>
           </div>
 
           <div className="flex justify-center gap-4 mb-10">

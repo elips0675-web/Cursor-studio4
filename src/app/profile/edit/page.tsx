@@ -7,12 +7,7 @@ import {
   ChevronLeft, 
   Sparkles, 
   Camera, 
-  CheckCircle2,
-  User,
-  Dog,
-  Ruler,
-  Moon,
-  Sun
+  Target
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -23,10 +18,25 @@ import { Badge } from "@/components/ui/badge";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { generateProfileBio } from "@/ai/flows/ai-generate-profile-bio";
 import { toast } from "@/hooks/use-toast";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 
 const INTEREST_OPTIONS = [
   "Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Кино", "Йога", "Бизнес", "Игры",
   "Собаки", "Кошки", "Жаворонок", "Сова"
+];
+
+const DATING_GOALS = [
+  "Серьезные отношения",
+  "Свидания",
+  "Новые друзья",
+  "Просто общение",
+  "Пока не знаю"
 ];
 
 export default function EditProfilePage() {
@@ -38,6 +48,7 @@ export default function EditProfilePage() {
     age: 24,
     city: "Москва",
     height: 172,
+    datingGoal: "Серьезные отношения",
     bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Собаки", "Сова"]
   });
@@ -136,6 +147,23 @@ export default function EditProfilePage() {
                 className="rounded-2xl bg-muted/50 border-0 h-12 focus-visible:ring-primary/20"
               />
             </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Цель знакомства</Label>
+            <Select 
+              value={profile.datingGoal} 
+              onValueChange={(val) => setProfile({...profile, datingGoal: val})}
+            >
+              <SelectTrigger className="rounded-2xl bg-muted/50 border-0 h-12 focus:ring-primary/20">
+                <SelectValue placeholder="Выберите цель" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl border-0 shadow-xl">
+                {DATING_GOALS.map(goal => (
+                  <SelectItem key={goal} value={goal} className="font-medium text-sm rounded-xl py-3">{goal}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="space-y-2">
