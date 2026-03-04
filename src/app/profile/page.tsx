@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -135,42 +136,17 @@ export default function ProfilePage() {
 
         {/* Profile Info */}
         <div className="px-6 -mt-16 text-center">
-          <div className="relative inline-block mb-8 w-full max-w-[320px]">
-            <div className="relative aspect-[3/4] w-full rounded-[3rem] border-8 border-white app-shadow overflow-hidden bg-muted transition-transform duration-500 hover:scale-[1.01]">
-              <Carousel className="w-full h-full group">
-                <CarouselContent className="h-full ml-0">
-                  {photos.length > 0 ? (
-                    photos.map((url, idx) => (
-                      <CarouselItem key={idx} className="pl-0 h-full relative cursor-pointer" onClick={() => openPhotoViewer(idx)}>
-                        <Image 
-                          src={url} 
-                          alt={`Profile ${idx}`} 
-                          fill 
-                          className="object-cover" 
-                          priority={idx === 0}
-                        />
-                      </CarouselItem>
-                    ))
-                  ) : (
-                    <CarouselItem className="pl-0 h-full relative">
-                      <Image src={PlaceHolderImages[0].imageUrl} alt="My Profile" fill className="object-cover" />
-                    </CarouselItem>
-                  )}
-                </CarouselContent>
-                {photos.length > 1 && (
-                  <>
-                    <CarouselPrevious className="left-4 bg-black/20 border-0 text-white hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md h-12 w-12" />
-                    <CarouselNext className="right-4 bg-black/20 border-0 text-white hover:bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md h-12 w-12" />
-                    <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-10 pointer-events-none">
-                      {photos.map((_, i) => (
-                        <div key={i} className="w-2 h-2 rounded-full bg-white/40 shadow-sm" />
-                      ))}
-                    </div>
-                  </>
-                )}
-              </Carousel>
+          <div className="relative inline-block mb-8">
+            <div className="relative w-40 h-40 rounded-[2.5rem] border-4 border-white app-shadow overflow-hidden bg-muted transition-transform duration-500 hover:scale-[1.02]">
+              <Image 
+                src={photos[0]} 
+                alt={profile.name} 
+                fill 
+                className="object-cover" 
+                priority
+              />
               {/* Premium Badge on top of image */}
-              <Badge className="absolute top-6 left-6 bg-primary text-white border-0 font-black text-[10px] h-8 px-4 flex items-center justify-center rounded-full shadow-xl z-20 uppercase tracking-widest">
+              <Badge className="absolute top-3 left-3 bg-primary text-white border-0 font-black text-[8px] h-6 px-2 flex items-center justify-center rounded-full shadow-xl z-20 uppercase tracking-widest">
                 PREMIUM 💎
               </Badge>
             </div>
