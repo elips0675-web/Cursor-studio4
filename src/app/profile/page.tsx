@@ -3,7 +3,6 @@
 
 import { useState } from "react";
 import { 
-  Edit2, 
   Settings, 
   MapPin, 
   CheckCircle2, 
@@ -20,20 +19,15 @@ import {
   EyeOff,
   ShieldCheck,
   User,
-  Search
+  Search,
+  Edit2
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -42,16 +36,11 @@ import {
   SheetDescription,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { generateProfileBio } from "@/ai/flows/ai-generate-profile-bio";
-import { toast } from "@/hooks/use-toast";
 
 export default function ProfilePage() {
   // Profile State
-  const [profile, setProfile] = useState({
+  const [profile] = useState({
     name: "Анна",
     age: 24,
     city: "Москва",
@@ -60,9 +49,7 @@ export default function ProfilePage() {
   });
 
   // UI States
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-  const [isGeneratingBio, setIsGeneratingBio] = useState(false);
 
   // Settings State
   const [settings, setSettings] = useState({
@@ -80,37 +67,6 @@ export default function ProfilePage() {
     { icon: Dumbbell, label: "Спорт" },
     { icon: User, label: "Искусство" },
   ];
-
-  const handleGenerateBio = async () => {
-    setIsGeneratingBio(true);
-    try {
-      const result = await generateProfileBio({
-        keywords: profile.interests,
-        description: profile.bio
-      });
-      setProfile(prev => ({ ...prev, bio: result.bio }));
-      toast({
-        title: "Био обновлено",
-        description: "ИИ сгенерировал новый текст для вашего профиля.",
-      });
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Ошибка",
-        description: "Не удалось сгенерировать био.",
-      });
-    } finally {
-      setIsGeneratingBio(false);
-    }
-  };
-
-  const handleSaveProfile = () => {
-    setIsEditOpen(false);
-    toast({
-      title: "Профиль сохранен",
-      description: "Ваши изменения успешно применены.",
-    });
-  };
 
   return (
     <>
@@ -130,10 +86,10 @@ export default function ProfilePage() {
         <div className="px-5 -mt-16 text-center">
           <div className="relative inline-block mb-3">
             <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl overflow-hidden relative bg-muted">
-              <Image src={PlaceHolderImages[9].imageUrl} alt="My Profile" fill className="object-cover" />
-              <button className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+              <Image src={PlaceHolderImages[0].imageUrl} alt="My Profile" fill className="object-cover" />
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                 <Camera className="text-white" size={24} />
-              </button>
+              </div>
             </div>
             <Badge className="absolute bottom-1 right-1 bg-yellow-400 text-black border-2 border-white font-black text-xs h-7 w-7 flex items-center justify-center p-0 rounded-full shadow-md">
               💎
@@ -149,11 +105,13 @@ export default function ProfilePage() {
 
           <div className="flex justify-center gap-3 mb-8">
             <Button 
-              onClick={() => setIsEditOpen(true)}
+              asChild
               size="sm" 
               className="rounded-full bg-primary text-white h-9 px-6 font-bold hover:bg-primary/90"
             >
-              <Edit2 size={14} className="mr-1.5" /> Редактировать
+              <Link href="/profile/edit">
+                <Edit2 size={14} className="mr-1.5" /> Редактировать
+              </Link>
             </Button>
             <Button 
               onClick={() => setIsSettingsOpen(true)}
@@ -211,88 +169,6 @@ export default function ProfilePage() {
         </div>
       </main>
 
-      {/* Edit Profile Dialog */}
-      <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent className="max-w-[400px] rounded-[2.5rem] p-0 overflow-hidden border-0">
-          <DialogHeader className="p-6 bg-muted/30">
-            <DialogTitle className="text-xl font-bold font-headline">Редактировать профиль</DialogTitle>
-          </DialogHeader>
-          <div className="p-6 space-y-6 overflow-y-auto max-h-[70vh] no-scrollbar">
-            <div className="space-y-2">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Имя</Label>
-              <Input 
-                value={profile.name} 
-                onChange={e => setProfile({...profile, name: e.target.value})}
-                className="rounded-2xl bg-muted/50 border-0 h-11"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Возраст</Label>
-                <Input 
-                  type="number"
-                  value={profile.age} 
-                  onChange={e => setProfile({...profile, age: parseInt(e.target.value)})}
-                  className="rounded-2xl bg-muted/50 border-0 h-11"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Город</Label>
-                <Input 
-                  value={profile.city} 
-                  onChange={e => setProfile({...profile, city: e.target.value})}
-                  className="rounded-2xl bg-muted/50 border-0 h-11"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">О себе</Label>
-                <button 
-                  onClick={handleGenerateBio}
-                  disabled={isGeneratingBio}
-                  className="text-[10px] font-bold text-primary flex items-center gap-1 hover:underline disabled:opacity-50"
-                >
-                  <Sparkles size={12} /> {isGeneratingBio ? "Генерация..." : "Улучшить с ИИ"}
-                </button>
-              </div>
-              <Textarea 
-                value={profile.bio} 
-                onChange={e => setProfile({...profile, bio: e.target.value})}
-                className="rounded-2xl bg-muted/50 border-0 min-h-[100px] text-sm resize-none"
-              />
-            </div>
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Интересы</Label>
-              <div className="flex flex-wrap gap-2">
-                {allInterests.map(interest => (
-                  <Badge 
-                    key={interest.label}
-                    onClick={() => {
-                      const newInterests = profile.interests.includes(interest.label)
-                        ? profile.interests.filter(interestToRemove => interestToRemove !== interest.label)
-                        : [...profile.interests, interest.label];
-                      setProfile({...profile, interests: newInterests});
-                    }}
-                    variant={profile.interests.includes(interest.label) ? "default" : "secondary"}
-                    className={`cursor-pointer px-3 py-1.5 rounded-full transition-all border-0 ${
-                      profile.interests.includes(interest.label) ? "gradient-bg text-white" : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {interest.label}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-          <DialogFooter className="p-6 pt-0">
-            <Button onClick={handleSaveProfile} className="w-full h-12 rounded-full gradient-bg text-white font-bold shadow-lg shadow-primary/20">
-              Сохранить
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Settings Sheet */}
       <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
         <SheetContent side="right" className="w-full max-w-[380px] p-0 border-0 flex flex-col h-full">
@@ -302,7 +178,6 @@ export default function ProfilePage() {
           </SheetHeader>
           
           <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar">
-            {/* Account Settings */}
             <div className="space-y-4">
               <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Аккаунт</h5>
               <div className="space-y-1">
@@ -339,7 +214,6 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Privacy Settings */}
             <div className="space-y-4">
               <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Приватность</h5>
               <div className="space-y-1">
@@ -373,7 +247,6 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Dangerous Actions */}
             <div className="space-y-3 pt-4">
               <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground font-semibold h-12 gap-3 px-0">
                 <LogOut size={18} /> Выйти из аккаунта
