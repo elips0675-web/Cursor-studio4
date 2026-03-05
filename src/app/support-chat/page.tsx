@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { ChevronLeft, Send, Paperclip } from "lucide-react";
+import { ChevronLeft, Send, Paperclip, HelpCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
@@ -15,9 +16,23 @@ const SUPPORT_AGENT = {
   img: 'https://picsum.photos/seed/support_agent/100/100', 
 };
 
+const QUICK_QUESTIONS_RU = [
+  "Как изменить фото профиля?",
+  "Проблемы с оплатой",
+  "Как работает режим инкогнито?",
+  "Пожаловаться на пользователя",
+];
+
+const QUICK_QUESTIONS_EN = [
+  "How to change profile picture?",
+  "Payment issues",
+  "How does incognito mode work?",
+  "Report a user",
+];
+
 export default function SupportChatPage() {
   const router = useRouter();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   
   const initialMessages = [
     { id: 1, text: t('support.greeting') || "Здравствуйте! Чем мы можем вам помочь?", sender: "other", time: "10:00" },
@@ -27,6 +42,7 @@ export default function SupportChatPage() {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const quickQuestions = language === 'RU' ? QUICK_QUESTIONS_RU : QUICK_QUESTIONS_EN;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -36,18 +52,25 @@ export default function SupportChatPage() {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
+  const handleSendMessage = (textOverride?: string) => {
+    const textToSend = textOverride || inputValue;
+    if (!textToSend.trim()) return;
 
     const newMessage = {
       id: Date.now(),
-      text: inputValue,
+      text: textToSend,
       sender: "me",
       time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages([...messages, newMessage]);
-    setInputValue("");
+    setMessages(prev => [...prev, newMessage]);
+    if (!textOverride) {
+      setInputValue("");
+    } else {
+      if (inputValue === textToSend) {
+        setInputValue("");
+      }
+    }
 
     setTimeout(() => {
       setIsTyping(true);
@@ -130,6 +153,25 @@ export default function SupportChatPage() {
       </main>
 
       <div className="p-4 bg-white border-t border-border shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.1)] relative z-10">
+        <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-1.5 text-primary text-[10px] font-black uppercase tracking-wider">
+                <HelpCircle size={14} />
+                <span>{t('support.faq') || 'Быстрые ответы'}</span>
+            </div>
+        </div>
+        <div className="flex gap-2.5 overflow-x-auto no-scrollbar pb-4">
+            {quickQuestions.map((q, i) => (
+                <Button
+                    key={i}
+                    variant="outline"
+                    className="h-auto px-4 py-2 text-[11px] font-bold rounded-full whitespace-nowrap bg-muted/40 border-muted hover:bg-muted"
+                    onClick={() => handleSendMessage(q)}
+                >
+                    {q}
+                </Button>
+            ))}
+        </div>
+
         <div className="flex items-center gap-3">
             <Button 
                 variant="ghost" 
@@ -149,7 +191,7 @@ export default function SupportChatPage() {
             </div>
             <Button 
               size="icon" 
-              onClick={handleSendMessage}
+              onClick={() => handleSendMessage()}
               disabled={!inputValue.trim()}
               className="h-11 w-11 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20 transition-all active:scale-90 disabled:opacity-40 flex-shrink-0"
             >

@@ -168,6 +168,7 @@ const translations = {
     'support.placeholder': 'Напишите ваше сообщение...',
     'support.greeting': 'Здравствуйте! Чем мы можем вам помочь?',
     'support.response': 'Спасибо за ваше сообщение! Наш специалист скоро с вами свяжется.',
+    'support.faq': 'Быстрые ответы',
   },
   EN: {
     // Bottom Nav
@@ -322,6 +323,7 @@ const translations = {
     'support.placeholder': 'Write your message...',
     'support.greeting': 'Hello! How can we help you?',
     'support.response': 'Thank you for your message! Our specialist will contact you soon.',
+    'support.faq': 'Quick Answers',
   }
 };
 
