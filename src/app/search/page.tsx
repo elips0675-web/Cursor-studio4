@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle } from "lucide-react";
+import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, Sparkles } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,6 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
+import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 const ALL_USERS = [
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, interests: ['Фотография', 'Путешествия', 'Кофе'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', distance: 2, match: 87, gender: 'female' },
@@ -52,6 +59,38 @@ const swipePower = (offset: number, velocity: number) => {
   return Math.abs(offset) * velocity;
 };
 
+function HeartConfetti() {
+  const hearts = Array.from({ length: 20 });
+  return (
+    <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
+      {hearts.map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ y: "100%", x: 0, opacity: 1 }}
+          animate={{
+            y: -(Math.random() * 200 + 100),
+            x: (Math.random() - 0.5) * 500,
+            scale: Math.random() * 1.2 + 0.8,
+            opacity: [1, 1, 0],
+            rotate: (Math.random() - 0.5) * 540,
+          }}
+          transition={{
+            duration: Math.random() * 2 + 2.5,
+            ease: "easeOut",
+            delay: 0.2,
+          }}
+          className="absolute bottom-0"
+        >
+          <Heart
+            size={Math.random() * 25 + 15}
+            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
+            className="text-transparent drop-shadow-lg"
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
 
 export default function SearchPage() {
   const router = useRouter();
@@ -61,6 +100,10 @@ export default function SearchPage() {
   const [maxDistance] = useState([50]);
   const [selectedInterests] = useState<string[]>([]);
   const [selectedGender] = useState<string>('all');
+
+  const [matchUser, setMatchUser] = useState<any>(null);
+  const [compatibility, setCompatibility] = useState("");
+  const [loadingAi, setLoadingAi] = useState(false);
 
   const filteredUsers = useMemo(() => {
     return ALL_USERS.filter(user => {
@@ -84,7 +127,32 @@ export default function SearchPage() {
   const user = filteredUsers[userIndex];
 
   const paginate = (newDirection: number) => {
-    setPage([page + newDirection, newDirection]);
+    setPage([page + 1, newDirection]);
+  };
+
+  const getAiInsight = async (targetUser: any) => {
+    setLoadingAi(true);
+    try {
+      const res = await generateMatchCompatibilityInsight({
+        currentUser: {
+          name: "Вы",
+          age: 25,
+          interests: ["Спорт", "Кино", "Кофе"],
+          bio: "Активный пользователь SwiftMatch, люблю общение и новые открытия."
+        },
+        matchUser: {
+          name: targetUser.name,
+          age: targetUser.age,
+          interests: targetUser.interests,
+          bio: targetUser.bio || ""
+        }
+      });
+      setCompatibility(res.explanation);
+    } catch (e) {
+      setCompatibility(t('match.insight_default') || "Вы отлично подходите друг другу!");
+    } finally {
+      setLoadingAi(false);
+    }
   };
 
   const handleLike = () => {
@@ -93,7 +161,13 @@ export default function SearchPage() {
         title: language === 'RU' ? "Лайк!" : "Like!",
         description: `${language === 'RU' ? 'Вы лайкнули' : 'You liked'} ${user.name}`,
     });
-    paginate(1);
+
+    if (Math.random() > 0.7) {
+      setMatchUser(user);
+      getAiInsight(user);
+    } else {
+      paginate(1);
+    }
   };
 
   if (!user) {
@@ -139,9 +213,9 @@ export default function SearchPage() {
                 const swipe = swipePower(offset.x, velocity.x);
 
                 if (swipe < -swipeConfidenceThreshold) {
-                  paginate(1);
+                  handleLike();
                 } else if (swipe > swipeConfidenceThreshold) {
-                  paginate(-1);
+                  paginate(1);
                 }
               }}
               className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col border-4 border-white cursor-grab active:cursor-grabbing"
@@ -180,30 +254,133 @@ export default function SearchPage() {
                 </div>
             </motion.div>
           </AnimatePresence>
-          <button onClick={() => paginate(-1)} className="absolute left-0 z-10 p-2 bg-white/50 rounded-full text-foreground backdrop-blur-sm shadow-md hover:bg-white transition-all">
-             <ChevronLeft size={24}/>
-          </button>
-           <button onClick={() => paginate(1)} className="absolute right-0 z-10 p-2 bg-white/50 rounded-full text-foreground backdrop-blur-sm shadow-md hover:bg-white transition-all">
-             <ChevronRight size={24}/>
-          </button>
         </div>
 
         <div className="flex justify-center items-center gap-4 w-full px-4">
           <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-muted bg-white hover:bg-muted text-muted-foreground transition-all active:scale-90 shadow-lg" onClick={() => paginate(1)}>
               <X size={28} />
           </Button>
-          <Button size="icon" className="w-16 h-16 rounded-full gradient-bg text-white shadow-lg shadow-primary/30 transition-all active:scale-90" onClick={handleLike}>
-              <Heart size={28} fill="currentColor" />
+          <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-xl shadow-primary/30 transition-all active:scale-90" onClick={handleLike}>
+              <Heart size={36} fill="currentColor" />
           </Button>
           <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-primary/20 bg-white hover:bg-primary/5 text-primary transition-all active:scale-90 shadow-lg" onClick={() => router.push(`/chats?matchId=${user.id}`)}>
               <MessageCircle size={28} />
           </Button>
-          <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-muted bg-white hover:bg-muted text-foreground transition-all active:scale-90 shadow-lg" onClick={() => router.push(`/user?id=${user.id}`)}>
-              <User size={28} />
-          </Button>
         </div>
       </main>
       
+      <Dialog open={!!matchUser} onOpenChange={(open) => {
+        if (!open) {
+            setMatchUser(null);
+            paginate(1);
+        }
+      }}>
+        <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 overflow-hidden bg-white app-shadow">
+          <div className="relative">
+            <HeartConfetti />
+            <div className="relative h-56 flex items-center justify-center p-6 gradient-bg">
+                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                <div className="flex items-center justify-center gap-0 relative">
+                    <motion.div 
+                        initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }}
+                        animate={{ x: 0, opacity: 1, rotate: -8, scale: 1 }}
+                        transition={{ type: "spring", damping: 12, delay: 0.2 }}
+                        className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted"
+                    >
+                        <Image 
+                            src={PlaceHolderImages[10].imageUrl} 
+                            alt="Вы" 
+                            fill 
+                            data-ai-hint={PlaceHolderImages[10].imageHint}
+                            className="object-cover" 
+                        />
+                    </motion.div>
+                    <motion.div 
+                        initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }}
+                        animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }}
+                        transition={{ type: "spring", damping: 12, delay: 0.3 }}
+                        className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted"
+                    >
+                        <Image 
+                            src={matchUser?.img || PlaceHolderImages[0].imageUrl} 
+                            alt={matchUser?.name} 
+                            fill 
+                            data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint}
+                            className="object-cover" 
+                        />
+                    </motion.div>
+                </div>
+            </div>
+
+            <div className="px-8 pt-8 pb-8 text-center">
+              <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">
+                {t('match.title')}
+              </DialogTitle>
+              <DialogDescription className="text-muted-foreground text-sm mb-8 px-6 leading-relaxed font-medium">
+                {language === 'RU' ? 'Вы с ' : 'You and '} <span className="font-bold text-foreground">{matchUser?.name}</span> {language === 'RU' ? 'понравились друг другу.' : 'liked each other.'}
+              </DialogDescription>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-primary/20 bg-gradient-to-br from-white via-primary/[0.02] to-orange-500/[0.02] shadow-xl shadow-primary/5 overflow-hidden group"
+              >
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl opacity-40"></div>
+                
+                <div className="flex items-center justify-between mb-4 relative z-10">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                      <Cpu size={14} className="animate-pulse" />
+                    </div>
+                    <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.2em]">{t('match.insight')}</h4>
+                  </div>
+                  <motion.div 
+                    animate={{ rotate: [0, 15, -15, 0] }}
+                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                  >
+                    <Sparkles size={20} className="text-orange-400 opacity-60" />
+                  </motion.div>
+                </div>
+
+                {loadingAi ? (
+                  <div className="flex items-center gap-3 text-xs text-muted-foreground py-2 relative z-10">
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <span className="animate-pulse font-bold uppercase tracking-widest text-[10px]">{t('home.searching')}</span>
+                  </div>
+                ) : (
+                  <div className="relative z-10">
+                    <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-primary/30 pl-4 py-1">
+                      "{compatibility}"
+                    </p>
+                  </div>
+                )}
+
+                <div className="absolute bottom-2 right-4 text-primary/5 group-hover:text-primary/10 transition-colors">
+                  <Sparkles size={48} />
+                </div>
+              </motion.div>
+
+              <div className="flex flex-col gap-4 w-full">
+                <Button 
+                  onClick={() => router.push(`/chats?matchId=${matchUser.id}`)} 
+                  className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-primary/30"
+                >
+                  {t('button.write_first')}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => { setMatchUser(null); paginate(1); }} 
+                  className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]"
+                >
+                  {t('button.continue')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
       <BottomNav />
     </>
   );
