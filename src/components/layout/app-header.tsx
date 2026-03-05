@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bell, SlidersHorizontal, Languages } from "lucide-react";
+import { Bell, Languages } from "lucide-react";
 import Link from "next/link";
 import {
   DropdownMenu,
@@ -54,9 +54,6 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <button className="w-10 h-10 rounded-full bg-[#f5f7fa] flex items-center justify-center text-foreground hover:bg-border transition-all active:scale-95">
-          <SlidersHorizontal size={18} />
-        </button>
         <button className="w-10 h-10 rounded-full bg-[#f5f7fa] flex items-center justify-center text-foreground hover:bg-border transition-all active:scale-95">
           <Bell size={18} />
         </button>

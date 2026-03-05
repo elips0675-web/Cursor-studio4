@@ -11,10 +11,10 @@ import {
   ShieldCheck, 
   LogOut, 
   Trash2,
-  Lock,
   MapPin,
   Camera
 } from "lucide-react";
+import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,7 @@ export default function SettingsPage() {
 
   return (
     <div className="flex flex-col min-h-svh bg-white">
+      <AppHeader />
       <header className="flex items-center gap-3 px-4 py-4 border-b border-border sticky top-0 bg-white z-10">
         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
           <ChevronLeft size={24} />
@@ -61,13 +62,9 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold">Уведомления</p>
-                    <p className="text-[10px] text-muted-foreground">Мэтчи, сообщения, лайки</p>
                   </div>
                 </div>
-                <Switch 
-                  checked={settings.notifications} 
-                  onCheckedChange={(val) => setSettings({...settings, notifications: val})} 
-                />
+                <Switch checked={settings.notifications} onCheckedChange={(val) => setSettings({...settings, notifications: val})} />
               </div>
               
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -77,13 +74,9 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold">Геолокация</p>
-                    <p className="text-[10px] text-muted-foreground">Использовать текущее местоположение</p>
                   </div>
                 </div>
-                <Switch 
-                  checked={settings.location} 
-                  onCheckedChange={(val) => setSettings({...settings, location: val})} 
-                />
+                <Switch checked={settings.location} onCheckedChange={(val) => setSettings({...settings, location: val})} />
               </div>
 
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -93,19 +86,15 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold">Показывать меня</p>
-                    <p className="text-[10px] text-muted-foreground">Ваш профиль в поиске</p>
                   </div>
                 </div>
-                <Switch 
-                  checked={settings.discovery} 
-                  onCheckedChange={(val) => setSettings({...settings, discovery: val})} 
-                />
+                <Switch checked={settings.discovery} onCheckedChange={(val) => setSettings({...settings, discovery: val})} />
               </div>
             </div>
           </section>
 
           <section className="space-y-4">
-            <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Приватность и безопасность</h5>
+            <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Приватность</h5>
             <div className="space-y-1">
               <div className="flex items-center justify-between py-3 border-b border-border/50">
                 <div className="flex items-center gap-3">
@@ -114,29 +103,9 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold">Инкогнито</p>
-                    <p className="text-[10px] text-muted-foreground">Скрывать посещения</p>
                   </div>
                 </div>
-                <Switch 
-                  checked={settings.incognito} 
-                  onCheckedChange={(val) => setSettings({...settings, incognito: val})} 
-                />
-              </div>
-
-              <div className="flex items-center justify-between py-3 border-b border-border/50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                    <Camera size={18} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold">Проверка фото</p>
-                    <p className="text-[10px] text-muted-foreground">Автоматическая проверка на неприемлемый контент</p>
-                  </div>
-                </div>
-                <Switch 
-                  checked={settings.photoVerification} 
-                  onCheckedChange={(val) => setSettings({...settings, photoVerification: val})} 
-                />
+                <Switch checked={settings.incognito} onCheckedChange={(val) => setSettings({...settings, incognito: val})} />
               </div>
 
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -146,7 +115,6 @@ export default function SettingsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-bold">Безопасность</p>
-                    <p className="text-[10px] text-muted-foreground">Верификация профиля</p>
                   </div>
                 </div>
                 <Badge variant="outline" className="text-[10px] text-primary border-primary/20">OK</Badge>
@@ -155,20 +123,12 @@ export default function SettingsPage() {
           </section>
 
           <section className="space-y-2 pt-4">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground font-semibold h-12 gap-3 px-0">
-              <LogOut size={18} /> Выйти из аккаунта
-            </Button>
-            <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive/80 font-semibold h-12 gap-3 px-0">
-              <Trash2 size={18} /> Удалить профиль
-            </Button>
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground font-semibold h-12 gap-3 px-0"><LogOut size={18} /> Выйти</Button>
+            <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive/80 font-semibold h-12 gap-3 px-0"><Trash2 size={18} /> Удалить профиль</Button>
           </section>
         </div>
 
-        <div className="pt-6">
-          <Button onClick={handleSave} className="w-full h-14 rounded-full gradient-bg text-white font-bold shadow-xl shadow-primary/20 active:scale-[0.98] transition-all">
-            Сохранить настройки
-          </Button>
-        </div>
+        <Button onClick={handleSave} className="w-full h-14 rounded-full gradient-bg text-white font-bold shadow-xl shadow-primary/20">Сохранить</Button>
       </main>
     </div>
   );

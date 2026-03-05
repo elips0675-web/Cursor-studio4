@@ -33,6 +33,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { BottomNav } from "@/components/navigation/bottom-nav";
+import { AppHeader } from "@/components/layout/app-header";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -158,40 +159,35 @@ export default function ProfilePage() {
 
   return (
     <>
+      <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
-        <div className="h-32 gradient-bg relative shadow-lg">
-          <Link href="/settings" className="absolute top-6 right-6 text-white/90 p-2.5 bg-black/15 rounded-full hover:bg-black/25 transition-all backdrop-blur-md">
-            <Settings size={20} />
+        <div className="h-24 gradient-bg relative shadow-sm">
+          <Link href="/settings" className="absolute top-4 right-6 text-white/90 p-2 bg-black/15 rounded-full hover:bg-black/25 transition-all backdrop-blur-md">
+            <Settings size={18} />
           </Link>
         </div>
 
-        <div className="px-5 -mt-12 text-center">
-          <div className="relative inline-block mb-4 group">
+        <div className="px-5 -mt-10 text-center">
+          <div className="relative inline-block mb-4">
             <div 
-              className="relative w-36 h-36 rounded-[2.5rem] border-[6px] border-white app-shadow overflow-hidden bg-muted transition-all duration-300"
+              className="relative w-32 h-32 rounded-[2.5rem] border-[6px] border-white app-shadow overflow-hidden bg-muted"
             >
               <Image src={photos[0]} alt={profile.name} fill className="object-cover" priority />
             </div>
-            {/* Кнопка Сменить */}
             <Link 
               href="/profile/edit" 
-              className="absolute -bottom-1 -right-1 bg-white p-3 rounded-2xl shadow-xl border-2 border-primary/10 text-primary hover:bg-primary hover:text-white transition-all active:scale-90"
+              className="absolute -bottom-1 -right-1 bg-white p-2.5 rounded-2xl shadow-xl border-2 border-primary/10 text-primary hover:bg-primary hover:text-white transition-all active:scale-90"
             >
-               <Camera size={18} />
+               <Camera size={16} />
             </Link>
-            <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-md p-1 rounded-xl border border-white/50 shadow-sm pointer-events-none">
-              <Badge className="bg-primary text-white border-0 font-black text-[8px] h-5 px-2 rounded-lg uppercase tracking-widest">
-                {t('profile.pro')}
-              </Badge>
-            </div>
           </div>
 
-          <div className="mb-6 space-y-3">
+          <div className="mb-6 space-y-2">
             <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">
               {profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" />
             </h3>
             
-            <div className="flex flex-col items-center gap-2.5">
+            <div className="flex flex-col items-center gap-2">
               <p className="text-muted-foreground text-[10px] font-black flex items-center justify-center gap-1.5 uppercase tracking-widest opacity-80">
                 <MapPin size={12} className="text-primary" /> {t('profile.city')}
               </p>
@@ -216,20 +212,6 @@ export default function ProfilePage() {
             <Button asChild className="rounded-2xl gradient-bg text-white h-12 px-10 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0">
               <Link href="/profile/edit"><Edit2 size={16} className="mr-2" /> {t('profile.edit')}</Link>
             </Button>
-            <Button asChild variant="outline" className="rounded-2xl h-12 w-12 p-0 border-border bg-white shadow-sm hover:bg-muted active:scale-95 transition-all">
-              <Link href="/settings"><Settings size={20} className="text-muted-foreground" /></Link>
-            </Button>
-          </div>
-
-          <div className="bg-white rounded-[2rem] p-4 app-shadow border border-border/40 mb-6 flex divide-x divide-border/50">
-            <div className="flex-1 py-1">
-              <div className="text-xl font-black text-primary leading-none tracking-tighter">128</div>
-              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">{t('profile.likes')}</div>
-            </div>
-            <div className="flex-1 py-1">
-              <div className="text-xl font-black text-primary leading-none tracking-tighter">45</div>
-              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">{t('profile.matches')}</div>
-            </div>
           </div>
 
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left">
@@ -242,77 +224,60 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
-            <div className="space-y-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{t('profile.lifestyle')}</p>
-              <div className="flex flex-wrap gap-2">
-                {lifestyleDetails.filter(d => !d.includes(language === 'RU' ? "Рост:" : "Height:")).map((detail) => {
-                  const mapItem = interestMap.find(m => detail.includes(m.label));
-                  const Icon = mapItem?.icon || Star;
-                  return (
-                    <Badge key={detail} variant="secondary" className="bg-blue-50/50 text-blue-600 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-xl">
-                      <Icon size={14} /> {detail}
-                    </Badge>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="h-px bg-muted/60" />
-            
-            <div className="space-y-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{t('profile.interests')}</p>
-              <div className="flex flex-wrap gap-2">
-                {generalInterests.map((interest) => {
-                  const mapItem = interestMap.find(m => interest.includes(m.label));
-                  const Icon = mapItem?.icon || Heart;
-                  return (
-                    <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-xl hover:bg-muted transition-all">
-                      <Icon size={14} className="text-primary" /> {interest}
-                    </Badge>
-                  );
-                })}
-              </div>
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-4">
+            <div className="flex flex-wrap gap-2">
+              {lifestyleDetails.filter(d => !d.includes(language === 'RU' ? "Рост:" : "Height:")).map((detail) => {
+                const mapItem = interestMap.find(m => detail.includes(m.label));
+                const Icon = mapItem?.icon || Star;
+                return (
+                  <Badge key={detail} variant="secondary" className="bg-blue-50/50 text-blue-600 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-xl">
+                    <Icon size={14} /> {detail}
+                  </Badge>
+                );
+              })}
+              {generalInterests.map((interest) => {
+                const mapItem = interestMap.find(m => interest.includes(m.label));
+                const Icon = mapItem?.icon || Heart;
+                return (
+                  <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-xl">
+                    <Icon size={14} className="text-primary" /> {interest}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
 
-          <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-12 text-left">
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-12 text-left">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
                 <Camera size={18} className="text-primary" />
                 <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
               </div>
-              <button onClick={handleAddPhoto} className="text-primary flex items-center gap-1.5 text-[11px] font-black uppercase hover:underline tracking-widest">
+              <button onClick={handleAddPhoto} className="text-primary flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest">
                 <Plus size={18} /> {t('profile.add')}
               </button>
             </div>
-            <div className="grid grid-cols-2 gap-5">
+            <div className="grid grid-cols-2 gap-4">
               {photos.map((url, idx) => (
-                <div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-square rounded-[2rem] overflow-hidden bg-muted group shadow-md border border-border/10 cursor-pointer hover:scale-[1.02] transition-all">
+                <div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-square rounded-2xl overflow-hidden bg-muted group shadow-sm border border-border/10 cursor-pointer">
                   <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
-                    <div className="p-3 bg-white/20 backdrop-blur-md text-white rounded-full"><Maximize2 size={20} /></div>
-                    <button onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }} className="p-3 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-destructive/80 transition-colors">
-                      <Trash2 size={20} />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <Maximize2 size={18} className="text-white" />
+                    <button onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }} className="p-2 bg-white/20 backdrop-blur-md text-white rounded-full">
+                      <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
               ))}
-              {photos.length < 10 && (
-                <button onClick={handleAddPhoto} className="aspect-square rounded-[2rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all shadow-sm">
-                  <Plus size={40} className="opacity-30 group-hover:text-primary transition-colors" />
-                  <span className="text-[10px] font-black mt-3 uppercase tracking-widest opacity-50">{t('profile.add')}</span>
-                </button>
-              )}
             </div>
           </div>
         </div>
       </main>
 
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
-        <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center outline-none">
+        <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center">
           <DialogTitle className="sr-only">Viewer</DialogTitle>
-          <button onClick={() => setIsViewerOpen(false)} className="absolute top-4 right-4 z-50 p-3 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-black/70 active:scale-90 transition-all">
+          <button onClick={() => setIsViewerOpen(false)} className="absolute top-4 right-4 z-50 p-2 bg-black/50 text-white rounded-full">
             <X size={24} />
           </button>
           
@@ -320,14 +285,12 @@ export default function ProfilePage() {
             <CarouselContent className="h-full ml-0">
               {photos.map((url, idx) => (
                 <CarouselItem key={idx} className="pl-0 h-[80vh] flex items-center justify-center">
-                  <div className="relative w-full h-full rounded-[3rem] overflow-hidden app-shadow border-4 border-white/10">
-                    <Image src={url} alt={`Gallery view ${idx}`} fill className="object-cover" sizes="(max-width: 480px) 100vw, 440px" />
+                  <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden app-shadow">
+                    <Image src={url} alt={`Gallery view ${idx}`} fill className="object-cover" />
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-4 h-14 w-14 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
-            <CarouselNext className="right-4 h-14 w-14 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
           </Carousel>
         </DialogContent>
       </Dialog>
