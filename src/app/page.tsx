@@ -42,67 +42,32 @@ const ALL_DEMO_USERS = [
 const INTEREST_OPTIONS = ["Фотография", "Спорт", "Музыка", "Кофе", "IT", "Искусство", "Бизнес", "Путешествия"];
 const ITEMS_PER_PAGE = 4;
 
-function FallingHearts() {
-  const hearts = Array.from({ length: 20 });
-  return (
-    <div className="absolute inset-0 pointer-events-none z-10">
-      {hearts.map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute"
-          initial={{ y: -50 }}
-          animate={{ y: '100vh' }}
-          transition={{
-            duration: Math.random() * 3 + 4,
-            repeat: Infinity,
-            delay: Math.random() * 5,
-            ease: "linear",
-          }}
-          style={{
-            left: `${5 + Math.random() * 90}%`,
-            transform: `rotate(${Math.random() * 60 - 30}deg)`,
-          }}
-        >
-          <Heart 
-            size={Math.random() * 15 + 10} 
-            fill={i % 2 === 0 ? "rgba(254, 60, 114, 0.7)" : "rgba(255, 142, 83, 0.7)"}
-            className="text-transparent"
-            style={{
-              filter: `blur(${Math.random() * 1.5}px)`
-            }}
-          />
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
 function HeartConfetti() {
-  const hearts = Array.from({ length: 45 });
+  const hearts = Array.from({ length: 50 });
   return (
-    <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center">
+    <div className="absolute inset-0 pointer-events-none z-20 flex items-end justify-center overflow-hidden">
       {hearts.map((_, i) => (
         <motion.div
           key={i}
-          initial={{ opacity: 1, scale: 0, x: 0, y: 0 }}
-          animate={{ 
-            opacity: [1, 1, 0], 
-            scale: [0, 1.3, 0.7], 
-            x: [`0px`, `${(Math.random() - 0.5) * 450}px`], 
-            y: [`0px`, `${(Math.random() - 0.5) * 550}px`],
-            rotate: Math.random() * 1080
+          initial={{ y: 0, opacity: 0 }}
+          animate={{
+            y: -(Math.random() * 500 + 200),
+            x: (Math.random() - 0.5) * 500,
+            scale: Math.random() * 1 + 0.5,
+            opacity: [0, 1, 1, 0],
+            rotate: Math.random() * 360,
           }}
-          transition={{ 
-            duration: 3, 
-            ease: [0.16, 1, 0.3, 1], 
-            delay: Math.random() * 0.5 
+          transition={{
+            duration: Math.random() * 2 + 3,
+            ease: "easeOut",
+            delay: Math.random() * 1.5,
           }}
           className="absolute"
         >
-          <Heart 
-            size={Math.random() * 30 + 12} 
-            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"} 
-            className="text-transparent drop-shadow-xl" 
+          <Heart
+            size={Math.random() * 25 + 10}
+            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
+            className="text-transparent drop-shadow-lg"
           />
         </motion.div>
       ))}
@@ -339,8 +304,7 @@ export default function Home() {
             <div className="w-full h-full bg-white"></div>
             <div className="absolute top-0 left-0 right-0 h-56 gradient-bg"></div>
           </div>
-
-          <FallingHearts />
+          
           <HeartConfetti />
           
           <div className="relative z-30">
@@ -650,3 +614,4 @@ function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; 
     
 
     
+
