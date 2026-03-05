@@ -234,7 +234,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Bio Section */}
+          {/* About Section */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-8 text-left">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={16} className="text-primary" />
@@ -245,44 +245,47 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          {/* Lifestyle & Details */}
-          <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-8 text-left">
-            <div className="flex items-center gap-2 mb-6">
-              <Star size={16} className="text-primary" />
-              <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Стиль жизни</h4>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-2 py-3 px-5 font-bold text-[11px] rounded-xl shadow-sm">
-                <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
-              </Badge>
-              {lifestyleDetails.map((detail) => {
-                const mapItem = interestMap.find(m => detail.includes(m.label));
-                const Icon = mapItem?.icon || Star;
-                return (
-                  <Badge key={detail} variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-2 py-3 px-5 font-bold text-[11px] rounded-xl shadow-sm">
-                    <Icon size={16} /> {detail}
-                  </Badge>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Interests Section */}
+          {/* Interests & Lifestyle Combined Section */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-8 text-left">
             <div className="flex items-center gap-2 mb-6">
               <Heart size={16} className="text-primary" />
-              <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Интересы</h4>
+              <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Интересы и стиль жизни</h4>
             </div>
-            <div className="flex flex-wrap gap-3">
-              {generalInterests.map((interest) => {
-                const mapItem = interestMap.find(m => interest.includes(m.label));
-                const Icon = mapItem?.icon || Heart;
-                return (
-                  <Badge key={interest} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2 py-3 px-5 font-bold text-[11px] rounded-xl hover:bg-muted transition-colors shadow-sm">
-                    <Icon size={16} className="text-primary" /> {interest}
-                  </Badge>
-                );
-              })}
+            
+            <div className="space-y-6">
+              {/* Lifestyle Details */}
+              <div className="flex flex-wrap gap-3">
+                <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-2 py-3 px-5 font-bold text-[11px] rounded-xl shadow-sm">
+                  <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
+                </Badge>
+                {lifestyleDetails.map((detail) => {
+                  const mapItem = interestMap.find(m => detail.includes(m.label));
+                  const Icon = mapItem?.icon || Star;
+                  return (
+                    <Badge key={detail} variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-2 py-3 px-5 font-bold text-[11px] rounded-xl shadow-sm">
+                      <Icon size={16} /> {detail}
+                    </Badge>
+                  );
+                })}
+              </div>
+
+              {/* Separator if both exist */}
+              {lifestyleDetails.length > 0 && generalInterests.length > 0 && (
+                <div className="h-px bg-muted w-full" />
+              )}
+
+              {/* General Interests */}
+              <div className="flex flex-wrap gap-3">
+                {generalInterests.map((interest) => {
+                  const mapItem = interestMap.find(m => interest.includes(m.label));
+                  const Icon = mapItem?.icon || Heart;
+                  return (
+                    <Badge key={interest} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-2 py-3 px-5 font-bold text-[11px] rounded-xl hover:bg-muted transition-colors shadow-sm">
+                      <Icon size={16} className="text-primary" /> {interest}
+                    </Badge>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
