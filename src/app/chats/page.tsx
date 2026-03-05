@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { generateIcebreakerSuggestions } from "@/ai/flows/ai-chat-icebreaker-suggestions";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CHAT_THEMES = [
   { id: 'romantic', label: 'Романтика', icon: Heart, color: 'text-pink-500', mood: 'Romantic, sweet and poetic' },
@@ -142,117 +143,136 @@ function ChatsContent() {
 
   if (selectedChat) {
     return (
-      <div className="flex flex-col h-svh bg-white">
-        <header className="flex items-center gap-3 px-4 py-3 border-b border-border sticky top-0 bg-white/95 backdrop-blur-md z-10">
-          <Button variant="ghost" size="icon" onClick={() => setSelectedChat(null)} className="rounded-full">
-            <ChevronLeft size={24} />
+      <div className="flex flex-col h-svh bg-[#f8f9fb]">
+        <header className="flex items-center gap-3 px-4 py-3 border-b border-border sticky top-0 bg-white/90 backdrop-blur-lg z-50">
+          <Button variant="ghost" size="icon" onClick={() => setSelectedChat(null)} className="rounded-full hover:bg-muted/50">
+            <ChevronLeft size={24} className="text-foreground" />
           </Button>
           <div className="relative">
-            <div className="w-10 h-10 rounded-full overflow-hidden relative border border-border">
+            <div className="w-10 h-10 rounded-full overflow-hidden relative border-2 border-white shadow-sm">
               <Image src={selectedChat.img} alt={selectedChat.name} fill className="object-cover" />
             </div>
             {selectedChat.online && (
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full"></span>
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-sm"></span>
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-sm leading-tight">{selectedChat.name}</h3>
-            <p className="text-[10px] text-muted-foreground">{selectedChat.online ? 'В сети' : 'Был(а) недавно'}</p>
+            <h3 className="font-black text-sm leading-tight tracking-tight text-foreground">{selectedChat.name}</h3>
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">
+              {selectedChat.online ? '• В сети' : 'Был(а) недавно'}
+            </p>
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <MoreVertical size={20} className="text-muted-foreground" />
+          <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-foreground">
+            <MoreVertical size={20} />
           </Button>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f8f9fb]">
-          <div className="text-center my-4">
-            <Badge variant="secondary" className="bg-white/50 text-[10px] text-muted-foreground border-0 font-medium">Сегодня</Badge>
+        <main className="flex-1 overflow-y-auto p-5 space-y-5">
+          <div className="text-center my-2">
+            <Badge variant="secondary" className="bg-white/50 text-[10px] text-muted-foreground border-0 font-black uppercase tracking-widest px-3 py-1">Сегодня</Badge>
           </div>
 
-          {messages.map((msg) => (
-            <div 
-              key={msg.id} 
-              className={cn(
-                "flex flex-col max-w-[80%]",
-                msg.sender === "me" ? "ml-auto items-end" : "items-start"
-              )}
-            >
-              <div 
+          <AnimatePresence>
+            {messages.map((msg, idx) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                key={msg.id} 
                 className={cn(
-                  "px-4 py-2.5 rounded-[1.25rem] text-sm shadow-sm",
-                  msg.sender === "me" 
-                    ? "gradient-bg text-white rounded-tr-none" 
-                    : "bg-white text-foreground rounded-tl-none border border-border/50"
+                  "flex flex-col max-w-[85%]",
+                  msg.sender === "me" ? "ml-auto items-end" : "items-start"
                 )}
               >
-                {msg.text}
-              </div>
-              <span className="text-[10px] text-muted-foreground mt-1 px-1">{msg.time}</span>
-            </div>
-          ))}
+                <div 
+                  className={cn(
+                    "px-4 py-3 rounded-[1.25rem] text-sm shadow-sm font-medium leading-relaxed transition-all",
+                    msg.sender === "me" 
+                      ? "gradient-bg text-white rounded-tr-none shadow-primary/10" 
+                      : "bg-white text-foreground rounded-tl-none border border-border/40"
+                  )}
+                >
+                  {msg.text}
+                </div>
+                <span className="text-[9px] text-muted-foreground mt-1.5 px-1 font-bold uppercase tracking-tighter opacity-70">
+                  {msg.time}
+                </span>
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           {isTyping && (
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <div className="flex gap-1 bg-white p-2 rounded-2xl border border-border/50">
-                <span className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce"></span>
-                <span className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-1.5 h-1.5 bg-muted-foreground/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-1.5 text-muted-foreground"
+            >
+              <div className="flex gap-1 bg-white px-3 py-2.5 rounded-[1.25rem] border border-border/40 shadow-sm rounded-tl-none">
+                <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
+                <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>
               </div>
-            </div>
+            </motion.div>
           )}
           <div ref={messagesEndRef} />
         </main>
 
-        <div className="p-4 bg-white border-t border-border shadow-[0_-4px_20px_-10px_rgba(0,0,0,0.1)]">
+        <div className="p-4 bg-white border-t border-border shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.1)] relative z-10">
           {/* AI Theme Grid Toggle */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 px-1">
              <button 
                onClick={() => setShowThemeGrid(!showThemeGrid)}
                className={cn(
-                 "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-tight transition-all",
-                 showThemeGrid ? "gradient-bg text-white shadow-md" : "bg-primary/5 text-primary border border-primary/10"
+                 "flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all active:scale-95",
+                 showThemeGrid ? "gradient-bg text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10"
                )}
              >
-               <Sparkles size={12} className={cn(loadingIcebreakers && "animate-spin")} /> {showThemeGrid ? "Закрыть темы" : "Темы ответов AI"}
+               <Sparkles size={14} className={cn(loadingIcebreakers && "animate-spin")} /> {showThemeGrid ? "Закрыть темы" : "Темы ответов AI"}
              </button>
              {!showThemeGrid && icebreakers.length > 0 && !loadingIcebreakers && (
-               <p className="text-[9px] text-muted-foreground font-medium italic">Листайте вправо →</p>
+               <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-40 italic">Листайте →</p>
              )}
           </div>
 
-          {/* AI Themes Grid */}
-          {showThemeGrid && (
-            <div className="grid grid-cols-3 gap-2 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              {CHAT_THEMES.map((theme) => {
-                const Icon = theme.icon;
-                return (
-                  <button
-                    key={theme.id}
-                    onClick={() => loadIcebreakers(selectedChat, theme.mood)}
-                    className="flex flex-col items-center justify-center p-3 rounded-2xl bg-muted/40 border border-border/50 hover:border-primary/30 hover:bg-white transition-all group"
-                  >
-                    <Icon size={20} className={cn("mb-1 group-hover:scale-110 transition-transform", theme.color)} />
-                    <span className="text-[9px] font-black uppercase tracking-tighter text-foreground/70">{theme.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-          )}
+          <AnimatePresence>
+            {/* AI Themes Grid */}
+            {showThemeGrid && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="grid grid-cols-3 gap-2.5 mb-5 overflow-hidden"
+              >
+                {CHAT_THEMES.map((theme) => {
+                  const Icon = theme.icon;
+                  return (
+                    <button
+                      key={theme.id}
+                      onClick={() => loadIcebreakers(selectedChat, theme.mood)}
+                      className="flex flex-col items-center justify-center p-3.5 rounded-[1.5rem] bg-muted/40 border border-border/50 hover:border-primary/30 hover:bg-white hover:shadow-md transition-all group active:scale-95"
+                    >
+                      <Icon size={22} className={cn("mb-1.5 group-hover:scale-110 transition-transform", theme.color)} />
+                      <span className="text-[9px] font-black uppercase tracking-tighter text-foreground/70">{theme.label}</span>
+                    </button>
+                  )
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Icebreaker Suggestions */}
           {!showThemeGrid && (
-            <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4 h-9 items-center">
+            <div className="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 h-10 items-center px-1">
               {loadingIcebreakers ? (
                 <div className="flex gap-2">
-                  <div className="h-7 w-32 bg-muted animate-pulse rounded-full"></div>
-                  <div className="h-7 w-28 bg-muted animate-pulse rounded-full"></div>
+                  <div className="h-8 w-32 bg-muted animate-pulse rounded-full"></div>
+                  <div className="h-8 w-28 bg-muted animate-pulse rounded-full"></div>
                 </div>
               ) : (
                 icebreakers.map((text, i) => (
                   <button 
                     key={i} 
                     onClick={() => setInputValue(text)}
-                    className="whitespace-nowrap px-4 py-1.5 bg-muted hover:bg-border transition-colors text-[10px] font-medium rounded-full text-foreground/80 border border-transparent active:scale-95 transition-transform"
+                    className="whitespace-nowrap px-4 py-2 bg-white hover:bg-muted transition-all text-[11px] font-bold rounded-full text-foreground/80 border border-border/60 shadow-sm active:scale-95 whitespace-nowrap"
                   >
                     {text}
                   </button>
@@ -261,26 +281,26 @@ function ChatsContent() {
             </div>
           )}
 
-          <div className="flex items-center gap-2">
-            <div className="flex-1 relative">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 relative group">
               <Input 
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 placeholder="Ваше сообщение..." 
-                className="pr-10 h-11 bg-muted border-0 rounded-2xl focus-visible:ring-primary/20 font-medium"
+                className="pr-12 h-14 bg-muted/50 border-0 rounded-3xl focus-visible:ring-primary/20 font-medium px-6 text-sm placeholder:text-muted-foreground/60 transition-all focus:bg-muted"
               />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors">
-                <Smile size={20} />
+              <button className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors p-1 rounded-full hover:bg-white active:scale-90">
+                <Smile size={24} />
               </button>
             </div>
             <Button 
               size="icon" 
               onClick={handleSendMessage}
               disabled={!inputValue.trim()}
-              className="h-11 w-11 rounded-2xl gradient-bg text-white shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
+              className="h-14 w-14 rounded-[1.5rem] gradient-bg text-white shadow-xl shadow-primary/20 transition-all active:scale-90 disabled:opacity-40 flex-shrink-0"
             >
-              <Send size={18} />
+              <Send size={22} className="ml-1" />
             </Button>
           </div>
         </div>
@@ -291,44 +311,47 @@ function ChatsContent() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold font-headline">Сообщения</h2>
-          <Badge className="bg-primary text-white rounded-full">3 новых</Badge>
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
+        <div className="flex justify-between items-center mb-6 px-1">
+          <div>
+            <h2 className="text-2xl font-black font-headline tracking-tight text-foreground">Сообщения</h2>
+            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 opacity-60">Твои диалоги</p>
+          </div>
+          <Badge className="gradient-bg text-white rounded-full px-3 py-1 font-black text-[10px] border-0 shadow-lg shadow-primary/20">3 новых</Badge>
         </div>
 
-        <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+        <div className="relative mb-8 px-1">
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={18} />
           <Input 
-            className="pl-10 h-11 bg-muted border-0 rounded-2xl placeholder:text-muted-foreground focus-visible:ring-primary/20" 
+            className="pl-12 h-14 bg-white border-0 rounded-3xl placeholder:text-muted-foreground/50 focus-visible:ring-primary/20 app-shadow text-sm font-medium" 
             placeholder="Поиск по чатам..." 
           />
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-4 px-1">
           {ALL_DEMO_USERS.map((chat) => (
             <div 
               key={chat.id} 
               onClick={() => openChat(chat)}
-              className="flex items-center gap-4 p-4 bg-white rounded-3xl app-shadow hover:translate-x-1 transition-transform cursor-pointer group"
+              className="flex items-center gap-4 p-4 bg-white rounded-[2rem] app-shadow hover:translate-x-1.5 transition-all cursor-pointer group border border-transparent hover:border-primary/10"
             >
               <div className="relative flex-shrink-0">
-                <div className="w-14 h-14 rounded-full overflow-hidden relative border border-border">
+                <div className="w-16 h-16 rounded-[1.5rem] overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105">
                   <Image src={chat.img} alt={chat.name} fill className="object-cover" />
                 </div>
                 {chat.online && (
-                  <span className="absolute bottom-0 right-0 w-4 h-4 bg-[#2ecc71] border-2 border-white rounded-full"></span>
+                  <span className="absolute bottom-0 right-0 w-4 h-4 bg-[#2ecc71] border-2 border-white rounded-full shadow-md"></span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-center mb-0.5">
-                  <span className="font-bold text-sm">{chat.name}</span>
-                  <span className="text-[10px] text-muted-foreground">{chat.time}</span>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">{chat.name}</span>
+                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">{chat.time}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className="text-xs text-muted-foreground truncate pr-2">{chat.last}</p>
+                  <p className="text-xs text-muted-foreground truncate pr-3 font-medium opacity-80 leading-snug">{chat.last}</p>
                   {chat.unread > 0 && (
-                    <Badge className="bg-primary text-white text-[10px] h-4 min-w-[16px] px-1 flex items-center justify-center rounded-full">
+                    <Badge className="gradient-bg text-white text-[9px] h-5 min-w-[20px] px-1.5 flex items-center justify-center rounded-full border-0 font-black shadow-md shadow-primary/10">
                       {chat.unread}
                     </Badge>
                   )}
@@ -345,7 +368,7 @@ function ChatsContent() {
 
 export default function ChatsPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center h-screen font-bold">Загрузка...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center h-screen font-black text-primary animate-pulse uppercase tracking-[0.2em] text-xs">Загрузка чатов...</div>}>
       <ChatsContent />
     </Suspense>
   );
