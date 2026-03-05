@@ -174,9 +174,9 @@ export default function SearchPage() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-hidden px-5 pt-4 pb-24 flex flex-col items-center relative">
+      <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center relative bg-[#f8f9fb]">
         {/* Top bar */}
-        <div className="flex items-center justify-between w-full max-w-sm mb-6 z-10">
+        <div className="flex items-center justify-between w-full max-w-sm mb-4 z-10">
           <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-2xl flex items-center gap-2 text-[11px] text-primary font-bold border border-primary/5 shadow-md">
             <Sparkles size={14} />
             <span>{filteredUsers.length} анкет рядом</span>
@@ -192,7 +192,7 @@ export default function SearchPage() {
         </div>
 
         {/* Swipe Card Container */}
-        <div className="relative w-full flex-1 mb-8 max-w-[400px] flex items-center justify-center">
+        <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
           <AnimatePresence mode="popLayout">
             {filteredUsers.length > 0 ? (
               <motion.div 
@@ -211,7 +211,8 @@ export default function SearchPage() {
                 whileDrag={{ scale: 1.05 }}
                 className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col cursor-grab active:cursor-grabbing border-4 border-white"
               >
-                <div className="relative flex-[1.6] pointer-events-none select-none">
+                {/* Photo section - INCREASED height proportion */}
+                <div className="relative flex-[4] pointer-events-none select-none">
                   <Image 
                     src={user.img} 
                     alt={user.name} 
@@ -228,22 +229,26 @@ export default function SearchPage() {
                        {user.match}% совпадение
                      </Badge>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent"></div>
+                  
+                  {/* Floating Info Over Photo */}
+                  <div className="absolute bottom-6 left-6 right-6 text-white text-left pointer-events-none">
+                    <h3 className="text-3xl font-black font-headline mb-1 drop-shadow-md">{user.name}, {user.age}</h3>
+                    <p className="text-white/90 text-xs flex items-center gap-1 font-bold drop-shadow-sm">
+                      <MapPin size={14} className="text-white" /> {user.distance} км от вас
+                    </p>
+                  </div>
                 </div>
                 
-                <div className="p-6 text-center bg-white flex flex-col justify-center relative -mt-4 rounded-t-3xl shadow-2xl pointer-events-none select-none">
-                  <h3 className="text-2xl font-bold font-headline mb-1">{user.name}, {user.age}</h3>
-                  <p className="text-muted-foreground text-xs mb-4 flex items-center justify-center gap-1">
-                    <MapPin size={14} className="text-primary" /> {user.distance} км от вас
-                  </p>
-                  
-                  <div className="flex flex-wrap justify-center gap-2 mb-4">
-                    {user.interests.map(i => (
-                      <span key={i} className="px-3 py-1 bg-muted text-[9px] rounded-full font-bold text-foreground/70 uppercase tracking-tight shadow-sm">{i}</span>
+                {/* Compact Info Section */}
+                <div className="p-5 bg-white flex flex-col justify-start relative -mt-4 rounded-t-[2.5rem] shadow-2xl pointer-events-none select-none min-h-[140px]">
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {user.interests.slice(0, 3).map(i => (
+                      <span key={i} className="px-2.5 py-1 bg-primary/5 text-primary text-[8px] rounded-full font-black uppercase tracking-widest border border-primary/10">{i}</span>
                     ))}
                   </div>
                   
-                  <p className="text-muted-foreground text-xs leading-relaxed italic px-2 line-clamp-3">
+                  <p className="text-muted-foreground text-[11px] leading-tight italic px-1 line-clamp-2">
                     "{user.bio}"
                   </p>
                 </div>
@@ -272,7 +277,7 @@ export default function SearchPage() {
         <div className="flex items-center justify-center gap-6 z-10">
           <button 
             onClick={() => setIndex(prev => prev + 1)}
-            className="w-14 h-14 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow"
+            className="w-14 h-14 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow border border-border/40"
           >
             <X size={24} />
           </button>
@@ -284,7 +289,7 @@ export default function SearchPage() {
             <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
           </button>
           <button 
-            className="w-14 h-14 rounded-full bg-white text-yellow-500 flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow"
+            className="w-14 h-14 rounded-full bg-white text-yellow-500 flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow border border-border/40"
           >
             <Sparkles size={24} />
           </button>
