@@ -333,7 +333,7 @@ export default function ProfilePage() {
             )}
           </div>
           
-          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-12 text-left">
+          <div className="bg-white rounded-[2.5rem] p-6 app-shadow border border-border/40 mb-12 text-left">
             <div className="flex justify-between items-center mb-6">
                 <div className="flex items-center gap-2">
                     <Camera size={18} className="text-primary" />
@@ -347,7 +347,7 @@ export default function ProfilePage() {
                     className="hidden" 
                 />
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
                 {photos.map((url, idx) => (
                 <div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-square rounded-xl overflow-hidden bg-muted group shadow-sm border border-border/10 cursor-pointer">
                     <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
@@ -358,7 +358,7 @@ export default function ProfilePage() {
 
                     <button 
                         onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }} 
-                        className="absolute top-2 right-2 p-2 bg-white text-destructive rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white hover:scale-110 z-10 shadow-md"
+                        className="absolute top-2 right-2 p-2 bg-white/80 text-destructive rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-destructive hover:text-white hover:scale-110 z-10 shadow-md backdrop-blur-sm"
                     >
                         <Trash2 size={12} strokeWidth={2.5} />
                     </button>
@@ -367,7 +367,7 @@ export default function ProfilePage() {
                 {photos.length < 10 && (
                     <div 
                         onClick={handleTriggerFileInput} 
-                        className="relative aspect-square rounded-xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-primary cursor-pointer transition-colors group"
+                        className="relative aspect-square rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-primary cursor-pointer transition-colors group"
                     >
                         <div className="p-4 bg-muted/60 rounded-full group-hover:bg-primary/10 transition-colors">
                             <Upload size={24} />
@@ -383,7 +383,7 @@ export default function ProfilePage() {
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center">
           <DialogTitle className="sr-only">Viewer</DialogTitle>
-          <button onClick={() => setIsViewerOpen(false)} className="absolute top-6 right-6 z-50 p-2 bg-black/50 text-white rounded-full">
+          <button onClick={() => setIsViewerOpen(false)} className="absolute top-8 right-8 z-50 p-2 bg-black/50 text-white rounded-full">
             <X size={24} />
           </button>
           

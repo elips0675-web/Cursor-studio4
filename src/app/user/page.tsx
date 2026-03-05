@@ -248,7 +248,7 @@ function UserProfileContent() {
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center">
           <DialogTitle className="sr-only">Viewer</DialogTitle>
-          <button onClick={() => setIsViewerOpen(false)} className="absolute top-6 right-6 z-50 p-2 bg-black/50 text-white rounded-full">
+          <button onClick={() => setIsViewerOpen(false)} className="absolute top-8 right-8 z-50 p-2 bg-black/50 text-white rounded-full">
             <X size={24} />
           </button>
           

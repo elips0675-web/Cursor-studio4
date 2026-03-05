@@ -1,24 +1,16 @@
 
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
-import { Heart, MapPin, Sparkles, X, User, Cpu, MessageCircle } from "lucide-react";
+import { useState, useMemo } from "react";
+import { MapPin, User, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogTitle, 
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { useLanguage } from "@/context/language-context";
 
 const ALL_USERS = [
@@ -34,47 +26,35 @@ const ALL_USERS = [
   { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, interests: ['Наука', 'История', 'Музеи'], bio: 'Люблю узнавать что-то новое каждый день.', distance: 9, match: 77, gender: 'male' }
 ];
 
-function HeartConfetti() {
-  const hearts = Array.from({ length: 20 });
-  return (
-    <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
-      {hearts.map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ y: "100%", x: 0, opacity: 1 }}
-          animate={{
-            y: -(Math.random() * 200 + 100),
-            x: (Math.random() - 0.5) * 500,
-            scale: Math.random() * 1.2 + 0.8,
-            opacity: [1, 1, 0],
-            rotate: (Math.random() - 0.5) * 540,
-          }}
-          transition={{
-            duration: Math.random() * 2 + 2.5,
-            ease: "easeOut",
-            delay: 0.2,
-          }}
-          className="absolute bottom-0"
-        >
-          <Heart
-            size={Math.random() * 25 + 15}
-            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
-            className="text-transparent drop-shadow-lg"
-          />
-        </motion.div>
-      ))}
-    </div>
-  );
-}
+const variants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 300 : -300,
+    opacity: 0,
+    scale: 0.8,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 300 : -300,
+    opacity: 0,
+    scale: 0.8,
+  }),
+};
+
+const swipeConfidenceThreshold = 10000;
+const swipePower = (offset: number, velocity: number) => {
+  return Math.abs(offset) * velocity;
+};
+
 
 export default function SearchPage() {
   const router = useRouter();
   const { t, language } = useLanguage();
-  const [index, setIndex] = useState(0);
-  const [matchUser, setMatchUser] = useState<any>(null);
-  const [compatibility, setCompatibility] = useState("");
-  const [loadingAi, setLoadingAi] = useState(false);
-  const [exitDirection, setExitDirection] = useState(0);
 
   const [ageRange] = useState([18, 40]);
   const [maxDistance] = useState([50]);
@@ -92,85 +72,71 @@ export default function SearchPage() {
     });
   }, [ageRange, maxDistance, selectedInterests, selectedGender]);
 
-  const user = filteredUsers[index % filteredUsers.length];
-
-  const getAiInsight = useCallback(async (targetUser: any) => {
-    setLoadingAi(true);
-    try {
-      const res = await generateMatchCompatibilityInsight({
-        currentUser: { name: "Вы", age: 25, interests: ["Спорт", "Кино", "Кофе"], bio: "Активный парень, люблю новые знакомства." },
-        matchUser: { name: targetUser.name, age: targetUser.age, interests: targetUser.interests, bio: targetUser.bio }
-      });
-      setCompatibility(res.explanation);
-    } catch (e) {
-      setCompatibility(t('match.insight_default') || "Great match!");
-    } finally {
-      setLoadingAi(false);
-    }
-  }, [t]);
-
-  const handleSwipe = (direction: 'right' | 'left') => {
-    const swipedUser = filteredUsers[index % filteredUsers.length];
-    setExitDirection(direction === 'right' ? 1 : -1);
-    
-    if (direction === 'right') {
-      if (Math.random() > 0.6 && swipedUser) {
-        setMatchUser(swipedUser);
-        getAiInsight(swipedUser);
-      } else {
-        setIndex(prev => prev + 1);
-      }
-    } else {
-      setIndex(prev => prev + 1);
-    }
+  const [[page, direction], setPage] = useState([0, 0]);
+  
+  const wrap = (min: number, max: number, v: number) => {
+    const rangeSize = max - min;
+    return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
   };
 
-  const handleStartChat = () => {
-    if (matchUser) router.push(`/chats?matchId=${matchUser.id}`);
+  const userIndex = wrap(0, filteredUsers.length, page);
+  const user = filteredUsers[userIndex];
+
+  const paginate = (newDirection: number) => {
+    setPage([page + newDirection, newDirection]);
   };
 
-  const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-25, 25]);
-  const nopeOpacity = useTransform(x, [-100, -20], [1, 0]);
-  const likeOpacity = useTransform(x, [20, 100], [0, 1]);
+  if (!user) {
+    return (
+        <>
+            <AppHeader />
+            <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center justify-center relative bg-[#f8f9fb]">
+                 <div className="flex flex-col items-center justify-center h-full w-full text-center p-8 bg-white/50 rounded-[2.5rem] border-2 border-dashed border-muted shadow-inner">
+                    <User size={32} className="text-muted-foreground mb-4" />
+                    <h4 className="text-lg font-bold uppercase tracking-tight">{language === 'RU' ? 'Никого не нашли' : 'No one found'}</h4>
+                    <p className="text-xs text-muted-foreground mt-2">{language === 'RU' ? 'Попробуйте изменить фильтры' : 'Try changing your filters'}</p>
+                </div>
+            </main>
+            <BottomNav />
+        </>
+    )
+  }
 
   return (
     <>
       <AppHeader />
       <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center relative bg-[#f8f9fb]">
         <div className="text-center mb-4">
-            <Badge variant="outline" className="text-[8px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">{filteredUsers.length} {t('swipes.nearby')}</Badge>
+            <Badge variant="outline" className="text-[8px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">{userIndex + 1} / {filteredUsers.length}</Badge>
         </div>
         <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
-          <AnimatePresence 
-            initial={false}
-            onExitComplete={() => setExitDirection(0)}
-          >
-            {filteredUsers.length > 0 && user ? (
-              <motion.div 
-                key={index}
-                style={{ x, rotate }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                onDragEnd={(_, info) => {
-                  if (info.offset.x > 100) {
-                    handleSwipe('right');
-                  } else if (info.offset.x < -100) {
-                    handleSwipe('left');
-                  }
-                }}
-                initial={{ y: 20, opacity: 0, scale: 0.95 }}
-                animate={{ y: 0, opacity: 1, scale: 1, transition: { duration: 0.3 } }}
-                exit={{ 
-                  x: exitDirection * 500,
-                  opacity: 0,
-                  scale: 0.5,
-                  transition: { duration: 0.3, ease: 'easeIn' }
-                }}
-                whileDrag={{ scale: 1.05, cursor: 'grabbing' }}
-                className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col border-4 border-white cursor-pointer"
-              >
-                <div className="relative flex-1 select-none">
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={page}
+              custom={direction}
+              variants={variants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 }
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={1}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = swipePower(offset.x, velocity.x);
+
+                if (swipe < -swipeConfidenceThreshold) {
+                  paginate(1);
+                } else if (swipe > swipeConfidenceThreshold) {
+                  paginate(-1);
+                }
+              }}
+              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col border-4 border-white cursor-grab active:cursor-grabbing"
+            >
+              <div className="relative flex-1 select-none">
                   <Image 
                     src={user.img} 
                     alt={user.name} 
@@ -188,9 +154,6 @@ export default function SearchPage() {
                      </Badge>
                   </div>
 
-                  <motion.div style={{ opacity: nopeOpacity }} className="absolute top-12 left-8 text-rose-500 font-black text-4xl uppercase -rotate-[20deg] border-4 border-rose-500 rounded-2xl px-4 py-1 tracking-widest">НЕТ</motion.div>
-                  <motion.div style={{ opacity: likeOpacity }} className="absolute top-12 right-8 text-emerald-400 font-black text-4xl uppercase rotate-[20deg] border-4 border-emerald-400 rounded-2xl px-4 py-1 tracking-widest">ЛАЙК</motion.div>
-
                   <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6 text-white text-left">
                     <h3 className="text-3xl font-black font-headline mb-1 drop-shadow-md">{user.name}, {user.age}</h3>
@@ -205,158 +168,25 @@ export default function SearchPage() {
                     <p className="text-white/80 text-[10px] leading-tight italic line-clamp-2">"{user.bio}"</p>
                   </div>
                 </div>
-              </motion.div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full w-full text-center p-8 bg-white/50 rounded-[2.5rem] border-2 border-dashed border-muted shadow-inner">
-                <X size={32} className="text-muted-foreground mb-4" />
-                <h4 className="text-lg font-bold uppercase tracking-tight">{language === 'RU' ? 'Никого не нашли' : 'No one found'}</h4>
-                <p className="text-xs text-muted-foreground mt-2">{language === 'RU' ? 'Попробуйте зайти позже' : 'Please try again later'}</p>
-              </div>
-            )}
+            </motion.div>
           </AnimatePresence>
+          <button onClick={() => paginate(-1)} className="absolute left-0 z-10 p-2 bg-white/50 rounded-full text-foreground backdrop-blur-sm shadow-md hover:bg-white transition-all">
+             <ChevronLeft size={24}/>
+          </button>
+           <button onClick={() => paginate(1)} className="absolute right-0 z-10 p-2 bg-white/50 rounded-full text-foreground backdrop-blur-sm shadow-md hover:bg-white transition-all">
+             <ChevronRight size={24}/>
+          </button>
         </div>
 
-        <div className="flex items-center justify-center w-full max-w-md z-10 pb-4 gap-3">
-          <Button 
-            onClick={() => handleSwipe('left')} 
-            disabled={filteredUsers.length === 0}
-            variant="outline"
-            className="w-16 h-16 rounded-full bg-white text-red-500 flex items-center justify-center hover:bg-red-50 active:scale-90 transition-all app-shadow border-2 group shadow-xl"
-          >
-            <X size={28} strokeWidth={2.5} />
-          </Button>
-          
-          <Button
-            size="lg" 
-            disabled={filteredUsers.length === 0} 
-            onClick={() => handleSwipe('right')} 
-            className="w-20 h-20 rounded-full gradient-bg text-white flex items-center justify-center active:scale-95 transition-all app-shadow shadow-primary/30 border-4 border-white/50 group"
-          >
-            <Heart size={36} fill="currentColor" />
-          </Button>
-
-          <Button 
-            disabled={filteredUsers.length === 0}
-            onClick={() => router.push(`/chats?matchId=${user.id}`)}
-            variant="outline"
-            className="w-16 h-16 rounded-full bg-white text-blue-500 flex items-center justify-center hover:bg-blue-50 active:scale-90 transition-all app-shadow border-2 group shadow-xl"
-            title={language === 'RU' ? "Написать ЛС" : "Write DM"}
-          >
-            <MessageCircle size={28} strokeWidth={2.5} />
-          </Button>
-
-           <Button 
-            disabled={filteredUsers.length === 0}
+        <Button 
             onClick={() => router.push(`/user?id=${user.id}`)}
-            variant="outline"
-            className="w-16 h-16 rounded-full bg-white text-gray-500 flex items-center justify-center hover:bg-gray-100 active:scale-90 transition-all app-shadow border-2 group shadow-xl"
-            title={language === 'RU' ? "Посмотреть профиль" : "View Profile"}
+            className="w-full max-w-xs h-14 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 active:scale-95 transition-all text-sm flex items-center gap-2"
           >
-            <User size={28} strokeWidth={2.5} />
-          </Button>
-        </div>
+            <User size={20} />
+            {language === 'RU' ? "Посмотреть профиль" : "View Profile"}
+        </Button>
       </main>
-
-      <Dialog open={!!matchUser} onOpenChange={(open) => { if (!open) { setMatchUser(null); setIndex(prev => prev + 1); }}}>
-        <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 overflow-hidden bg-white app-shadow">
-          <div className="relative">
-            <HeartConfetti />
-            <div className="relative h-56 flex items-center justify-center p-6 gradient-bg">
-                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-                <div className="flex items-center justify-center gap-0 relative">
-                    <motion.div 
-                        initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }}
-                        animate={{ x: 0, opacity: 1, rotate: -8, scale: 1 }}
-                        transition={{ type: "spring", damping: 12, delay: 0.2 }}
-                        className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted"
-                    >
-                        <Image 
-                            src={PlaceHolderImages[10].imageUrl} 
-                            alt="Вы" 
-                            fill 
-                            data-ai-hint={PlaceHolderImages[10].imageHint}
-                            className="object-cover" 
-                        />
-                    </motion.div>
-                    <motion.div 
-                        initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }}
-                        animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }}
-                        transition={{ type: "spring", damping: 12, delay: 0.3 }}
-                        className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted"
-                    >
-                        <Image 
-                            src={matchUser?.img || PlaceHolderImages[0].imageUrl} 
-                            alt={matchUser?.name} 
-                            fill 
-                            data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint}
-                            className="object-cover" 
-                        />
-                    </motion.div>
-                </div>
-            </div>
-
-            <div className="px-8 pt-8 pb-8 text-center">
-              <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">
-                {t('match.title')}
-              </DialogTitle>
-              <DialogDescription className="text-muted-foreground text-sm mb-8 px-6 leading-relaxed font-medium">
-                {language === 'RU' ? 'Вы с ' : 'You and '} <span className="font-bold text-foreground">{matchUser?.name}</span> {language === 'RU' ? 'понравились друг другу.' : 'liked each other.'}
-              </DialogDescription>
-              
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-primary/20 bg-gradient-to-br from-white via-primary/[0.02] to-orange-500/[0.02] shadow-xl shadow-primary/5 overflow-hidden group"
-              >
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl opacity-40"></div>
-                
-                <div className="flex items-center justify-between mb-4 relative z-10">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
-                      <Cpu size={14} className="animate-pulse" />
-                    </div>
-                    <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.2em]">{t('match.insight')}</h4>
-                  </div>
-                  <motion.div 
-                    animate={{ rotate: [0, 15, -15, 0] }}
-                    transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                  >
-                    <Sparkles size={20} className="text-orange-400 opacity-60" />
-                  </motion.div>
-                </div>
-
-                {loadingAi ? (
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground py-2 relative z-10">
-                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    <span className="animate-pulse font-bold uppercase tracking-widest text-[10px]">{language === 'RU' ? 'Анализируем...' : 'Analyzing...'}</span>
-                  </div>
-                ) : (
-                  <div className="relative z-10">
-                    <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-primary/30 pl-4 py-1">
-                      "{compatibility}"
-                    </p>
-                  </div>
-                )}
-
-                <div className="absolute bottom-2 right-4 text-primary/5 group-hover:text-primary/10 transition-colors">
-                  <Sparkles size={48} />
-                </div>
-              </motion.div>
-              
-              <div className="flex flex-col gap-4">
-                <Button onClick={handleStartChat} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
-                  {t('button.write_first')}
-                </Button>
-                <Button variant="ghost" onClick={() => {setMatchUser(null); setIndex(prev => prev + 1);}} className="w-full h-12 rounded-full text-muted-foreground font-black uppercase tracking-[0.1em] text-[10px] hover:bg-muted transition-all">
-                  {t('button.continue')}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      
       <BottomNav />
     </>
   );
