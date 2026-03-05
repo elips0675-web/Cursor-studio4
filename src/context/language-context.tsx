@@ -148,6 +148,26 @@ const translations = {
     'report.toast.success_desc': 'Спасибо! Мы рассмотрим вашу жалобу на',
     'report.toast.no_reason_title': 'Выберите причину',
     'report.toast.no_reason_desc': 'Необходимо указать причину для отправки жалобы.',
+    // Settings
+    'settings.account': 'Аккаунт',
+    'settings.notifications': 'Уведомления',
+    'settings.location': 'Геолокация',
+    'settings.discovery': 'Показывать меня',
+    'settings.privacy': 'Приватность',
+    'settings.incognito': 'Инкогнито',
+    'settings.security': 'Безопасность',
+    'settings.security.status': 'OK',
+    'settings.support': 'Поддержка',
+    'settings.support.chat_title': 'Написать в поддержку',
+    'settings.support.chat_desc': 'Чат с нашей командой',
+    'logout.title': 'Вы вышли из системы',
+    'logout.button': 'Выйти',
+    'delete_profile.button': 'Удалить профиль',
+    // Support Chat
+    'support.title': 'Служба поддержки',
+    'support.placeholder': 'Напишите ваше сообщение...',
+    'support.greeting': 'Здравствуйте! Чем мы можем вам помочь?',
+    'support.response': 'Спасибо за ваше сообщение! Наш специалист скоро с вами свяжется.',
   },
   EN: {
     // Bottom Nav
@@ -282,6 +302,26 @@ const translations = {
     'report.toast.success_desc': 'Thank you! We will review your report on',
     'report.toast.no_reason_title': 'Select a reason',
     'report.toast.no_reason_desc': 'A reason is required to send a report.',
+    // Settings
+    'settings.account': 'Account',
+    'settings.notifications': 'Notifications',
+    'settings.location': 'Geolocation',
+    'settings.discovery': 'Show me',
+    'settings.privacy': 'Privacy',
+    'settings.incognito': 'Incognito',
+    'settings.security': 'Security',
+    'settings.security.status': 'OK',
+    'settings.support': 'Support',
+    'settings.support.chat_title': 'Contact Support',
+    'settings.support.chat_desc': 'Chat with our team',
+    'logout.title': 'You have been logged out',
+    'logout.button': 'Logout',
+    'delete_profile.button': 'Delete Profile',
+    // Support Chat
+    'support.title': 'Support',
+    'support.placeholder': 'Write your message...',
+    'support.greeting': 'Hello! How can we help you?',
+    'support.response': 'Thank you for your message! Our specialist will contact you soon.',
   }
 };
 
