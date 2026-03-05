@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from "react";
@@ -20,6 +19,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 const ALL_USERS = [
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, interests: ['Фотография', 'Путешествия', 'Кофе'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', distance: 2, match: 87, gender: 'female' },
@@ -52,11 +52,6 @@ const variants = {
     opacity: 0,
     scale: 0.8,
   }),
-};
-
-const swipeConfidenceThreshold = 10000;
-const swipePower = (offset: number, velocity: number) => {
-  return Math.abs(offset) * velocity;
 };
 
 function HeartConfetti() {
@@ -127,8 +122,11 @@ export default function SearchPage() {
   const user = filteredUsers[userIndex];
 
   const paginate = (newDirection: number) => {
-    setPage([page + 1, newDirection]);
+    setPage([page + newDirection, newDirection]);
   };
+
+  const handleNext = () => paginate(1);
+  const handlePrev = () => paginate(-1);
 
   const getAiInsight = async (targetUser: any) => {
     setLoadingAi(true);
@@ -166,7 +164,7 @@ export default function SearchPage() {
       setMatchUser(user);
       getAiInsight(user);
     } else {
-      paginate(1);
+      handleNext();
     }
   };
 
@@ -194,6 +192,16 @@ export default function SearchPage() {
             <Badge variant="outline" className="text-[8px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">{userIndex + 1} / {filteredUsers.length}</Badge>
         </div>
         <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handlePrev}
+            className="absolute left-[-10px] sm:left-[-16px] top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full bg-white/50 backdrop-blur-sm text-foreground shadow-md hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed"
+            disabled={filteredUsers.length <= 1}
+          >
+            <ChevronLeft size={24} />
+          </Button>
+
           <AnimatePresence initial={false} custom={direction}>
             <motion.div
               key={page}
@@ -206,19 +214,7 @@ export default function SearchPage() {
                 x: { type: "spring", stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 }
               }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={1}
-              onDragEnd={(e, { offset, velocity }) => {
-                const swipe = swipePower(offset.x, velocity.x);
-
-                if (swipe < -swipeConfidenceThreshold) {
-                  handleLike();
-                } else if (swipe > swipeConfidenceThreshold) {
-                  paginate(1);
-                }
-              }}
-              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col border-4 border-white cursor-grab active:cursor-grabbing"
+              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col border-4 border-white"
             >
               <div className="relative flex-1 select-none">
                   <Image 
@@ -254,10 +250,20 @@ export default function SearchPage() {
                 </div>
             </motion.div>
           </AnimatePresence>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleNext}
+            className="absolute right-[-10px] sm:right-[-16px] top-1/2 -translate-y-1/2 z-20 h-12 w-12 rounded-full bg-white/50 backdrop-blur-sm text-foreground shadow-md hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed"
+            disabled={filteredUsers.length <= 1}
+          >
+            <ChevronRight size={24} />
+          </Button>
         </div>
 
-        <div className="flex justify-center items-center gap-4 w-full px-4">
-          <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-muted bg-white hover:bg-muted text-muted-foreground transition-all active:scale-90 shadow-lg" onClick={() => paginate(1)}>
+        <div className="flex justify-center items-center gap-2 sm:gap-4 w-full px-2">
+          <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-muted bg-white hover:bg-muted text-muted-foreground transition-all active:scale-90 shadow-lg" onClick={handleNext}>
               <X size={28} />
           </Button>
           <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-xl shadow-primary/30 transition-all active:scale-90" onClick={handleLike}>
@@ -266,13 +272,18 @@ export default function SearchPage() {
           <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-primary/20 bg-white hover:bg-primary/5 text-primary transition-all active:scale-90 shadow-lg" onClick={() => router.push(`/chats?matchId=${user.id}`)}>
               <MessageCircle size={28} />
           </Button>
+          <Button asChild variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-muted bg-white hover:bg-muted text-foreground transition-all active:scale-90 shadow-lg">
+            <Link href={`/user?id=${user.id}`}>
+              <User size={28} />
+            </Link>
+          </Button>
         </div>
       </main>
       
       <Dialog open={!!matchUser} onOpenChange={(open) => {
         if (!open) {
             setMatchUser(null);
-            paginate(1);
+            handleNext();
         }
       }}>
         <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 overflow-hidden bg-white app-shadow">
@@ -371,7 +382,7 @@ export default function SearchPage() {
                 </Button>
                 <Button 
                   variant="ghost" 
-                  onClick={() => { setMatchUser(null); paginate(1); }} 
+                  onClick={() => { setMatchUser(null); handleNext(); }} 
                   className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]"
                 >
                   {t('button.continue')}

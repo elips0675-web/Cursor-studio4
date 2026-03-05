@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
@@ -37,7 +36,9 @@ import {
   FlaskConical,
   Car,
   ChefHat,
-  Brush
+  Brush,
+  Mountain,
+  Wine,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -322,15 +323,12 @@ function UserProfileContent() {
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center">
           <DialogTitle className="sr-only">Viewer</DialogTitle>
-          <button onClick={() => setIsViewerOpen(false)} className="absolute top-8 right-8 z-50 p-2 bg-black/50 text-white rounded-full">
-            <X size={24} />
-          </button>
           
           <Carousel className="w-full h-full" opts={{ startIndex: activePhotoIndex }}>
             <CarouselContent className="h-full ml-0">
               {photos.map((url, idx) => (
                 <CarouselItem key={idx} className="h-[80vh] flex items-center justify-center p-4 pl-4">
-                  <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden app-shadow">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden app-shadow">
                     <Image src={url} alt={`Gallery view ${idx}`} fill className="object-cover" />
                   </div>
                 </CarouselItem>
@@ -461,5 +459,3 @@ export default function UserProfilePage() {
     </Suspense>
   );
 }
-
-    
