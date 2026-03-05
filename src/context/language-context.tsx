@@ -1,7 +1,10 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import { useIdleTimer } from '@/hooks/use-idle-timer';
+import { toast } from '@/hooks/use-toast';
 
 type Language = 'RU' | 'EN';
 
@@ -254,6 +257,24 @@ const LanguageContext = createContext<LanguageContextProps | undefined>(undefine
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [language, setLanguageState] = useState<Language>('RU');
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleIdle = useCallback(() => {
+    // Don't log out if on a public page like login/onboarding
+    if (pathname === '/login' || pathname === '/onboarding') return;
+
+    toast({
+      title: language === 'RU' ? 'Сессия истекла' : 'Session Expired',
+      description: language === 'RU' ? 'Вы были неактивны в течение 30 минут.' : 'You have been inactive for 30 minutes.',
+    });
+    router.push('/login');
+  }, [router, language, pathname]);
+
+  // 30 minutes in milliseconds
+  const IDLE_TIMEOUT = 30 * 60 * 1000;
+  useIdleTimer(handleIdle, IDLE_TIMEOUT);
+
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);

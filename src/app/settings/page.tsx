@@ -30,20 +30,19 @@ export default function SettingsPage() {
     photoVerification: true
   });
 
-  const handleSave = () => {
+  const handleLogout = () => {
     toast({
-      title: "Настройки сохранены",
-      description: "Ваши предпочтения успешно обновлены.",
+      title: "Вы вышли из системы",
     });
-    router.back();
+    router.push("/login");
   };
 
   return (
     <div className="flex flex-col min-h-svh bg-white">
       <AppHeader />
       
-      <main className="flex-1 overflow-y-auto p-6 space-y-8">
-        <div className="space-y-6">
+      <main className="flex-1 overflow-y-auto p-6 flex flex-col">
+        <div className="space-y-6 flex-1">
           <section className="space-y-4">
             <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Аккаунт</h5>
             <div className="space-y-1">
@@ -113,14 +112,20 @@ export default function SettingsPage() {
               </div>
             </div>
           </section>
-
-          <section className="space-y-2 pt-4">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground font-semibold h-12 gap-3 px-0"><LogOut size={18} /> Выйти</Button>
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground/80 hover:text-destructive text-sm font-normal h-auto py-3 gap-3 px-0"><Trash2 size={16} /> Удалить профиль</Button>
-          </section>
         </div>
 
-        <Button onClick={handleSave} className="w-full h-14 rounded-full gradient-bg text-white font-bold shadow-xl shadow-primary/20">Сохранить</Button>
+        <div className="space-y-3 pt-8 mt-auto">
+            <Button 
+                onClick={handleLogout}
+                className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all border-0">
+                <LogOut size={18} className="mr-2" /> Выйти
+            </Button>
+            <Button 
+                variant="ghost" 
+                className="w-full justify-center text-muted-foreground/60 hover:text-destructive text-xs font-normal h-auto py-3 gap-2 px-0 transition-colors">
+                <Trash2 size={14} /> Удалить профиль
+            </Button>
+        </div>
       </main>
     </div>
   );
