@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  ChevronLeft, 
   Sparkles, 
   Camera, 
   User,
@@ -100,13 +99,7 @@ export default function EditProfilePage() {
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <header className="flex items-center gap-3 px-4 py-3 border-b border-border sticky top-0 bg-white/95 backdrop-blur-md z-20">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full h-9 w-9">
-          <ChevronLeft size={20} />
-        </Button>
-        <h1 className="text-lg font-black font-headline tracking-tight uppercase">Изменить профиль</h1>
-      </header>
-
+      
       <main className="flex-1 overflow-y-auto p-4 space-y-5 pb-6">
         <div className="flex flex-col items-center gap-2 pt-2">
           <div className="relative group cursor-pointer" onClick={handleChangeMainPhoto}>

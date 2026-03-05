@@ -4,15 +4,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { 
-  ChevronLeft, 
   Bell, 
   Search, 
   EyeOff, 
   ShieldCheck, 
   LogOut, 
   Trash2,
-  MapPin,
-  Camera
+  MapPin
 } from "lucide-react";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -43,13 +41,7 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col min-h-svh bg-white">
       <AppHeader />
-      <header className="flex items-center gap-3 px-4 py-4 border-b border-border sticky top-0 bg-white z-10">
-        <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full">
-          <ChevronLeft size={24} />
-        </Button>
-        <h1 className="text-xl font-bold font-headline">Настройки</h1>
-      </header>
-
+      
       <main className="flex-1 overflow-y-auto p-6 space-y-8">
         <div className="space-y-6">
           <section className="space-y-4">

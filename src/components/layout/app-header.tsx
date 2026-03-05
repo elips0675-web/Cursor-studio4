@@ -1,19 +1,42 @@
 
 "use client";
 
-import { Bell, Languages } from "lucide-react";
+import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle } from "lucide-react";
 import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+
+const NOTIFICATIONS = [
+  { id: 1, type: 'like', text: 'Анна поставила вам лайк!', time: '2 мин назад', icon: Heart, color: 'text-primary' },
+  { id: 2, type: 'match', text: 'У вас новое совпадение с Максимом!', time: '15 мин назад', icon: Sparkles, color: 'text-yellow-500' },
+  { id: 3, type: 'message', text: 'Елена прислала вам сообщение', time: '1 час назад', icon: MessageCircle, color: 'text-blue-500' },
+  { id: 4, type: 'system', text: 'Ваш профиль стал популярнее на 20%', time: '3 часа назад', icon: Bell, color: 'text-green-500' },
+];
 
 export function AppHeader() {
   const { language, setLanguage } = useLanguage();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = useState(4);
+
+  const isHomePage = pathname === "/";
 
   const handleLangChange = (newLang: 'RU' | 'EN') => {
     setLanguage(newLang);
@@ -23,40 +46,124 @@ export function AppHeader() {
     });
   };
 
+  const handleLogin = () => {
+    toast({
+      title: language === "RU" ? "Вход в систему" : "Logging in",
+      description: language === "RU" ? "Функция входа будет доступна скоро" : "Login feature coming soon",
+    });
+  };
+
   return (
-    <header className="sticky top-0 w-full bg-white border-b border-border px-5 py-4 flex justify-between items-center z-40">
-      <Link href="/">
-        <h1 className="text-2xl font-black font-headline gradient-text cursor-pointer">
-          SwiftMatch
-        </h1>
-      </Link>
-      <div className="flex gap-2">
+    <header className="sticky top-0 w-full bg-white/95 backdrop-blur-md border-b border-border px-4 py-3 flex justify-between items-center z-50">
+      <div className="flex items-center gap-2">
+        {!isHomePage && (
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => router.back()} 
+            className="rounded-full h-9 w-9 hover:bg-muted"
+          >
+            <ChevronLeft size={22} />
+          </Button>
+        )}
+        <Link href="/">
+          <h1 className={cn(
+            "text-xl font-black font-headline gradient-text cursor-pointer tracking-tight",
+            !isHomePage && "hidden sm:block"
+          )}>
+            SwiftMatch
+          </h1>
+        </Link>
+      </div>
+
+      <div className="flex items-center gap-1.5">
+        {/* Кнопка Вход */}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleLogin}
+          className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-primary transition-colors"
+        >
+          <LogIn size={14} />
+          <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
+        </Button>
+
+        {/* Смена языка */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="h-10 px-3 rounded-full bg-[#f5f7fa] flex items-center justify-center text-foreground hover:bg-border transition-all active:scale-95 gap-1.5 border border-transparent hover:border-border/50">
-              <Languages size={16} className="text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-tight">{language}</span>
+            <button className="h-9 px-2.5 rounded-full bg-muted/50 flex items-center justify-center text-foreground hover:bg-muted transition-all active:scale-95 gap-1.5 border border-transparent">
+              <Languages size={15} className="text-primary" />
+              <span className="text-[9px] font-black uppercase tracking-tighter">{language}</span>
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="rounded-[1.5rem] border-0 app-shadow p-2 min-w-[120px] bg-white z-50">
+          <DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[120px] bg-white">
             <DropdownMenuItem 
               onClick={() => handleLangChange("RU")}
-              className="rounded-xl font-bold text-[11px] uppercase tracking-wider cursor-pointer focus:bg-primary/5 focus:text-primary py-2.5"
+              className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2"
             >
               Русский (RU)
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => handleLangChange("EN")}
-              className="rounded-xl font-bold text-[11px] uppercase tracking-wider cursor-pointer focus:bg-primary/5 focus:text-primary py-2.5"
+              className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2"
             >
               English (EN)
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <button className="w-10 h-10 rounded-full bg-[#f5f7fa] flex items-center justify-center text-foreground hover:bg-border transition-all active:scale-95">
-          <Bell size={18} />
-        </button>
+        {/* Уведомления */}
+        <Popover onOpenChange={(open) => open && setUnreadCount(0)}>
+          <PopoverTrigger asChild>
+            <button className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center text-foreground hover:bg-muted transition-all active:scale-95 relative">
+              <Bell size={16} />
+              {unreadCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 bg-primary text-white border-2 border-white flex items-center justify-center text-[8px] font-black animate-in zoom-in">
+                  {unreadCount}
+                </Badge>
+              )}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent align="end" className="w-[320px] p-0 rounded-3xl border-0 shadow-2xl bg-white overflow-hidden">
+            <div className="p-4 border-b border-border bg-muted/20">
+              <h4 className="font-black text-xs uppercase tracking-widest text-foreground">
+                {language === "RU" ? "Уведомления" : "Notifications"}
+              </h4>
+            </div>
+            <ScrollArea className="h-[300px]">
+              <div className="flex flex-col">
+                {NOTIFICATIONS.map((note) => {
+                  const Icon = note.icon;
+                  return (
+                    <div 
+                      key={note.id} 
+                      className="p-4 border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer group"
+                    >
+                      <div className="flex gap-3">
+                        <div className={cn("mt-0.5 p-2 rounded-xl bg-white shadow-sm border border-border/10", note.color)}>
+                          <Icon size={14} fill={note.type === 'like' ? 'currentColor' : 'none'} />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-[11px] font-bold leading-tight group-hover:text-primary transition-colors">
+                            {note.text}
+                          </p>
+                          <p className="text-[9px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter">
+                            {note.time}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+            <div className="p-3 bg-muted/10 text-center border-t border-border">
+              <Button variant="ghost" className="h-8 text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 w-full rounded-xl">
+                {language === "RU" ? "Показать все" : "View all"}
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     </header>
   );
