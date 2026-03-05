@@ -57,6 +57,14 @@ export default function OnboardingPage() {
     else handleFinish();
   };
 
+  const skipStep = () => {
+    if (step < totalSteps) {
+      setStep(step + 1);
+    } else {
+      handleFinish();
+    }
+  };
+
   const prevStep = () => {
     if (step > 1) setStep(step - 1);
   };
@@ -275,7 +283,13 @@ export default function OnboardingPage() {
             ></div>
           ))}
         </div>
-        <div className="w-10"></div>
+        <Button 
+          variant="ghost" 
+          onClick={skipStep}
+          className="text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors"
+        >
+          Пропустить
+        </Button>
       </header>
 
       <main className="flex-1 px-8 pt-4 pb-24 max-w-md mx-auto w-full">
