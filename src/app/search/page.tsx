@@ -34,10 +34,45 @@ const ALL_USERS = [
   { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, interests: ['Наука', 'История', 'Музеи'], bio: 'Люблю узнавать что-то новое каждый день.', distance: 9, match: 77, gender: 'male' }
 ];
 
+function FallingHearts() {
+  const hearts = Array.from({ length: 20 });
+  return (
+    <div className="absolute inset-0 pointer-events-none z-0">
+      {hearts.map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          initial={{ y: -50 }}
+          animate={{ y: '100vh' }}
+          transition={{
+            duration: Math.random() * 3 + 4,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+            ease: "linear",
+          }}
+          style={{
+            left: `${Math.random() * 100}%`,
+            transform: `rotate(${Math.random() * 60 - 30}deg)`,
+          }}
+        >
+          <Heart 
+            size={Math.random() * 15 + 10} 
+            fill={i % 2 === 0 ? "rgba(254, 60, 114, 0.7)" : "rgba(255, 142, 83, 0.7)"}
+            className="text-transparent"
+            style={{
+              filter: `blur(${Math.random() * 1.5}px)`
+            }}
+          />
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 function HeartConfetti() {
   const hearts = Array.from({ length: 45 });
   return (
-    <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden flex items-center justify-center">
+    <div className="absolute inset-0 pointer-events-none z-5 overflow-hidden flex items-center justify-center">
       {hearts.map((_, i) => (
         <motion.div
           key={i}
@@ -263,6 +298,7 @@ export default function SearchPage() {
 
       <Dialog open={!!matchUser} onOpenChange={() => setMatchUser(null)}>
         <DialogContent className="max-w-[400px] rounded-3xl border-0 bg-white p-0 overflow-hidden app-shadow">
+          <FallingHearts />
           <HeartConfetti />
           
           <div className="relative h-48 gradient-bg flex items-center justify-center overflow-hidden">
