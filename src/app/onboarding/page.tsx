@@ -1,18 +1,15 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { 
   ArrowRight, 
   Sparkles, 
   MapPin, 
-  User, 
-  Heart, 
   Camera,
-  CheckCircle2,
   ChevronLeft,
   Navigation,
-  Ruler,
   Target,
   Stars,
   Upload
@@ -60,6 +57,7 @@ const ZODIAC_SIGNS = [
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const totalSteps = 5;
 
@@ -160,18 +158,25 @@ export default function OnboardingPage() {
     }
   };
 
-  const handlePhotoUpload = () => {
-    setIsUploading(true);
-    // Имитация загрузки фото - выбираем рандомное из плейсхолдеров
-    setTimeout(() => {
-      const randomPhoto = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)].imageUrl;
-      setFormData(prev => ({ ...prev, photo: randomPhoto }));
-      setIsUploading(false);
-      toast({
-        title: "Фото загружено!",
-        description: "Ваш профиль теперь выглядит отлично.",
-      });
-    }, 1200);
+  const handleTriggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIsUploading(true);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, photo: reader.result as string }));
+        setIsUploading(false);
+        toast({
+          title: "Фото добавлено!",
+          description: "Ваш профиль теперь выглядит отлично.",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleFinish = () => {
@@ -363,13 +368,13 @@ export default function OnboardingPage() {
             <div className="space-y-2 text-center">
               <div className="relative inline-block mx-auto mb-4">
                 <div 
-                  onClick={handlePhotoUpload}
+                  onClick={handleTriggerFileInput}
                   className="w-40 h-40 rounded-[2.5rem] border-[6px] border-white shadow-2xl overflow-hidden relative group cursor-pointer transition-transform active:scale-95"
                 >
                   <Image src={formData.photo} alt="Me" fill className={cn("object-cover transition-all", isUploading && "blur-sm grayscale")} />
                   <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
                     <Camera className="text-white mb-1" size={32} />
-                    <span className="text-white text-[9px] font-black uppercase tracking-widest">Изменить</span>
+                    <span className="text-white text-[9px] font-black uppercase tracking-widest">Выбрать фото</span>
                   </div>
                   {isUploading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/20">
@@ -378,11 +383,18 @@ export default function OnboardingPage() {
                   )}
                 </div>
                 <button 
-                  onClick={handlePhotoUpload}
+                  onClick={handleTriggerFileInput}
                   className="absolute -bottom-1 -right-1 bg-primary text-white p-3 rounded-2xl shadow-xl border-2 border-white hover:scale-110 transition-transform active:scale-90"
                 >
                   <Upload size={18} />
                 </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  accept="image/*" 
+                  className="hidden" 
+                />
               </div>
               <h2 className="text-3xl font-black font-headline tracking-tight">Почти готово!</h2>
               <p className="text-muted-foreground text-sm px-4">Добавь яркое фото и расскажи о себе или позволь AI помочь.</p>
