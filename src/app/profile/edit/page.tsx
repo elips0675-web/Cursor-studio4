@@ -12,7 +12,8 @@ import {
   GraduationCap,
   Dog,
   Briefcase,
-  Bed
+  Bed,
+  Trophy
 } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
@@ -50,6 +51,13 @@ const PET_OPTIONS = ["Нет", "Есть собака", "Есть кошка", "
 const SLEEP_SCHEDULE_OPTIONS = ["Жаворонок", "Сова", "Когда как"];
 const EDUCATION_OPTIONS = ["Среднее", "Среднее специальное", "Неоконченное высшее", "Высшее", "Ученая степень"];
 
+const ALL_TITLES = [
+  { id: 'party', name: 'Душа компании' },
+  { id: 'romantic', name: 'Начинающий романтик' },
+  { id: 'king', name: 'Король свиданий' },
+  { id: 'explorer', name: 'Первооткрыватель' }
+];
+
 const defaultProfile = {
     name: "Анна",
     age: 24,
@@ -62,7 +70,8 @@ const defaultProfile = {
     pets: "Есть собака",
     education: "Высшее",
     sleepSchedule: "Сова",
-    work: "Дизайнер"
+    work: "Дизайнер",
+    titles: [] as {id: string, name: string}[]
 };
 
 export default function EditProfilePage() {
@@ -127,6 +136,15 @@ export default function EditProfilePage() {
       interests: prev.interests.includes(interest)
         ? prev.interests.filter(i => i !== interest)
         : [...prev.interests, interest]
+    }));
+  };
+  
+  const toggleTitle = (title: {id: string, name: string}) => {
+    setProfile(prev => ({
+      ...prev,
+      titles: prev.titles.some(t => t.id === title.id)
+        ? prev.titles.filter(t => t.id !== title.id)
+        : [...prev.titles, title]
     }));
   };
 
@@ -259,6 +277,19 @@ export default function EditProfilePage() {
               ))}
             </div>
           </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600"><Trophy size={14} /></div>
+                <h3 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Звания</h3>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {ALL_TITLES.map(title => (
+                <Badge key={title.id} onClick={() => toggleTitle(title)} variant={profile.titles.some(t => t.id === title.id) ? "default" : "secondary"} className={cn("cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight", profile.titles.some(t => t.id === title.id) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground")}>{title.name}</Badge>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         <Button onClick={handleSave} className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-lg shadow-primary/20 border-0">Сохранить</Button>

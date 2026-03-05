@@ -37,35 +37,32 @@ const ALL_USERS = [
 function HeartConfetti() {
   const hearts = Array.from({ length: 20 });
   return (
-    <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
-        {hearts.map((_, i) => (
-            <motion.div
-                key={i}
-                initial={{ y: "100%", x: "50%", opacity: 1 }}
-                animate={{
-                    y: -(Math.random() * 400 + 200),
-                    x: (Math.random() - 0.5) * window.innerWidth,
-                    scale: Math.random() * 0.8 + 0.5,
-                    opacity: 0,
-                }}
-                transition={{
-                    duration: Math.random() * 2 + 3,
-                    ease: "easeOut",
-                }}
-                style={{
-                    position: "absolute",
-                    bottom: 0,
-                    left: "50%",
-                }}
-            >
-                 <Heart
-                    size={Math.random() * 40 + 20}
-                    className="text-primary drop-shadow-lg"
-                    fill="currentColor"
-                    strokeWidth={0.5}
-                />
-            </motion.div>
-        ))}
+    <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
+      {hearts.map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ y: "100%", x: 0, opacity: 1 }}
+          animate={{
+            y: -(Math.random() * 200 + 100),
+            x: (Math.random() - 0.5) * 500,
+            scale: Math.random() * 1.2 + 0.8,
+            opacity: [1, 1, 0],
+            rotate: (Math.random() - 0.5) * 540,
+          }}
+          transition={{
+            duration: Math.random() * 2 + 2.5,
+            ease: "easeOut",
+            delay: 0.2,
+          }}
+          className="absolute bottom-0"
+        >
+          <Heart
+            size={Math.random() * 25 + 15}
+            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
+            className="text-transparent drop-shadow-lg"
+          />
+        </motion.div>
+      ))}
     </div>
   );
 }
@@ -141,6 +138,9 @@ export default function SearchPage() {
     <>
       <AppHeader />
       <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center relative bg-[#f8f9fb]">
+        <div className="text-center mb-4">
+            <Badge variant="outline" className="text-[8px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">{filteredUsers.length} {t('swipes.nearby')}</Badge>
+        </div>
         <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
           <AnimatePresence 
             initial={false}
@@ -216,31 +216,44 @@ export default function SearchPage() {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center justify-around w-full max-w-md z-10 pb-4">
-          <button 
+        <div className="flex items-center justify-center w-full max-w-md z-10 pb-4 gap-3">
+          <Button 
             onClick={() => handleSwipe('left')} 
             disabled={filteredUsers.length === 0}
-            className="w-20 h-20 rounded-full bg-white text-red-500 flex items-center justify-center hover:bg-red-50 active:scale-90 transition-all app-shadow border border-border/20 group shadow-lg"
+            variant="outline"
+            className="w-16 h-16 rounded-full bg-white text-red-500 flex items-center justify-center hover:bg-red-50 active:scale-90 transition-all app-shadow border-2 group shadow-xl"
           >
-            <X size={32} strokeWidth={2.5} />
-          </button>
+            <X size={28} strokeWidth={2.5} />
+          </Button>
           
-          <button 
+          <Button
+            size="lg" 
             disabled={filteredUsers.length === 0} 
             onClick={() => handleSwipe('right')} 
-            className="w-24 h-24 rounded-full gradient-bg text-white flex items-center justify-center active:scale-95 transition-all app-shadow shadow-primary/30 border-4 border-white/50 group"
+            className="w-20 h-20 rounded-full gradient-bg text-white flex items-center justify-center active:scale-95 transition-all app-shadow shadow-primary/30 border-4 border-white/50 group"
           >
-            <Heart size={44} fill="currentColor" />
-          </button>
+            <Heart size={36} fill="currentColor" />
+          </Button>
 
-          <button 
+          <Button 
             disabled={filteredUsers.length === 0}
             onClick={() => router.push(`/chats?matchId=${user.id}`)}
-            className="w-20 h-20 rounded-full bg-white text-green-500 flex items-center justify-center hover:bg-green-50 active:scale-90 transition-all app-shadow border border-border/20 group shadow-lg"
+            variant="outline"
+            className="w-16 h-16 rounded-full bg-white text-blue-500 flex items-center justify-center hover:bg-blue-50 active:scale-90 transition-all app-shadow border-2 group shadow-xl"
             title={language === 'RU' ? "Написать ЛС" : "Write DM"}
           >
-            <MessageCircle size={32} strokeWidth={2.5} />
-          </button>
+            <MessageCircle size={28} strokeWidth={2.5} />
+          </Button>
+
+           <Button 
+            disabled={filteredUsers.length === 0}
+            onClick={() => router.push(`/user?id=${user.id}`)}
+            variant="outline"
+            className="w-16 h-16 rounded-full bg-white text-gray-500 flex items-center justify-center hover:bg-gray-100 active:scale-90 transition-all app-shadow border-2 group shadow-xl"
+            title={language === 'RU' ? "Посмотреть профиль" : "View Profile"}
+          >
+            <User size={28} strokeWidth={2.5} />
+          </Button>
         </div>
       </main>
 

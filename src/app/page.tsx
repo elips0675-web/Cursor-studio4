@@ -107,7 +107,6 @@ export default function Home() {
 
   useEffect(() => {
     if (isFilterDialogOpen) {
-      // Mock current user data for pre-filling filters
       const currentUser = {
         interests: ['Спорт', 'Музыка'],
         city: 'Москва',
@@ -255,7 +254,6 @@ export default function Home() {
               <Sparkles size={16} className="text-primary" />
               <h5 className="font-black text-base font-headline tracking-tight">{t('home.recommend')}</h5>
             </div>
-            <Badge variant="outline" className="text-[8px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">{ALL_DEMO_USERS.length} {t('swipes.nearby')}</Badge>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {ALL_DEMO_USERS.slice(6, 10).map((u) => (
@@ -436,7 +434,7 @@ export default function Home() {
       </Dialog>
 
       <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
-        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
+        <DialogContent className="max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
           <DialogHeader className="p-6 bg-muted/30 pb-4">
             <div className="flex items-center gap-3 mb-1">
               <div className="w-10 h-10 rounded-2xl gradient-bg flex items-center justify-center text-white shadow-lg">
@@ -447,8 +445,8 @@ export default function Home() {
             <p className="text-xs text-muted-foreground font-medium">{t('button.filters')}</p>
           </DialogHeader>
 
-          <div className="p-6 space-y-6 overflow-y-auto max-h-[60vh] no-scrollbar">
-            <div className="space-y-4">
+          <div className="p-5 space-y-5 overflow-y-auto max-h-[60vh] no-scrollbar">
+            <div className="space-y-3">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('profile.interests')}</label>
               <div className="flex flex-wrap gap-2">
                 {INTEREST_OPTIONS.map(interest => (
@@ -457,7 +455,7 @@ export default function Home() {
                     onClick={() => toggleInterest(interest)}
                     variant={selectedInterests.includes(interest) ? "default" : "secondary"}
                     className={cn(
-                      "cursor-pointer px-4 py-2.5 rounded-xl transition-all border-0 font-bold text-[9px] uppercase tracking-tight shadow-sm",
+                      "cursor-pointer px-3 py-2 rounded-lg transition-all border-0 font-bold text-[9px] uppercase tracking-tight shadow-sm",
                       selectedInterests.includes(interest) 
                         ? "gradient-bg text-white shadow-md" 
                         : "bg-muted text-muted-foreground hover:bg-border"
@@ -469,9 +467,9 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               <div className="flex justify-between items-center px-1">
-                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('edit.age')}</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('profile.age')}</label>
                 <span className="text-xs font-black text-primary">{ageRange[0]} - {ageRange[1]}</span>
               </div>
               <Slider 
@@ -484,7 +482,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('profile.city')}</label>
               <Select value={selectedCity} onValueChange={setSelectedCity}>
                 <SelectTrigger className="h-12 rounded-xl bg-muted/30 border-0 font-bold px-4">
@@ -500,13 +498,13 @@ export default function Home() {
             </div>
           </div>
 
-          <DialogFooter className="p-6 pt-2">
+          <DialogFooter className="p-5 pt-2">
             <Button 
               onClick={() => {
                 setIsFilterDialogOpen(false);
                 handleAutoSearch();
               }}
-              className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all border-0"
+              className="w-full h-12 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all border-0"
             >
               {t('button.autosearch')}
             </Button>
@@ -559,8 +557,8 @@ function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
             size="sm" 
             className="h-8 rounded-lg border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm"
           >
-            <Link href={`/chats?matchId=${user.id}`}>
-              <MessageCircle size={14} />
+            <Link href={`/user?id=${user.id}`}>
+              <User size={14} />
             </Link>
           </Button>
         </div>
@@ -608,14 +606,14 @@ function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; 
             >
               <Heart size={14} className="group-hover/heart:fill-current" />
             </Button>
-            <Button 
+             <Button 
               asChild
               variant="outline" 
               size="sm" 
               className="h-8 rounded-lg border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm"
             >
-              <Link href={`/chats?matchId=${user.id}`}>
-                <MessageCircle size={14} />
+              <Link href={`/user?id=${user.id}`}>
+                <User size={14} />
               </Link>
             </Button>
           </div>
