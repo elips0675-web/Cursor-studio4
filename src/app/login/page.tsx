@@ -10,20 +10,22 @@ import {
   ArrowRight, 
   Sparkles,
   ChevronLeft,
-  Chrome
+  Chrome,
+  Phone
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loginMethod, setLoginMethod] = useState<"email" | "phone">("phone");
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +37,8 @@ export default function LoginPage() {
         title: "С возвращением!",
         description: "Вы успешно вошли в SwiftMatch.",
       });
-      router.push("/");
+      // После входа направляем на онбординг для заполнения профиля
+      router.push("/onboarding");
     }, 1500);
   };
 
@@ -43,7 +46,7 @@ export default function LoginPage() {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      router.push("/");
+      router.push("/onboarding");
     }, 1000);
   };
 
@@ -71,39 +74,79 @@ export default function LoginPage() {
         </div>
 
         <div className="space-y-6 animate-in slide-in-from-bottom-8 duration-700">
+          <div className="flex gap-2 p-1 bg-muted/30 rounded-2xl mb-2">
+            <button 
+              onClick={() => setLoginMethod("phone")}
+              className={cn(
+                "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                loginMethod === "phone" ? "bg-white shadow-sm text-primary" : "text-muted-foreground"
+              )}
+            >
+              Телефон
+            </button>
+            <button 
+              onClick={() => setLoginMethod("email")}
+              className={cn(
+                "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                loginMethod === "email" ? "bg-white shadow-sm text-primary" : "text-muted-foreground"
+              )}
+            >
+              Email
+            </button>
+          </div>
+
           <form onSubmit={handleLogin} className="space-y-4">
-            <div className="space-y-2">
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                <Input 
-                  type="email" 
-                  placeholder="Email" 
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-medium"
-                  required
-                />
+            {loginMethod === "phone" ? (
+              <div className="space-y-2">
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Input 
+                    type="tel" 
+                    placeholder="+7 (999) 000-00-00" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-medium"
+                    required
+                  />
+                </div>
               </div>
-            </div>
-            <div className="space-y-2">
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                <Input 
-                  type="password" 
-                  placeholder="Пароль" 
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-medium"
-                  required
-                />
-              </div>
-            </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                    <Input 
+                      type="email" 
+                      placeholder="Email" 
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                    <Input 
+                      type="password" 
+                      placeholder="Пароль" 
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-14 pl-12 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-medium"
+                      required
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+            
             <Button 
               type="submit" 
               disabled={isLoading}
               className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95"
             >
-              {isLoading ? "Вход..." : "Войти"} <ArrowRight size={18} className="ml-2" />
+              {isLoading ? "Вход..." : "Продолжить"} <ArrowRight size={18} className="ml-2" />
             </Button>
           </form>
 
@@ -137,12 +180,12 @@ export default function LoginPage() {
           <Badge variant="secondary" className="bg-primary/5 text-primary border-0 px-4 py-2 rounded-xl flex gap-2">
             <Sparkles size={14} /> <span>100% Приватно</span>
           </Badge>
-          <div className="flex gap-6 text-[10px] text-muted-foreground font-medium uppercase tracking-widest opacity-60">
-            <button className="hover:text-primary transition-colors">Условия</button>
-            <button className="hover:text-primary transition-colors">Приватность</button>
-          </div>
         </div>
       </main>
     </div>
   );
+}
+
+function cn(...classes: string[]) {
+  return classes.filter(Boolean).join(" ");
 }
