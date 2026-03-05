@@ -3,68 +3,68 @@
     {
       "id": "anna",
       "description": "Портрет улыбающейся девушки",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_1/600/800",
-      "imageHint": "woman smile"
+      "imageUrl": "https://picsum.photos/seed/person_anna_99/600/800",
+      "imageHint": "woman portrait"
     },
     {
       "id": "maxim",
       "description": "Уверенный мужчина",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_2/600/800",
+      "imageUrl": "https://picsum.photos/seed/person_maxim_88/600/800",
       "imageHint": "man portrait"
     },
     {
       "id": "elena",
-      "description": "Девушка в парке",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_3/600/800",
-      "imageHint": "woman nature"
+      "description": "Девушка на фоне города",
+      "imageUrl": "https://picsum.photos/seed/person_elena_77/600/800",
+      "imageHint": "woman urban"
     },
     {
       "id": "dmitry",
-      "description": "Мужчина в костюме",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_4/600/800",
-      "imageHint": "man style"
+      "description": "Мужчина в повседневной одежде",
+      "imageUrl": "https://picsum.photos/seed/person_dmitry_66/600/800",
+      "imageHint": "man casual"
     },
     {
       "id": "sophia",
-      "description": "Девушка с гитарой",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_5/600/800",
-      "imageHint": "woman music"
+      "description": "Девушка в кафе",
+      "imageUrl": "https://picsum.photos/seed/person_sophia_55/600/800",
+      "imageHint": "woman cafe"
     },
     {
       "id": "artem",
-      "description": "Парень геймер",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_6/600/800",
-      "imageHint": "man cool"
+      "description": "Парень в спортивном стиле",
+      "imageUrl": "https://picsum.photos/seed/person_artem_44/600/800",
+      "imageHint": "man sport"
     },
     {
       "id": "maria",
-      "description": "Девушка занимается йогой",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_7/600/800",
-      "imageHint": "woman yoga"
+      "description": "Стильная девушка",
+      "imageUrl": "https://picsum.photos/seed/person_maria_33/600/800",
+      "imageHint": "woman style"
     },
     {
       "id": "ivan",
-      "description": "Путешественник в горах",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_8/600/800",
-      "imageHint": "man travel"
+      "description": "Мужчина на природе",
+      "imageUrl": "https://picsum.photos/seed/person_ivan_22/600/800",
+      "imageHint": "man nature"
     },
     {
       "id": "ksenia",
-      "description": "Модная девушка на улице",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_9/600/800",
-      "imageHint": "woman fashion"
+      "description": "Элегантная девушка",
+      "imageUrl": "https://picsum.photos/seed/person_ksenia_11/600/800",
+      "imageHint": "woman elegant"
     },
     {
       "id": "nikita",
-      "description": "Мужчина в интерьере",
-      "imageUrl": "https://picsum.photos/seed/dating_vibe_10/600/800",
-      "imageHint": "man urban"
+      "description": "Молодой человек",
+      "imageUrl": "https://picsum.photos/seed/person_nikita_00/600/800",
+      "imageHint": "man young"
     },
     {
       "id": "me",
-      "description": "Селфи текущего пользователя",
-      "imageUrl": "https://picsum.photos/seed/my_vibe_2024/600/600",
-      "imageHint": "selfie face"
+      "description": "Селфи пользователя",
+      "imageUrl": "https://picsum.photos/seed/person_me_vibe/600/600",
+      "imageHint": "person face"
     }
   ]
 }
