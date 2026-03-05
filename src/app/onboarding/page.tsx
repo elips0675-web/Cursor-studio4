@@ -31,6 +31,7 @@ import { toast } from "@/hooks/use-toast";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { generateProfileBio } from "@/ai/flows/ai-generate-profile-bio";
 import { cn } from "@/lib/utils";
+import { useLanguage } from "@/context/language-context";
 
 const INTEREST_OPTIONS = [
   "Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Кино", "Йога", "Бизнес", "Игры",
@@ -38,8 +39,8 @@ const INTEREST_OPTIONS = [
 ];
 
 const GENDER_OPTIONS = [
-  { id: 'male', label: 'Мужчина' },
-  { id: 'female', label: 'Женщина' }
+  { id: 'male', labelKey: 'onboarding.step1.male' },
+  { id: 'female', labelKey: 'onboarding.step1.female' }
 ];
 
 const DATING_GOALS = [
@@ -57,6 +58,7 @@ const ZODIAC_SIGNS = [
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState(1);
   const totalSteps = 5;
@@ -106,12 +108,12 @@ export default function OnboardingPage() {
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) {
-      toast({ title: "Геолокация не поддерживается вашим браузером", variant: "destructive" });
+      toast({ title: t('onboarding.loc.fail'), variant: "destructive" });
       return;
     }
 
     setIsDetectingLocation(true);
-    toast({ title: "Определяем местоположение..." });
+    toast({ title: t('onboarding.loc.detecting') });
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -124,35 +126,35 @@ export default function OnboardingPage() {
           
           if (city) {
             setFormData(prev => ({ ...prev, city }));
-            toast({ title: `Город определен: ${city}` });
+            toast({ title: `${t('onboarding.loc.success')}${city}` });
           } else {
-            toast({ title: "Не удалось точно определить город", variant: "destructive" });
+            toast({ title: t('onboarding.loc.fail'), variant: "destructive" });
           }
         } catch (error) {
-          toast({ title: "Ошибка при получении города", variant: "destructive" });
+          toast({ title: t('onboarding.loc.fail'), variant: "destructive" });
         } finally {
           setIsDetectingLocation(false);
         }
       },
       () => {
         setIsDetectingLocation(false);
-        toast({ title: "Доступ к геолокации отклонен", variant: "destructive" });
+        toast({ title: t('onboarding.loc.denied'), variant: "destructive" });
       }
     );
   };
 
   const handleGenerateBio = async () => {
     if (formData.interests.length === 0) {
-      toast({ title: "Выберите хотя бы один интерес" });
+      toast({ title: t('onboarding.step4.desc') });
       return;
     }
     setIsGeneratingBio(true);
     try {
       const result = await generateProfileBio({ keywords: formData.interests });
       setFormData(prev => ({ ...prev, bio: result.bio }));
-      toast({ title: "Био создано AI" });
+      toast({ title: t('onboarding.toast.bio_ai') });
     } catch (error) {
-      toast({ variant: "destructive", title: "Ошибка генерации" });
+      toast({ variant: "destructive", title: "AI Error" });
     } finally {
       setIsGeneratingBio(false);
     }
@@ -171,8 +173,8 @@ export default function OnboardingPage() {
         setFormData(prev => ({ ...prev, photo: reader.result as string }));
         setIsUploading(false);
         toast({
-          title: "Фото добавлено!",
-          description: "Ваш профиль теперь выглядит отлично.",
+          title: t('onboarding.toast.photo_added'),
+          description: t('onboarding.toast.photo_desc'),
         });
       };
       reader.readAsDataURL(file);
@@ -181,8 +183,8 @@ export default function OnboardingPage() {
 
   const handleFinish = () => {
     toast({
-      title: "Профиль готов!",
-      description: "Добро пожаловать в SwiftMatch.",
+      title: t('onboarding.toast.finish_title'),
+      description: t('onboarding.toast.finish_desc'),
     });
     router.push("/");
   };
@@ -193,21 +195,21 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black font-headline tracking-tight">Как тебя зовут?</h2>
-              <p className="text-muted-foreground text-sm">Имя будет отображаться в твоем профиле.</p>
+              <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step1.title')}</h2>
+              <p className="text-muted-foreground text-sm">{t('onboarding.step1.desc')}</p>
             </div>
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Имя</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step1.label')}</Label>
                 <Input 
                   value={formData.name} 
                   onChange={e => setFormData({...formData, name: e.target.value})}
-                  placeholder="Твое имя"
+                  placeholder={t('onboarding.step1.placeholder')}
                   className="h-14 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-bold px-6"
                 />
               </div>
               <div className="space-y-2 pt-4">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Твой пол</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step1.gender_label')}</Label>
                 <div className="grid grid-cols-1 gap-3">
                   {GENDER_OPTIONS.map(opt => (
                     <button
@@ -226,7 +228,7 @@ export default function OnboardingPage() {
                       )}>
                         {formData.gender === opt.id && <div className="w-2 h-2 bg-white rounded-full"></div>}
                       </div>
-                      {opt.label}
+                      {t(opt.labelKey)}
                     </button>
                   ))}
                 </div>
@@ -238,13 +240,13 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black font-headline tracking-tight">Немного деталей</h2>
-              <p className="text-muted-foreground text-sm">Это поможет нам найти людей поблизости.</p>
+              <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step2.title')}</h2>
+              <p className="text-muted-foreground text-sm">{t('onboarding.step2.desc')}</p>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Возраст</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step2.age')}</Label>
                   <Input 
                     type="number"
                     value={formData.age} 
@@ -254,7 +256,7 @@ export default function OnboardingPage() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Рост (см)</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step2.height')}</Label>
                   <Input 
                     type="number"
                     value={formData.height} 
@@ -266,14 +268,14 @@ export default function OnboardingPage() {
               </div>
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center ml-1">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Город (опционально)</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('onboarding.step2.city')}</Label>
                 </div>
                 <div className="relative">
                   <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary" size={20} />
                   <Input 
                     value={formData.city} 
                     onChange={e => setFormData({...formData, city: e.target.value})}
-                    placeholder="Где ты находишься?"
+                    placeholder={t('onboarding.step2.city_placeholder')}
                     className="h-14 pl-14 pr-16 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-bold"
                   />
                   <button 
@@ -281,7 +283,7 @@ export default function OnboardingPage() {
                     disabled={isDetectingLocation}
                     type="button"
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-primary hover:bg-primary/5 p-2 rounded-xl transition-colors active:scale-90"
-                    title="Определить город"
+                    title="Detect City"
                   >
                     <Navigation size={20} className={cn(isDetectingLocation && "animate-pulse")} fill={isDetectingLocation ? "currentColor" : "none"} />
                   </button>
@@ -294,22 +296,22 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black font-headline tracking-tight">Личное</h2>
-              <p className="text-muted-foreground text-sm">Расскажи о своих целях и знаке зодиака.</p>
+              <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step3.title')}</h2>
+              <p className="text-muted-foreground text-sm">{t('onboarding.step3.desc')}</p>
             </div>
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                  <Target size={14} className="text-primary" /> Цель знакомства
+                  <Target size={14} className="text-primary" /> {t('onboarding.step3.goal_label')}
                 </Label>
                 <Select value={formData.datingGoal} onValueChange={(val) => setFormData({...formData, datingGoal: val})}>
                   <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold px-6">
-                    <SelectValue placeholder="Выберите цель" />
+                    <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-0 shadow-2xl">
                     {DATING_GOALS.map(goal => (
                       <SelectItem key={goal} value={goal} className="font-bold py-3">
-                        {goal}
+                        {t(goal)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -318,16 +320,16 @@ export default function OnboardingPage() {
 
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                  <Stars size={14} className="text-primary" /> Знак зодиака
+                  <Stars size={14} className="text-primary" /> {t('onboarding.step3.zodiac_label')}
                 </Label>
                 <Select value={formData.zodiac} onValueChange={(val) => setFormData({...formData, zodiac: val})}>
                   <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold px-6">
-                    <SelectValue placeholder="Выберите знак" />
+                    <SelectValue placeholder={t('onboarding.step3.zodiac_placeholder')} />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-0 shadow-2xl">
                     {ZODIAC_SIGNS.map(sign => (
                       <SelectItem key={sign} value={sign} className="font-bold py-3">
-                        {sign}
+                        {t(sign)}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -340,8 +342,8 @@ export default function OnboardingPage() {
         return (
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2">
-              <h2 className="text-3xl font-black font-headline tracking-tight">Твои интересы</h2>
-              <p className="text-muted-foreground text-sm">Выбери минимум 1, чтобы AI составил крутое био.</p>
+              <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step4.title')}</h2>
+              <p className="text-muted-foreground text-sm">{t('onboarding.step4.desc')}</p>
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {INTEREST_OPTIONS.map(interest => (
@@ -356,7 +358,7 @@ export default function OnboardingPage() {
                       : "bg-muted text-muted-foreground hover:bg-border"
                   )}
                 >
-                  {interest}
+                  {t(interest)}
                 </Badge>
               ))}
             </div>
@@ -374,7 +376,7 @@ export default function OnboardingPage() {
                   <Image src={formData.photo} alt="Me" fill className={cn("object-cover transition-all", isUploading && "blur-sm grayscale")} />
                   <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
                     <Camera className="text-white mb-1" size={32} />
-                    <span className="text-white text-[9px] font-black uppercase tracking-widest">Выбрать фото</span>
+                    <span className="text-white text-[9px] font-black uppercase tracking-widest">{t('onboarding.step5.photo_label')}</span>
                   </div>
                   {isUploading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-white/20">
@@ -396,25 +398,25 @@ export default function OnboardingPage() {
                   className="hidden" 
                 />
               </div>
-              <h2 className="text-3xl font-black font-headline tracking-tight">Почти готово!</h2>
-              <p className="text-muted-foreground text-sm px-4">Добавь яркое фото и расскажи о себе или позволь AI помочь.</p>
+              <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step5.title')}</h2>
+              <p className="text-muted-foreground text-sm px-4">{t('onboarding.step5.desc')}</p>
             </div>
             
             <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 space-y-4">
               <div className="flex justify-between items-center">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">О себе</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step5.bio_label')}</Label>
                 <button 
                   onClick={handleGenerateBio}
                   disabled={isGeneratingBio}
                   className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors shadow-sm"
                 >
-                  <Sparkles size={12} className={cn(isGeneratingBio && "animate-spin")} /> AI Создать
+                  <Sparkles size={12} className={cn(isGeneratingBio && "animate-spin")} /> AI {t('button.save')}
                 </button>
               </div>
               <Textarea 
                 value={formData.bio}
                 onChange={e => setFormData({...formData, bio: e.target.value})}
-                placeholder="Расскажи о своих увлечениях..."
+                placeholder={t('onboarding.step5.bio_placeholder')}
                 className="min-h-[120px] rounded-2xl bg-muted/30 border-0 text-sm font-medium p-4 resize-none focus-visible:ring-primary/10"
               />
             </div>
@@ -463,7 +465,7 @@ export default function OnboardingPage() {
           onClick={skipStep}
           className="rounded-2xl gradient-bg text-white h-10 px-6 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 active:scale-95 transition-all border-0"
         >
-          Пропустить
+          {t('button.skip')}
         </Button>
       </header>
 
@@ -477,7 +479,7 @@ export default function OnboardingPage() {
           disabled={!isStepValid()}
           className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 active:scale-95 transition-all"
         >
-          {step === totalSteps ? "Начать знакомства" : "Продолжить"} <ArrowRight size={20} className="ml-2" />
+          {step === totalSteps ? t('button.start') : t('button.continue')} <ArrowRight size={20} className="ml-2" />
         </Button>
       </div>
     </div>
