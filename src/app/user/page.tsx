@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
@@ -39,6 +40,8 @@ import {
   Brush,
   Mountain,
   Wine,
+  MoreVertical,
+  Flag,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,6 +66,12 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 
@@ -214,9 +223,31 @@ function UserProfileContent() {
           >
             <ChevronLeft size={24} />
           </Button>
-          <Badge className="bg-white/20 backdrop-blur-md text-white border-white/20 px-3 py-1 font-black uppercase text-[9px] tracking-widest">
-            {user.match}% {language === 'RU' ? 'Совпадение' : 'Match'}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-white/20 backdrop-blur-md text-white border-white/20 px-3 py-1 font-black uppercase text-[9px] tracking-widest">
+              {user.match}% {language === 'RU' ? 'Совпадение' : 'Match'}
+            </Badge>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                  <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/40 border border-white/20"
+                  >
+                  <MoreVertical size={20} />
+                  </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white">
+                  <DropdownMenuItem 
+                  onClick={() => toast({ title: language === 'RU' ? 'Жалоба отправлена' : 'Report sent', description: language === 'RU' ? `Мы рассмотрим вашу жалобу на ${user.name}.` : `We will review your report on ${user.name}.` })}
+                  className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                  >
+                  <Flag size={14} className="mr-2" />
+                  {language === 'RU' ? 'Пожаловаться' : 'Report'}
+                  </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
       </header>
 
       <main className="flex-1 overflow-y-auto pb-24">

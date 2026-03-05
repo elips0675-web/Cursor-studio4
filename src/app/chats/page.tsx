@@ -24,7 +24,8 @@ import {
   Crown,
   Music,
   Phone,
-  Video
+  Video,
+  Flag
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -35,10 +36,12 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { generateIcebreakerSuggestions } from "@/ai/flows/ai-chat-icebreaker-suggestions";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/context/language-context";
+import { toast } from "@/hooks/use-toast";
 
 const CHAT_THEMES = [
   { id: 'romantic', label_ru: 'Романтика', label_en: 'Romantic', icon: Heart, color: 'text-pink-500', mood: 'Romantic, sweet and poetic' },
@@ -210,9 +213,22 @@ function ChatsContent() {
             <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
               <Video size={18} />
             </Button>
-            <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-              <MoreVertical size={18} />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
+                    <MoreVertical size={18} />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white">
+                <DropdownMenuItem
+                    onClick={() => toast({ title: language === 'RU' ? 'Жалоба отправлена' : 'Report sent', description: language === 'RU' ? `Мы рассмотрим вашу жалобу на ${selectedChat.name} в ближайшее время.` : `We will review your report on ${selectedChat.name} shortly.` })}
+                    className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                >
+                    <Flag size={14} className="mr-2" />
+                    {language === 'RU' ? 'Пожаловаться' : 'Report'}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 
