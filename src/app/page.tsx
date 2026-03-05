@@ -473,7 +473,7 @@ export default function Home() {
 function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
   return (
     <div className="bg-white rounded-[1rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
-      <Link href={`/user?id=${user.id}`} className="relative aspect-[4/5] bg-muted block overflow-hidden cursor-pointer">
+      <Link href={`/user?id=${user.id}`} className="relative aspect-square bg-muted block overflow-hidden cursor-pointer">
         <Image 
           src={user.img} 
           alt={user.name} 
@@ -522,7 +522,7 @@ function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
 function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; showActions?: boolean; onLike: () => void }) {
   return (
     <div className="bg-white rounded-[1rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
-      <Link href={`/user?id=${user.id}`} className="relative aspect-square bg-muted block overflow-hidden cursor-pointer">
+      <Link href={`/user?id=${user.id}`} className="relative aspect-[4/3] bg-muted block overflow-hidden cursor-pointer">
         <Image 
           src={user.img} 
           alt={user.name} 
