@@ -36,15 +36,15 @@ const ALL_DEMO_USERS = [
   { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, online: true, distance: 4, match: 69, city: 'Питер', zodiac: 'Близнецы', interests: ['Игры', 'Аниме'], bio: 'Давай поиграем вместе или посмотрим сериал.' },
   { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, online: true, distance: 1, match: 94, city: 'Москва', zodiac: 'Скорпион', interests: ['Йога', 'Природа'], bio: 'Люблю готовить полезную еду и ходить в походы.' },
   { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, online: false, distance: 15, match: 72, city: 'Сочи', zodiac: 'Стрелец', interests: ['Горы', 'Фотография'], bio: 'Пейзажный фотограф в поисках приключений.' },
-  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, online: true, distance: 6, match: 83, city: 'Москва', zodiac: 'Козерог', interests: ['Мода', 'Дизайн'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.' },
+  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, online: true, distance: 6, match: 83, city: 'Москва', zodiac: 'Козерог', interests: ['Мода', 'Дизайн'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежат.' },
   { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, online: false, distance: 9, match: 77, city: 'Питер', zodiac: 'Водолей', interests: ['Наука', 'История'], bio: 'Люблю узнавать что-то новое каждый день.' }
 ];
 
 const INTEREST_OPTIONS = ["Фотография", "Спорт", "Музыка", "Кофе", "IT", "Искусство", "Бизнес", "Путешествия"];
 
-// Компонент "Салют из сердец"
+// Компонент "Салют из сердец" (Обновленный)
 function HeartConfetti() {
-  const hearts = Array.from({ length: 20 });
+  const hearts = Array.from({ length: 40 });
   return (
     <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
       {hearts.map((_, i) => (
@@ -52,16 +52,24 @@ function HeartConfetti() {
           key={i}
           initial={{ opacity: 1, scale: 0, x: "50%", y: "50%" }}
           animate={{ 
-            opacity: 0, 
-            scale: [0, 1.5, 1], 
-            x: `${Math.random() * 100}%`, 
-            y: `${Math.random() * 100}%`,
-            rotate: Math.random() * 360
+            opacity: [1, 1, 0], 
+            scale: [0, 1.2, 0.8], 
+            x: [`50%`, `${Math.random() * 140 - 20}%`], 
+            y: [`50%`, `${Math.random() * 140 - 20}%`],
+            rotate: Math.random() * 720
           }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: Math.random() * 0.2 }}
+          transition={{ 
+            duration: 2.5, 
+            ease: [0.23, 1, 0.32, 1], 
+            delay: Math.random() * 0.4 
+          }}
           className="absolute"
         >
-          <Heart size={Math.random() * 20 + 10} fill={i % 2 === 0 ? "#fe3c72" : "#ff8e53"} className="text-transparent" />
+          <Heart 
+            size={Math.random() * 28 + 14} 
+            fill={i % 2 === 0 ? "#fe3c72" : "#ff8e53"} 
+            className="text-transparent drop-shadow-lg" 
+          />
         </motion.div>
       ))}
     </div>

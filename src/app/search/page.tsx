@@ -32,8 +32,9 @@ const ALL_USERS = [
   { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, interests: ['Наука', 'История', 'Музеи'], bio: 'Люблю узнавать что-то новое каждый день.', distance: 9, match: 77, gender: 'male' }
 ];
 
+// Обновленный компонент HeartConfetti (SwiftMatch1 Style)
 function HeartConfetti() {
-  const hearts = Array.from({ length: 25 });
+  const hearts = Array.from({ length: 45 });
   return (
     <div className="absolute inset-0 pointer-events-none z-50 overflow-hidden">
       {hearts.map((_, i) => (
@@ -41,17 +42,24 @@ function HeartConfetti() {
           key={i}
           initial={{ opacity: 1, scale: 0, x: "50%", y: "50%" }}
           animate={{ 
-            opacity: 0, 
-            scale: [0, 1.8, 1], 
-            x: `${Math.random() * 120 - 10}%`, 
-            y: `${Math.random() * 120 - 10}%`,
-            rotate: Math.random() * 720
+            opacity: [1, 1, 0], 
+            scale: [0, 1.3, 0.7], 
+            x: [`50%`, `${Math.random() * 160 - 30}%`], 
+            y: [`50%`, `${Math.random() * 160 - 30}%`],
+            rotate: Math.random() * 1080
           }}
-          transition={{ duration: 1.5, ease: "easeOut", delay: Math.random() * 0.3 }}
+          transition={{ 
+            duration: 3, 
+            ease: [0.16, 1, 0.3, 1], 
+            delay: Math.random() * 0.5 
+          }}
           className="absolute"
-          style={{ left: "-5%", top: "-5%" }}
         >
-          <Heart size={Math.random() * 24 + 12} fill={i % 2 === 0 ? "#fe3c72" : "#ff8e53"} className="text-transparent" />
+          <Heart 
+            size={Math.random() * 30 + 12} 
+            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"} 
+            className="text-transparent drop-shadow-xl" 
+          />
         </motion.div>
       ))}
     </div>
