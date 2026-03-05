@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
     remotePatterns: [
       {
         protocol: 'https',
@@ -36,11 +37,21 @@ const nextConfig: NextConfig = {
   },
   // Оптимизация для мобильных устройств и PageSpeed
   experimental: {
-    optimizePackageImports: ['lucide-react', 'framer-motion', 'date-fns', '@radix-ui/react-icons'],
+    optimizePackageImports: [
+      'lucide-react', 
+      'framer-motion', 
+      'date-fns', 
+      '@radix-ui/react-icons',
+      '@radix-ui/react-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@radix-ui/react-popover',
+      '@radix-ui/react-select'
+    ],
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
+  reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
 };

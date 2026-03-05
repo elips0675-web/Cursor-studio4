@@ -4,7 +4,7 @@
 import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle, User, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useState, memo } from "react";
+import { useState, memo, useMemo } from "react";
 import dynamic from 'next/dynamic';
 import {
   DropdownMenu,
@@ -22,7 +22,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Динамическая загрузка контента уведомлений
+// Динамическая загрузка контента уведомлений для ускорения LCP
 const PopoverContent = dynamic(() => import("@/components/ui/popover").then(mod => mod.PopoverContent));
 const ScrollArea = dynamic(() => import("@/components/ui/scroll-area").then(mod => mod.ScrollArea));
 

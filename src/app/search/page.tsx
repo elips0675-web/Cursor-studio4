@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo } from "react";
 import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, MoreVertical, Flag } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
@@ -15,25 +16,24 @@ import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
-import { HeartConfetti } from "@/components/animations/heart-confetti";
 import Link from "next/link";
 
+// Оптимизация тяжелых компонентов через динамический импорт
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
 const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
 const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
 const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
-
 const DropdownMenu = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenu));
 const DropdownMenuContent = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuContent));
 const DropdownMenuItem = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuItem));
 const DropdownMenuTrigger = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuTrigger));
-
 const RadioGroup = dynamic(() => import("@/components/ui/radio-group").then(mod => mod.RadioGroup));
 const RadioGroupItem = dynamic(() => import("@/components/ui/radio-group").then(mod => mod.RadioGroupItem));
 const Label = dynamic(() => import("@/components/ui/label").then(mod => mod.Label));
 const Textarea = dynamic(() => import("@/components/ui/textarea").then(mod => mod.Textarea));
+const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 
 const variants = {
   enter: (direction: number) => ({

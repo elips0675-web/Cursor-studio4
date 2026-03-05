@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy } from "lucide-react";
@@ -27,14 +28,15 @@ import { useLanguage } from "@/context/language-context";
 import { useFeatureFlags } from "@/context/feature-flags-context";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
 import { INTEREST_OPTIONS, CAPITALS } from "@/lib/constants";
-import { HeartConfetti } from "@/components/animations/heart-confetti";
 
+// Динамические импорты для тяжелых компонентов
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
 const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
 const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
 const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
+const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 
 const ITEMS_PER_PAGE = 4;
 
@@ -46,7 +48,7 @@ const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLi
           src={user.img} 
           alt={user.name} 
           fill 
-          sizes="(max-width: 768px) 50vw, 240px"
+          sizes="(max-width: 480px) 50vw, 240px"
           data-ai-hint={user.hint}
           priority={priority}
           className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -98,7 +100,7 @@ const ProfilePreviewCard = memo(({ user, showActions = false, onLike }: { user: 
           src={user.img} 
           alt={user.name} 
           fill 
-          sizes="(max-width: 768px) 50vw, 240px"
+          sizes="(max-width: 480px) 50vw, 240px"
           data-ai-hint={user.hint}
           className="object-cover group-hover:scale-105 transition-transform duration-500"
         />

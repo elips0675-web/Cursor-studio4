@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
@@ -52,32 +53,32 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
 import { motion } from "framer-motion";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { useFeatureFlags } from "@/context/feature-flags-context";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
-import { HeartConfetti } from "@/components/animations/heart-confetti";
 import { ZodiacIcon } from "@/components/shared/zodiac-icon";
 
+// Динамические импорты для тяжелых UI
 const Carousel = dynamic(() => import("@/components/ui/carousel").then(mod => mod.Carousel));
 const CarouselContent = dynamic(() => import("@/components/ui/carousel").then(mod => mod.CarouselContent));
 const CarouselItem = dynamic(() => import("@/components/ui/carousel").then(mod => mod.CarouselItem));
 const CarouselPrevious = dynamic(() => import("@/components/ui/carousel").then(mod => mod.CarouselPrevious));
 const CarouselNext = dynamic(() => import("@/components/ui/carousel").then(mod => mod.CarouselNext));
-
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
 const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
 const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
 const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
-
 const DropdownMenu = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenu));
 const DropdownMenuContent = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuContent));
 const DropdownMenuItem = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuItem));
 const DropdownMenuTrigger = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuTrigger));
+const RadioGroup = dynamic(() => import("@/components/ui/radio-group").then(mod => mod.RadioGroup));
+const RadioGroupItem = dynamic(() => import("@/components/ui/radio-group").then(mod => mod.RadioGroupItem));
+const Label = dynamic(() => import("@/components/ui/label").then(mod => mod.Label));
+const Textarea = dynamic(() => import("@/components/ui/textarea").then(mod => mod.Textarea));
+const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 
 const interestIcons: Record<string, any> = {
     "Фотография": Camera,
@@ -221,7 +222,7 @@ function UserProfileContent() {
 
       <main className="flex-1 overflow-y-auto pb-24">
         <div className="relative aspect-square w-full">
-          <Image src={user.img} alt={user.name} fill className="object-cover" priority />
+          <Image src={user.img} alt={user.name} fill sizes="100vw" className="object-cover" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fb] via-transparent to-black/30"></div>
           <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
              <div className="flex items-center gap-2">
@@ -283,7 +284,7 @@ function UserProfileContent() {
             <div className="grid grid-cols-2 gap-4">
               {photos.map((url, idx) => (
                 <div key={idx} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group">
-                  <Image src={url} alt={`Photo ${idx}`} fill className="object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Image src={url} alt={`Photo ${idx}`} fill sizes="50vw" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                     <Maximize2 size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
@@ -316,7 +317,7 @@ function UserProfileContent() {
               {photos.map((url, idx) => (
                 <CarouselItem key={idx} className="h-[80vh] flex items-center justify-center p-4 pl-4">
                   <div className="relative w-full h-full rounded-2xl overflow-hidden app-shadow">
-                    <Image src={url} alt={`Gallery view ${idx}`} fill className="object-cover" />
+                    <Image src={url} alt={`Gallery view ${idx}`} fill sizes="(max-width: 480px) 100vw, 440px" className="object-cover" />
                   </div>
                 </CarouselItem>
               ))}
@@ -335,10 +336,10 @@ function UserProfileContent() {
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                 <div className="flex items-center justify-center gap-0 relative">
                     <motion.div initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: -8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.2 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted">
-                        <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill data-ai-hint={PlaceHolderImages[10].imageHint} className="object-cover" />
+                        <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill sizes="144px" data-ai-hint={PlaceHolderImages[10].imageHint} className="object-cover" />
                     </motion.div>
                     <motion.div initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.3 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted">
-                        <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name} fill data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
+                        <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name} fill sizes="144px" data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
                     </motion.div>
                 </div>
             </div>
