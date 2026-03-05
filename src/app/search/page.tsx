@@ -1,8 +1,7 @@
-
 "use client";
 
-import { useState, useMemo, memo } from "react";
-import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, Sparkles } from "lucide-react";
+import { useState, useMemo } from "react";
+import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import { useRouter } from "next/navigation";
@@ -15,26 +14,14 @@ import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
+import { ALL_DEMO_USERS } from "@/lib/demo-data";
+import { HeartConfetti } from "@/components/animations/heart-confetti";
 import Link from "next/link";
 
-// Тяжелый диалог мэтча загружаем динамически
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
 const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
 const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
-
-const ALL_USERS = [
-  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, interests: ['Фотография', 'Путешествия', 'Кофе'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', distance: 2, match: 87, gender: 'female' },
-  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, hint: PlaceHolderImages[1].imageHint, interests: ['Спорт', 'IT', 'Книги'], bio: 'Ищу компанию для пробежек и обсуждения технологий.', distance: 5, match: 92, gender: 'male' },
-  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, hint: PlaceHolderImages[2].imageHint, interests: ['Искусство', 'Книги', 'Вино'], bio: 'Ищу кого-то, кто любит музеи и долгие прогулки.', distance: 3, match: 81, gender: 'female' },
-  { id: 4, name: 'Дмитрий', age: 31, img: PlaceHolderImages[3].imageUrl, hint: PlaceHolderImages[3].imageHint, interests: ['Бизнес', 'Авто', 'Спорт'], bio: 'Ценю время и качественный отдых.', distance: 12, match: 75, gender: 'male' },
-  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, hint: PlaceHolderImages[4].imageHint, interests: ['Музыка', 'Гитара', 'Фестивали'], bio: 'Мечтаю собрать свою группу и объехать мир.', distance: 7, match: 88, gender: 'female' },
-  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, hint: PlaceHolderImages[5].imageHint, interests: ['Игры', 'Аниме', 'Пицца'], bio: 'Давай поиграем вместе или посмотрим сериал.', distance: 4, match: 69, gender: 'male' },
-  { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, hint: PlaceHolderImages[6].imageHint, interests: ['Йога', 'Кулинария', 'Природа'], bio: 'Люблю готовить полезную еду и ходить в походы.', distance: 1, match: 94, gender: 'female' },
-  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, hint: PlaceHolderImages[7].imageHint, interests: ['Фотография', 'Горы', 'Кемпинг'], bio: 'Пейзажный фотограф в поисках приключений.', distance: 15, match: 72, gender: 'male' },
-  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, hint: PlaceHolderImages[8].imageHint, interests: ['Мода', 'Дизайн', 'Вечеринки'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.', distance: 6, match: 83, gender: 'female' },
-  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, interests: ['Наука', 'История', 'Музеи'], bio: 'Люблю узнавать что-то новое каждый день.', distance: 9, match: 77, gender: 'male' }
-];
 
 const variants = {
   enter: (direction: number) => ({
@@ -56,39 +43,6 @@ const variants = {
   }),
 };
 
-function HeartConfetti() {
-  const hearts = useMemo(() => Array.from({ length: 20 }), []);
-  return (
-    <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
-      {hearts.map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ y: "100%", x: 0, opacity: 1 }}
-          animate={{
-            y: -(Math.random() * 200 + 100),
-            x: (Math.random() - 0.5) * 500,
-            scale: Math.random() * 1.2 + 0.8,
-            opacity: [1, 1, 0],
-            rotate: (Math.random() - 0.5) * 540,
-          }}
-          transition={{
-            duration: Math.random() * 2 + 2.5,
-            ease: "easeOut",
-            delay: 0.2,
-          }}
-          className="absolute bottom-0"
-        >
-          <Heart
-            size={Math.random() * 25 + 15}
-            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
-            className="text-transparent drop-shadow-lg"
-          />
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
 export default function SearchPage() {
   const router = useRouter();
   const { t, language } = useLanguage();
@@ -103,7 +57,7 @@ export default function SearchPage() {
   const [loadingAi, setLoadingAi] = useState(false);
 
   const filteredUsers = useMemo(() => {
-    return ALL_USERS.filter(user => {
+    return ALL_DEMO_USERS.filter(user => {
       const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
       const matchesDistance = user.distance <= maxDistance[0];
       const matchesInterests = selectedInterests.length === 0 || 
@@ -226,7 +180,7 @@ export default function SearchPage() {
                     sizes="(max-width: 480px) 100vw, 420px"
                     data-ai-hint={user.hint} 
                     className="object-cover" 
-                    priority // Оптимизация LCP
+                    priority
                   />
                   <div className="absolute top-4 left-4">
                      <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold shadow-lg">{language === 'RU' ? 'Онлайн' : 'Online'}</Badge>

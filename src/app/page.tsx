@@ -1,7 +1,6 @@
-
 "use client";
 
-import { Flame, Search, Heart, MapPin, Zap, Check, MessageCircle, Sparkles, X, Trophy, ChevronDown, Cpu, User } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy } from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -26,8 +25,10 @@ import {
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { useLanguage } from "@/context/language-context";
 import { useFeatureFlags } from "@/context/feature-flags-context";
+import { ALL_DEMO_USERS } from "@/lib/demo-data";
+import { INTEREST_OPTIONS, CAPITALS } from "@/lib/constants";
+import { HeartConfetti } from "@/components/animations/heart-confetti";
 
-// Динамический импорт тяжелых диалогов для ускорения первой загрузки
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
 const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
@@ -35,66 +36,9 @@ const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => m
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
 const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
 
-const ALL_DEMO_USERS = [
-  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, online: true, distance: 2, match: 87, city: 'Москва', zodiac: 'Лев', interests: ['Фотография', 'Кофе'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.' },
-  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, hint: PlaceHolderImages[1].imageHint, online: true, distance: 5, match: 92, city: 'Питер', zodiac: 'Овен', interests: ['Спорт', 'IT'], bio: 'Ищу компанию для пробежек и обсуждения технологий.' },
-  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, hint: PlaceHolderImages[2].imageHint, online: false, distance: 3, match: 81, city: 'Москва', zodiac: 'Рыбы', interests: ['Искусство', 'Книги'], bio: 'Ищу кого-то, кто любит музеи и долгие прогулки.' },
-  { id: 4, name: 'Дмитрий', age: 31, img: PlaceHolderImages[3].imageUrl, hint: PlaceHolderImages[3].imageHint, online: false, distance: 12, match: 75, city: 'Казань', zodiac: 'Телец', interests: ['Бизнес', 'Авто'], bio: 'Ценю время и качественный отдых.' },
-  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, hint: PlaceHolderImages[4].imageHint, online: true, distance: 7, match: 88, city: 'Москва', zodiac: 'Дева', interests: ['Музыка', 'Гитара'], bio: 'Мечтаю собрать свою группу и объехать мир.' },
-  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, hint: PlaceHolderImages[5].imageHint, online: true, distance: 4, match: 69, city: 'Питер', zodiac: 'Близнецы', interests: ['Игры', 'Аниме'], bio: 'Давай поиграем вместе или посмотрим сериал.' },
-  { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, hint: PlaceHolderImages[6].imageHint, online: true, distance: 1, match: 94, city: 'Москва', zodiac: 'Скорпион', interests: ['Йога', 'Природа'], bio: 'Люблю готовить полезную еду и ходить в походы.' },
-  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, hint: PlaceHolderImages[7].imageHint, online: false, distance: 15, match: 72, city: 'Сочи', zodiac: 'Стрелец', interests: ['Горы', 'Фотография'], bio: 'Пейзажный фотограф в поисках приключений.' },
-  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, hint: PlaceHolderImages[8].imageHint, online: true, distance: 6, match: 83, city: 'Москва', zodiac: 'Козерог', interests: ['Мода', 'Дизайн'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.' },
-  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, online: false, distance: 9, match: 77, city: 'Питер', zodiac: 'Водолей', interests: ['Наука', 'История'], bio: 'Люблю узнавать что-то новое каждый день.' }
-];
-
-const INTEREST_OPTIONS = [
-  "Авто", "Бизнес", "Животные", "Игры", "Искусство", "IT технологии", "Кино", "Кофе", "Кошки", "Кулинария", 
-  "Музыка", "Наука", "Природа", "Путешествия", "Рыбалка", "Рукоделие", "Садоводство", "Собаки", "Спорт", 
-  "Творчество", "Туризм", "Фотография", "Чтение", "Йога", "Жаворонок", "Сова"
-];
-
-const CAPITALS = [
-  'Москва', 'Вашингтон', 'Лондон', 'Париж', 'Берлин', 'Пекин', 'Токио', 'Дели', 'Бразилиа', 'Канберра',
-  'Оттава', 'Рим', 'Мадрид', 'Сеул', 'Мехико', 'Анкара', 'Каир', 'Буэнос-Айрес', 'Джакарта', 'Киев'
-];
 const ITEMS_PER_PAGE = 4;
 
-function HeartConfetti() {
-  const hearts = useMemo(() => Array.from({ length: 20 }), []);
-  return (
-    <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
-      {hearts.map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ y: "100%", x: 0, opacity: 1 }}
-          animate={{
-            y: -(Math.random() * 200 + 100),
-            x: (Math.random() - 0.5) * 500,
-            scale: Math.random() * 1.2 + 0.8,
-            opacity: [1, 1, 0],
-            rotate: (Math.random() - 0.5) * 540,
-          }}
-          transition={{
-            duration: Math.random() * 2 + 2.5,
-            ease: "easeOut",
-            delay: 0.2,
-          }}
-          className="absolute bottom-0"
-        >
-          <Heart
-            size={Math.random() * 25 + 15}
-            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
-            className="text-transparent drop-shadow-lg"
-          />
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
 const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLike: () => void; priority?: boolean }) => {
-  const { t } = useLanguage();
   return (
     <div className="bg-white rounded-[1rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
       <Link href={`/user?id=${user.id}`} className="relative aspect-[4/3] bg-muted block overflow-hidden cursor-pointer">
@@ -147,7 +91,6 @@ const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLi
 FeaturedCard.displayName = "FeaturedCard";
 
 const ProfilePreviewCard = memo(({ user, showActions = false, onLike }: { user: any; showActions?: boolean; onLike: () => void }) => {
-  const { t } = useLanguage();
   return (
     <div className="bg-white rounded-[1rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
       <Link href={`/user?id=${user.id}`} className="relative aspect-[16/10] bg-muted block overflow-hidden cursor-pointer">
@@ -230,13 +173,11 @@ export default function Home() {
       
       if(currentUser) {
         setSelectedInterests(currentUser.interests.filter(interest => INTEREST_OPTIONS.includes(interest)));
-        
         if ([...CAPITALS, "Все"].includes(currentUser.city)) {
             setSelectedCity(currentUser.city);
         } else {
             setSelectedCity("Все");
         }
-
         setAgeRange([Math.max(18, currentUser.age - 2), currentUser.age + 2]);
       }
     }
@@ -302,7 +243,6 @@ export default function Home() {
         const matchesInterests = selectedInterests.length === 0 || 
           user.interests.some(i => selectedInterests.includes(i));
         const matchesCity = selectedCity === "Все" || user.city === selectedCity;
-        
         return matchesAge && matchesInterests && matchesCity;
       });
 

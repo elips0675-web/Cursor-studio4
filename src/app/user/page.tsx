@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, Suspense } from "react";
@@ -22,8 +21,6 @@ import {
   X,
   Dog,
   Ruler,
-  Moon,
-  Sun,
   Target,
   Sparkles,
   Heart,
@@ -43,6 +40,7 @@ import {
   Wine,
   MoreVertical,
   Flag,
+  Sun,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -57,11 +55,12 @@ import { motion } from "framer-motion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { useFeatureFlags } from "@/context/feature-flags-context";
+import { ALL_DEMO_USERS } from "@/lib/demo-data";
+import { HeartConfetti } from "@/components/animations/heart-confetti";
+import { ZodiacIcon } from "@/components/shared/zodiac-icon";
 
-// Динамические импорты для PageSpeed
 const Carousel = dynamic(() => import("@/components/ui/carousel").then(mod => mod.Carousel));
 const CarouselContent = dynamic(() => import("@/components/ui/carousel").then(mod => mod.CarouselContent));
 const CarouselItem = dynamic(() => import("@/components/ui/carousel").then(mod => mod.CarouselItem));
@@ -79,29 +78,6 @@ const DropdownMenu = dynamic(() => import("@/components/ui/dropdown-menu").then(
 const DropdownMenuContent = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuContent));
 const DropdownMenuItem = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuItem));
 const DropdownMenuTrigger = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuTrigger));
-
-const ALL_DEMO_USERS = [
-  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, distance: 2, match: 87, city: 'Москва', zodiac: 'Лев', interests: ['Фотография', 'Кофе', 'Музыка', 'Путешествия'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', height: 172, goal: 'Серьезные отношения' },
-  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, hint: PlaceHolderImages[1].imageHint, distance: 5, match: 92, city: 'Питер', zodiac: 'Овен', interests: ['Спорт', 'IT технологии', 'Чтение'], bio: 'Ищу компанию для пробежек и обсуждения технологий.', height: 185, goal: 'Новые друзья' },
-  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, hint: PlaceHolderImages[2].imageHint, distance: 3, match: 81, city: 'Москва', zodiac: 'Рыбы', interests: ['Искусство', 'Чтение', 'Кулинария'], bio: 'Ищу кого-то, кто любит музеи и долгие прогулки.', height: 168, goal: 'Свидания' },
-  { id: 4, name: 'Дмитрий', age: 31, img: PlaceHolderImages[3].imageUrl, hint: PlaceHolderImages[3].imageHint, distance: 12, match: 75, city: 'Казань', zodiac: 'Телец', interests: ['Бизнес', 'Авто', 'Спорт'], bio: 'Ценю время и качественный отдых.', height: 182, goal: 'Серьезные отношения' },
-  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, hint: PlaceHolderImages[4].imageHint, distance: 7, match: 88, city: 'Москва', zodiac: 'Дева', interests: ['Музыка', 'Творчество', 'Фотография'], bio: 'Мечтаю собрать свою группу и объехать мир.', height: 165, goal: 'Просто общение' },
-  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, hint: PlaceHolderImages[5].imageHint, distance: 4, match: 69, city: 'Питер', zodiac: 'Близнецы', interests: ['Игры', 'Кино', 'IT технологии'], bio: 'Давай поиграем вместе или посмотрим сериал.', height: 178, goal: 'Свидания' },
-  { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, hint: PlaceHolderImages[6].imageHint, distance: 1, match: 94, city: 'Москва', zodiac: 'Скорпион', interests: ['Йога', 'Природа', 'Путешествия'], bio: 'Люблю готовить полезную еду и ходить в походы.', height: 170, goal: 'Серьезные отношения' },
-  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, hint: PlaceHolderImages[7].imageHint, distance: 15, match: 72, city: 'Сочи', zodiac: 'Стрелец', interests: ['Туризм', 'Фотография', 'Спорт'], bio: 'Пейзажный фотограф в поисках приключений.', height: 188, goal: 'Новые друзья' },
-  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, hint: PlaceHolderImages[8].imageHint, distance: 6, match: 83, city: 'Москва', zodiac: 'Козерог', interests: ['Рукоделие', 'Дизайн', 'Искусство'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.', height: 174, goal: 'Серьезные отношения' },
-  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, distance: 9, match: 77, city: 'Питер', zodiac: 'Водолей', interests: ['Наука', 'История', 'Чтение'], bio: 'Люблю узнавать что-то новое каждый день.', height: 180, goal: 'Просто общение' }
-];
-
-const ZodiacIcon = ({ sign }: { sign: string }) => {
-  const signs: Record<string, string> = {
-    "Овен": "♈", "Телец": "♉", "Близнецы": "♊", "Рак": "♋", "Лев": "♌", "Дева": "♍",
-    "Весы": "♎", "Скорпион": "♏", "Стрелец": "♐", "Козерог": "♑", "Водолей": "♒", "Рыбы": "♓",
-    "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋", "Leo": "♌", "Virgo": "♍",
-    "Libra": "♎", "Scorpio": "♏", "Sagittarius": "♐", "Capricorn": "♑", "Aquarius": "♒", "Pisces": "♓"
-  };
-  return <span className="text-xl leading-none">{signs[sign] || "✨"}</span>;
-};
 
 const interestIcons: Record<string, any> = {
     "Фотография": Camera,
@@ -144,39 +120,6 @@ const REPORT_REASONS = [
     'report.reason.content'
 ];
 
-function HeartConfetti() {
-  const hearts = Array.from({ length: 20 });
-  return (
-    <div className="absolute inset-0 pointer-events-none z-50 flex items-center justify-center overflow-hidden">
-      {hearts.map((_, i) => (
-        <motion.div
-          key={i}
-          initial={{ y: "100%", x: 0, opacity: 1 }}
-          animate={{
-            y: -(Math.random() * 200 + 100),
-            x: (Math.random() - 0.5) * 500,
-            scale: Math.random() * 1.2 + 0.8,
-            opacity: [1, 1, 0],
-            rotate: (Math.random() - 0.5) * 540,
-          }}
-          transition={{
-            duration: Math.random() * 2 + 2.5,
-            ease: "easeOut",
-            delay: 0.2,
-          }}
-          className="absolute bottom-0"
-        >
-          <Heart
-            size={Math.random() * 25 + 15}
-            fill={i % 3 === 0 ? "#fe3c72" : i % 3 === 1 ? "#ff8e53" : "#ffc0cb"}
-            className="text-transparent drop-shadow-lg"
-          />
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
 function UserProfileContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -200,19 +143,10 @@ function UserProfileContent() {
 
   const handleReportSubmit = () => {
     if (!reportReason) {
-      toast({
-        variant: 'destructive',
-        title: t('report.toast.no_reason_title'),
-        description: t('report.toast.no_reason_desc'),
-      });
+      toast({ variant: 'destructive', title: t('report.toast.no_reason_title'), description: t('report.toast.no_reason_desc') });
       return;
     }
-    
-    toast({
-      title: t('report.toast.success_title'),
-      description: `${t('report.toast.success_desc')} ${user.name}.`,
-    });
-
+    toast({ title: t('report.toast.success_title'), description: `${t('report.toast.success_desc')} ${user.name}.` });
     setIsReportDialogOpen(false);
     setReportReason('');
     setReportDescription('');
@@ -271,21 +205,14 @@ function UserProfileContent() {
             </Badge>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                  <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/40 border border-white/20"
-                  >
-                  <MoreVertical size={20} />
+                  <Button variant="ghost" size="icon" className="rounded-full bg-white/20 backdrop-blur-md text-white hover:bg-white/40 border border-white/20">
+                    <MoreVertical size={20} />
                   </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white">
-                  <DropdownMenuItem 
-                  onSelect={(e) => { e.preventDefault(); setIsReportDialogOpen(true); }}
-                  className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
-                  >
-                  <Flag size={14} className="mr-2" />
-                  {t('button.report')}
+                  <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsReportDialogOpen(true); }} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10">
+                    <Flag size={14} className="mr-2" />
+                    {t('button.report')}
                   </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -294,15 +221,8 @@ function UserProfileContent() {
 
       <main className="flex-1 overflow-y-auto pb-24">
         <div className="relative aspect-square w-full">
-          <Image 
-            src={user.img} 
-            alt={user.name} 
-            fill 
-            className="object-cover" 
-            priority // Оптимизация LCP
-          />
+          <Image src={user.img} alt={user.name} fill className="object-cover" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fb] via-transparent to-black/30"></div>
-          
           <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
              <div className="flex items-center gap-2">
                 <h3 className="text-3xl font-black font-headline text-foreground tracking-tight flex items-center gap-2">
@@ -374,24 +294,13 @@ function UserProfileContent() {
         </div>
 
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 flex gap-4 bg-white/80 backdrop-blur-md z-40 safe-pb">
-          <Button 
-            onClick={() => router.back()}
-            variant="outline" 
-            className="w-16 h-16 rounded-full border-2 border-muted hover:bg-muted text-muted-foreground flex items-center justify-center transition-all active:scale-90"
-          >
+          <Button onClick={() => router.back()} variant="outline" className="w-16 h-16 rounded-full border-2 border-muted hover:bg-muted text-muted-foreground flex items-center justify-center transition-all active:scale-90">
             <X size={28} />
           </Button>
-          <Button 
-            onClick={handleLike}
-            className="flex-1 h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 transition-all"
-          >
+          <Button onClick={handleLike} className="flex-1 h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 transition-all">
             {t('button.like')} <Heart size={20} fill="currentColor" />
           </Button>
-          <Button 
-            asChild
-            variant="outline"
-            className="w-16 h-16 rounded-full border-2 border-primary/20 text-primary hover:bg-primary/5 flex items-center justify-center transition-all active:scale-90"
-          >
+          <Button asChild variant="outline" className="w-16 h-16 rounded-full border-2 border-primary/20 text-primary hover:bg-primary/5 flex items-center justify-center transition-all active:scale-90">
             <Link href={`/chats?matchId=${user.id}`}>
               <MessageCircle size={28} />
             </Link>
@@ -402,7 +311,6 @@ function UserProfileContent() {
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center">
           <DialogTitle className="sr-only">Viewer</DialogTitle>
-          
           <Carousel className="w-full h-full" opts={{ startIndex: activePhotoIndex }}>
             <CarouselContent className="h-full ml-0">
               {photos.map((url, idx) => (
@@ -426,55 +334,25 @@ function UserProfileContent() {
             <div className="relative h-56 flex items-center justify-center p-6 gradient-bg">
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                 <div className="flex items-center justify-center gap-0 relative">
-                    <motion.div 
-                        initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }}
-                        animate={{ x: 0, opacity: 1, rotate: -8, scale: 1 }}
-                        transition={{ type: "spring", damping: 12, delay: 0.2 }}
-                        className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted"
-                    >
-                        <Image 
-                            src={PlaceHolderImages[10].imageUrl} 
-                            alt="Вы" 
-                            fill 
-                            data-ai-hint={PlaceHolderImages[10].imageHint}
-                            className="object-cover" 
-                        />
+                    <motion.div initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: -8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.2 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted">
+                        <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill data-ai-hint={PlaceHolderImages[10].imageHint} className="object-cover" />
                     </motion.div>
-                    <motion.div 
-                        initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }}
-                        animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }}
-                        transition={{ type: "spring", damping: 12, delay: 0.3 }}
-                        className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted"
-                    >
-                        <Image 
-                            src={matchUser?.img || PlaceHolderImages[0].imageUrl} 
-                            alt={matchUser?.name} 
-                            fill 
-                            data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint}
-                            className="object-cover" 
-                        />
+                    <motion.div initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.3 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted">
+                        <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name} fill data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
                     </motion.div>
                 </div>
             </div>
 
             <div className="px-8 pt-8 pb-8 text-center">
-              <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">
-                {t('match.title')}
-              </DialogTitle>
+              <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">{t('match.title')}</DialogTitle>
               <DialogDescription className="text-muted-foreground text-sm mb-8 px-6 leading-relaxed font-medium">
                 {language === 'RU' ? 'Вы с ' : 'You and '} <span className="font-bold text-foreground">{matchUser?.name}</span> {language === 'RU' ? 'понравились друг другу.' : 'liked each other.'}
               </DialogDescription>
               
               {aiCompatibilityEnabled && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-primary/20 bg-gradient-to-br from-white via-primary/[0.02] to-orange-500/[0.02] shadow-xl shadow-primary/5 overflow-hidden group"
-                >
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-primary/20 bg-gradient-to-br from-white via-primary/[0.02] to-orange-500/[0.02] shadow-xl shadow-primary/5 overflow-hidden group">
                   <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
                   <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl opacity-40"></div>
-                  
                   <div className="flex items-center justify-between mb-4 relative z-10">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
@@ -482,14 +360,10 @@ function UserProfileContent() {
                       </div>
                       <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.2em]">{t('match.insight')}</h4>
                     </div>
-                    <motion.div 
-                      animate={{ rotate: [0, 15, -15, 0] }}
-                      transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                    >
+                    <motion.div animate={{ rotate: [0, 15, -15, 0] }} transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}>
                       <Sparkles size={20} className="text-orange-400 opacity-60" />
                     </motion.div>
                   </div>
-
                   {loadingAi ? (
                     <div className="flex items-center gap-3 text-xs text-muted-foreground py-2 relative z-10">
                       <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -497,12 +371,9 @@ function UserProfileContent() {
                     </div>
                   ) : (
                     <div className="relative z-10">
-                      <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-primary/30 pl-4 py-1">
-                        "{compatibility}"
-                      </p>
+                      <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-primary/30 pl-4 py-1">"{compatibility}"</p>
                     </div>
                   )}
-
                   <div className="absolute bottom-2 right-4 text-primary/5 group-hover:text-primary/10 transition-colors">
                     <Sparkles size={48} />
                   </div>
@@ -510,17 +381,10 @@ function UserProfileContent() {
               )}
 
               <div className="flex flex-col gap-4 w-full">
-                <Button 
-                  onClick={() => router.push(`/chats?matchId=${matchUser.id}`)} 
-                  className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-primary/30"
-                >
+                <Button onClick={() => router.push(`/chats?matchId=${matchUser.id}`)} className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-primary/30">
                   {t('button.write_first')}
                 </Button>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setMatchUser(null)} 
-                  className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]"
-                >
+                <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]">
                   {t('button.continue')}
                 </Button>
               </div>
@@ -549,13 +413,7 @@ function UserProfileContent() {
                       </div>
                   ))}
               </RadioGroup>
-              
-              <Textarea 
-                  placeholder={t('report.details_placeholder')}
-                  value={reportDescription}
-                  onChange={(e) => setReportDescription(e.target.value)}
-                  className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20"
-              />
+              <Textarea placeholder={t('report.details_placeholder')} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20" />
           </div>
           <DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl">
               <Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button>
@@ -563,7 +421,6 @@ function UserProfileContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

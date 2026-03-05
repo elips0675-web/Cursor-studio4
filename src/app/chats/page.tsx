@@ -2,48 +2,18 @@
 
 import { useState, useRef, useEffect, Suspense } from "react";
 import { 
-  MessageCircle, 
-  Search, 
-  ChevronLeft, 
-  Send, 
-  MoreVertical, 
-  Sparkles, 
-  Smile, 
-  Heart, 
-  Laugh, 
-  Compass, 
-  Coffee, 
-  Zap, 
-  MessageSquareQuote, 
-  X,
-  Flame,
-  Star,
-  Ghost,
-  Rocket,
-  Crown,
-  Music,
-  Phone,
-  Video,
-  Flag
+  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { AppHeader } from "@/components/layout/app-header";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { 
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -54,6 +24,7 @@ import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
 import { VideoCallDialog } from "@/components/video-call";
 import { useFeatureFlags } from "@/context/feature-flags-context";
+import { ALL_DEMO_USERS } from "@/lib/demo-data";
 
 const CHAT_THEMES = [
   { id: 'romantic', label_ru: 'Романтика', label_en: 'Romantic', icon: Heart, color: 'text-pink-500', mood: 'Romantic, sweet and poetic' },
@@ -77,32 +48,13 @@ const QUICK_REACTIONS = [
   { id: 'music', icon: Music, color: 'text-pink-400', label: '🎵' },
 ];
 
-const ALL_DEMO_USERS = [
-  { id: 1, name: 'Анна', img: PlaceHolderImages[0].imageUrl, last: 'Привет! Как дела? 😊', time: '2 мин', unread: 2, online: true, interests: ['Фотография', 'Путешествия', 'Кофе'], bio: 'Люблю закаты и интересные разговоры.' },
-  { id: 2, name: 'Максим', img: PlaceHolderImages[1].imageUrl, last: 'Давай встретимся завтра', time: '1 час', unread: 0, online: true, interests: ['Спорт', 'IT', 'Книги'], bio: 'Ищу компанию для пробежек.' },
-  { id: 3, name: 'Елена', img: PlaceHolderImages[2].imageUrl, last: 'Спасибо за комплимент!', time: '3 часа', unread: 1, online: false, interests: ['Искусство', 'Книги', 'Вино'], bio: 'Мечтаю о кругосветке.' },
-  { id: 4, name: 'Дмитрий', img: PlaceHolderImages[3].imageUrl, last: 'Был рад познакомиться', time: '5 час', unread: 0, online: false, interests: ['Бизнес', 'Авто', 'Спорт'], bio: 'Ценю время.' },
-  { id: 5, name: 'София', img: PlaceHolderImages[4].imageUrl, last: 'Круто!', time: '1 день', unread: 0, online: true, interests: ['Музыка', 'Гитара'], bio: 'Рок-н-ролл жив!' },
-  { id: 6, name: 'Артем', img: PlaceHolderImages[5].imageUrl, last: 'Го играть!', time: '1 день', unread: 0, online: true, interests: ['Игры', 'Аниме'], bio: 'Геймер со стажем.' },
-  { id: 7, name: 'Мария', img: PlaceHolderImages[6].imageUrl, last: 'Завтра в парк?', time: '2 дня', unread: 0, online: true, interests: ['Йога', 'Природа'], bio: 'За здоровый образ жизни.' },
-  { id: 8, name: 'Иван', img: PlaceHolderImages[7].imageUrl, last: 'Фото готовы!', time: '3 дня', unread: 0, online: false, interests: ['Фотография', 'Горы'], bio: 'Фотограф-пейзажист.' },
-  { id: 9, name: 'Ксения', img: PlaceHolderImages[8].imageUrl, last: 'Как тебе образ?', time: '4 дня', unread: 0, online: true, interests: ['Мода', 'Дизайн'], bio: 'Стиль - это всё.' },
-  { id: 10, name: 'Никита', img: PlaceHolderImages[9].imageUrl, last: 'Интересный факт...', time: '5 дней', unread: 0, online: false, interests: ['Наука', 'История'], bio: 'Люблю космос.' }
-];
-
 const INITIAL_MESSAGES = [
   { id: 1, text: "Привет! 👋 Видел твой профиль, у нас много общих интересов.", sender: "other", time: "10:00" },
   { id: 2, text: "Привет! Да, я тоже заметила. Ты тоже любишь кофе?", sender: "me", time: "10:02" },
   { id: 3, text: "О да, без него утро не начинается! Знаешь какое-нибудь уютное место?", sender: "other", time: "10:05" },
 ];
 
-const REPORT_REASONS = [
-    'report.reason.spam',
-    'report.reason.abuse',
-    'report.reason.fake',
-    'report.reason.scam',
-    'report.reason.content'
-];
+const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
 function ChatsContent() {
   const searchParams = useSearchParams();
@@ -125,364 +77,59 @@ function ChatsContent() {
   const [isVideoCall, setIsVideoCall] = useState(false);
 
   const handleReportSubmit = () => {
-    if (!reportReason) {
-      toast({
-        variant: 'destructive',
-        title: t('report.toast.no_reason_title'),
-        description: t('report.toast.no_reason_desc'),
-      });
-      return;
-    }
-    
-    toast({
-      title: t('report.toast.success_title'),
-      description: `${t('report.toast.success_desc')} ${selectedChat.name}.`,
-    });
-
-    setIsReportDialogOpen(false);
-    setReportReason('');
-    setReportDescription('');
+    if (!reportReason) { toast({ variant: 'destructive', title: t('report.toast.no_reason_title'), description: t('report.toast.no_reason_desc') }); return; }
+    toast({ title: t('report.toast.success_title'), description: `${t('report.toast.success_desc')} ${selectedChat.name}.` });
+    setIsReportDialogOpen(false); setReportReason(''); setReportDescription('');
   };
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    if (selectedChat) {
-      scrollToBottom();
-    }
-  }, [messages, selectedChat]);
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  useEffect(() => { if (selectedChat) scrollToBottom(); }, [messages, selectedChat]);
 
   const loadIcebreakers = async (chat: any, mood?: string) => {
     if (!aiIcebreakersEnabled) return;
     setLoadingIcebreakers(true);
     try {
-      const res = await generateIcebreakerSuggestions({
-        currentUserInterests: ["Спорт", "Кофе", "Кино"],
-        matchedUserName: chat.name,
-        matchedUserInterests: chat.interests || [],
-        matchedUserBio: chat.bio || "",
-        mood: mood || "Friendly and polite"
-      });
+      const res = await generateIcebreakerSuggestions({ currentUserInterests: ["Спорт", "Кофе", "Кино"], matchedUserName: chat.name, matchedUserInterests: chat.interests || [], matchedUserBio: chat.bio || "", mood: mood || "Friendly and polite" });
       setIcebreakers(res.suggestions);
     } catch (e) {
       setIcebreakers(language === 'RU' ? ["Привет! Как прошел твой день?", "Чем любишь заниматься в свободное время?", "Какой твой любимый фильм?"] : ["Hi! How was your day?", "What do you like doing in your free time?", "What's your favorite movie?"]);
-    } finally {
-      setLoadingIcebreakers(false);
-      if (mood) setShowThemeGrid(false);
-    }
+    } finally { setLoadingIcebreakers(false); if (mood) setShowThemeGrid(false); }
   };
 
   useEffect(() => {
     if (matchId) {
       const id = parseInt(matchId);
       const chat = ALL_DEMO_USERS.find(u => u.id === id);
-
-      if (chat) {
-        setSelectedChat(chat);
-        setMessages([
-          { 
-            id: Date.now(), 
-            text: language === 'RU' ? "Привет! Это совпадение, рад(а) знакомству! 😊" : "Hi! It's a match, glad to meet you! 😊", 
-            sender: "me", 
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-          }
-        ]);
-        loadIcebreakers(chat);
-      }
+      if (chat) { setSelectedChat(chat); setMessages([{ id: Date.now(), text: language === 'RU' ? "Привет! Это совпадение, рад(а) знакомству! 😊" : "Hi! It's a match, glad to meet you! 😊", sender: "me", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]); loadIcebreakers(chat); }
     }
   }, [matchId, language, aiIcebreakersEnabled]);
 
   const handleSendMessage = (textOverride?: string) => {
     const textToSend = textOverride || inputValue;
     if (!textToSend.trim()) return;
-
-    const newMessage = {
-      id: Date.now(),
-      text: textToSend,
-      sender: "me",
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-
-    setMessages([...messages, newMessage]);
-    if (!textOverride) setInputValue("");
-    setShowThemeGrid(false);
-
-    setTimeout(() => {
-      setIsTyping(true);
-      setTimeout(() => {
-        setIsTyping(false);
-        const response = {
-          id: Date.now() + 1,
-          text: language === 'RU' ? "Звучит здорово! Давай это обсудим." : "Sounds great! Let's discuss it.",
-          sender: "other",
-          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-        setMessages(prev => [...prev, response]);
-      }, 2000);
-    }, 1000);
+    const newMessage = { id: Date.now(), text: textToSend, sender: "me", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
+    setMessages([...messages, newMessage]); if (!textOverride) setInputValue(""); setShowThemeGrid(false);
+    setTimeout(() => { setIsTyping(true); setTimeout(() => { setIsTyping(false); const response = { id: Date.now() + 1, text: language === 'RU' ? "Звучит здорово! Давай это обсудим." : "Sounds great! Let's discuss it.", sender: "other", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }; setMessages(prev => [...prev, response]); }, 2000); }, 1000);
   };
 
-  const openChat = (chat: any) => {
-    setSelectedChat(chat);
-    setMessages(INITIAL_MESSAGES);
-    setShowThemeGrid(false);
-    setIcebreakers([]);
-    loadIcebreakers(chat);
-  };
+  const openChat = (chat: any) => { setSelectedChat(chat); setMessages(INITIAL_MESSAGES); setShowThemeGrid(false); setIcebreakers([]); loadIcebreakers(chat); };
 
   if (selectedChat) {
     return (
       <div className="flex flex-col h-svh bg-[#f8f9fb]">
         <header className="flex items-center gap-2 px-3 py-2 border-b border-border sticky top-0 bg-white/90 backdrop-blur-lg z-50">
-          <Button variant="ghost" size="icon" onClick={() => setSelectedChat(null)} className="rounded-full hover:bg-muted/50">
-            <ChevronLeft size={24} className="text-foreground" />
-          </Button>
-          <div className="relative">
-            <div className="w-10 h-10 rounded-full overflow-hidden relative border-2 border-white shadow-sm">
-              <Image src={selectedChat.img} alt={selectedChat.name} fill className="object-cover" />
-            </div>
-            {selectedChat.online && (
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-sm"></span>
-            )}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-black text-sm leading-tight tracking-tight text-foreground">{selectedChat.name}</h3>
-            <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">
-              {selectedChat.online ? `• ${t('chats.online')}` : t('chats.offline')}
-            </p>
-          </div>
-          <div className="flex items-center">
-            {videoCallsEnabled && (
-              <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground" onClick={() => setIsVideoCall(true)}>
-                <Video size={18} />
-              </Button>
-            )}
-            <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-              <Phone size={18} />
-            </Button>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50 hover:text-foreground">
-                    <MoreVertical size={18} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white">
-                <DropdownMenuItem
-                    onSelect={(e) => { e.preventDefault(); setIsReportDialogOpen(true); }}
-                    className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
-                >
-                    <Flag size={14} className="mr-2" />
-                    {t('button.report')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <Button variant="ghost" size="icon" onClick={() => setSelectedChat(null)} className="rounded-full hover:bg-muted/50"><ChevronLeft size={24} /></Button>
+          <div className="relative"><div className="w-10 h-10 rounded-full overflow-hidden relative border-2 border-white shadow-sm"><Image src={selectedChat.img} alt={selectedChat.name} fill className="object-cover" /></div>{selectedChat.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-sm"></span>}</div>
+          <div className="flex-1 min-w-0"><h3 className="font-black text-sm leading-tight tracking-tight text-foreground">{selectedChat.name}</h3><p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">{selectedChat.online ? `• ${t('chats.online')}` : t('chats.offline')}</p></div>
+          <div className="flex items-center">{videoCallsEnabled && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVideoCall(true)}><Video size={18} /></Button>}<Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50"><Phone size={18} /></Button><DropdownMenu modal={false}><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50"><MoreVertical size={18} /></Button></DropdownMenuTrigger><DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white"><DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsReportDialogOpen(true); }} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"><Flag size={14} className="mr-2" />{t('button.report')}</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div>
         </header>
-
-        <main className="flex-1 overflow-y-auto p-4 space-y-2">
-          <div className="text-center my-2">
-            <Badge variant="secondary" className="bg-white/50 text-[9px] text-muted-foreground border-0 font-black uppercase tracking-widest px-2.5 py-0.5">{t('chats.today')}</Badge>
-          </div>
-
-          <AnimatePresence>
-            {messages.map((msg, idx) => (
-              <motion.div 
-                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                key={msg.id} 
-                className={cn(
-                  "flex flex-col max-w-[80%]",
-                  msg.sender === "me" ? "ml-auto items-end" : "items-start"
-                )}
-              >
-                <div 
-                  className={cn(
-                    "px-3 py-2 rounded-lg text-sm shadow-sm font-medium leading-snug transition-all",
-                    msg.sender === "me" 
-                      ? "gradient-bg text-white rounded-br-none shadow-primary/10" 
-                      : "bg-white text-foreground rounded-bl-none border border-border/40"
-                  )}
-                >
-                  {msg.text}
-                </div>
-                <span className="text-[9px] text-muted-foreground mt-1.5 px-1 font-bold uppercase tracking-tighter opacity-60">
-                  {msg.time}
-                </span>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {isTyping && (
-            <motion.div 
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-1.5 text-muted-foreground"
-            >
-              <div className="flex gap-1 bg-white px-3 py-2.5 rounded-xl border border-border/40 shadow-sm rounded-bl-none">
-                <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
-                <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-              </div>
-              <span className="text-[9px] font-bold uppercase tracking-widest">{t('chats.typing')}</span>
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
-        </main>
-
+        <main className="flex-1 overflow-y-auto p-4 space-y-2"><div className="text-center my-2"><Badge variant="secondary" className="bg-white/50 text-[9px] text-muted-foreground border-0 font-black uppercase tracking-widest px-2.5 py-0.5">{t('chats.today')}</Badge></div><AnimatePresence>{messages.map((msg) => (<motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} key={msg.id} className={cn("flex flex-col max-w-[80%]", msg.sender === "me" ? "ml-auto items-end" : "items-start")}><div className={cn("px-3 py-2 rounded-lg text-sm shadow-sm font-medium leading-snug", msg.sender === "me" ? "gradient-bg text-white rounded-br-none shadow-primary/10" : "bg-white text-foreground rounded-bl-none border border-border/40")}>{msg.text}</div><span className="text-[9px] text-muted-foreground mt-1.5 px-1 font-bold uppercase tracking-tighter opacity-60">{msg.time}</span></motion.div>))}</AnimatePresence>{isTyping && (<motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-1.5 text-muted-foreground"><div className="flex gap-1 bg-white px-3 py-2.5 rounded-xl border border-border/40 shadow-sm rounded-bl-none"><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span></div><span className="text-[9px] font-bold uppercase tracking-widest">{t('chats.typing')}</span></motion.div>)}<div ref={messagesEndRef} /></main>
         <div className="p-4 bg-white border-t border-border shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.1)] relative z-10">
-          {aiIcebreakersEnabled && (
-            <>
-              <div className="flex items-center justify-between mb-3 px-1">
-                <button 
-                  onClick={() => setShowThemeGrid(!showThemeGrid)}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all active:scale-95",
-                    showThemeGrid ? "gradient-bg text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10"
-                  )}
-                >
-                  <Sparkles size={14} className={cn(loadingIcebreakers && "animate-spin")} /> {showThemeGrid ? t('chats.close_themes') : t('chats.ai_themes')}
-                </button>
-                {!showThemeGrid && icebreakers.length > 0 && !loadingIcebreakers && (
-                  <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-40 italic">{language === 'RU' ? 'Листайте →' : 'Swipe →'}</p>
-                )}
-              </div>
-
-              <AnimatePresence>
-                {showThemeGrid && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="grid grid-cols-3 gap-2.5 mb-5 overflow-hidden"
-                  >
-                    {CHAT_THEMES.map((theme) => {
-                      const Icon = theme.icon;
-                      return (
-                        <button
-                          key={theme.id}
-                          onClick={() => loadIcebreakers(selectedChat, theme.mood)}
-                          className="flex flex-col items-center justify-center p-3.5 rounded-[1.5rem] bg-muted/40 border border-border/50 hover:border-primary/30 hover:bg-white hover:shadow-md transition-all group active:scale-95"
-                        >
-                          <Icon size={22} className={cn("mb-1.5 group-hover:scale-110 transition-transform", theme.color)} />
-                          <span className="text-[9px] font-black uppercase tracking-tighter text-foreground/70">{language === 'RU' ? theme.label_ru : theme.label_en}</span>
-                        </button>
-                      )
-                    })}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {!showThemeGrid && (
-                <div className="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 h-10 items-center px-1">
-                  {loadingIcebreakers ? (
-                    <div className="flex gap-2">
-                      <div className="h-8 w-32 bg-muted animate-pulse rounded-full"></div>
-                      <div className="h-8 w-28 bg-muted animate-pulse rounded-full"></div>
-                    </div>
-                  ) : (
-                    icebreakers.map((text, i) => (
-                      <button 
-                        key={i} 
-                        onClick={() => setInputValue(text)}
-                        className="whitespace-nowrap px-4 py-2 bg-white hover:bg-muted transition-all text-[11px] font-bold rounded-full text-foreground/80 border border-border/60 shadow-sm active:scale-95"
-                      >
-                        {text}
-                      </button>
-                    ))
-                  )}
-                </div>
-              )}
-            </>
-          )}
-
-          <div className="flex items-center gap-3">
-            <div className="flex-1 relative group">
-              <Input 
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder={t('chats.placeholder')} 
-                className="pr-12 h-11 bg-muted/50 border-0 rounded-2xl focus-visible:ring-primary/20 font-medium px-6 text-sm placeholder:text-muted-foreground/60 transition-all focus:bg-muted"
-              />
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors p-1 rounded-full hover:bg-white active:scale-90">
-                    <Smile size={20} />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-full max-w-[280px] p-2 rounded-2xl border-0 shadow-2xl bg-white" side="top" align="end">
-                  <div className="grid grid-cols-5 gap-1">
-                    {QUICK_REACTIONS.map(reaction => {
-                      const ReactionIcon = reaction.icon;
-                      return (
-                        <button 
-                          key={reaction.id} 
-                          onClick={() => handleSendMessage(reaction.label)}
-                          className="w-10 h-10 flex items-center justify-center hover:bg-muted rounded-xl transition-all active:scale-90"
-                        >
-                          <ReactionIcon size={24} className={reaction.color} />
-                        </button>
-                      );
-                    })}
-                  </div>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <Button 
-              size="icon" 
-              onClick={() => handleSendMessage()}
-              disabled={!inputValue.trim()}
-              className="h-11 w-11 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20 transition-all active:scale-90 disabled:opacity-40 flex-shrink-0"
-            >
-              <Send size={18} className="ml-0.5" />
-            </Button>
-          </div>
+          {aiIcebreakersEnabled && (<><div className="flex items-center justify-between mb-3 px-1"><button onClick={() => setShowThemeGrid(!showThemeGrid)} className={cn("flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all", showThemeGrid ? "gradient-bg text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary border border-primary/10")}> <Sparkles size={14} className={cn(loadingIcebreakers && "animate-spin")} /> {showThemeGrid ? t('chats.close_themes') : t('chats.ai_themes')} </button>{!showThemeGrid && icebreakers.length > 0 && !loadingIcebreakers && (<p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-40 italic">{language === 'RU' ? 'Листайте →' : 'Swipe →'}</p>)}</div><AnimatePresence>{showThemeGrid && (<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="grid grid-cols-3 gap-2.5 mb-5 overflow-hidden">{CHAT_THEMES.map((theme) => { const Icon = theme.icon; return (<button key={theme.id} onClick={() => loadIcebreakers(selectedChat, theme.mood)} className="flex flex-col items-center justify-center p-3.5 rounded-[1.5rem] bg-muted/40 border border-border/50 transition-all group active:scale-95"><Icon size={22} className={cn("mb-1.5 group-hover:scale-110", theme.color)} /><span className="text-[9px] font-black uppercase tracking-tighter text-foreground/70">{language === 'RU' ? theme.label_ru : theme.label_en}</span></button>) })}</motion.div>)}</AnimatePresence>{!showThemeGrid && (<div className="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 h-10 items-center px-1">{loadingIcebreakers ? (<div className="flex gap-2"><div className="h-8 w-32 bg-muted animate-pulse rounded-full"></div><div className="h-8 w-28 bg-muted animate-pulse rounded-full"></div></div>) : (icebreakers.map((text, i) => (<button key={i} onClick={() => setInputValue(text)} className="whitespace-nowrap px-4 py-2 bg-white hover:bg-muted transition-all text-[11px] font-bold rounded-full text-foreground/80 border border-border/60 shadow-sm active:scale-95">{text}</button>)))}</div>)}</>)}
+          <div className="flex items-center gap-3"><div className="flex-1 relative group"><Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder={t('chats.placeholder')} className="pr-12 h-11 bg-muted/50 border-0 rounded-2xl font-medium px-6 text-sm" /><Popover><PopoverTrigger asChild><button className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"><Smile size={20} /></button></PopoverTrigger><PopoverContent className="w-full max-w-[280px] p-2 rounded-2xl border-0 shadow-2xl bg-white" side="top" align="end"><div className="grid grid-cols-5 gap-1">{QUICK_REACTIONS.map(reaction => { const ReactionIcon = reaction.icon; return (<button key={reaction.id} onClick={() => handleSendMessage(reaction.label)} className="w-10 h-10 flex items-center justify-center hover:bg-muted rounded-xl transition-all active:scale-90"><ReactionIcon size={24} className={reaction.color} /></button>); })}</div></PopoverContent></Popover></div><Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="h-11 w-11 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20"><Send size={18} className="ml-0.5" /></Button></div>
         </div>
-
-        <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
-            <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow">
-                <DialogHeader className="p-6 pb-4 text-left">
-                    <DialogTitle className="flex items-center gap-2 font-black tracking-tight">
-                        <Flag size={20} className="text-destructive" />
-                        {t('report.title')}
-                    </DialogTitle>
-                    <DialogDescription className="pt-2">
-                        {t('report.description')}
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="px-6 space-y-4">
-                    <RadioGroup value={reportReason} onValueChange={setReportReason} className="space-y-2">
-                        {REPORT_REASONS.map(reasonKey => (
-                            <div key={reasonKey} className="flex items-center space-x-3 bg-muted/40 p-3 rounded-lg">
-                                <RadioGroupItem value={t(reasonKey)} id={`${reasonKey}_chat`} />
-                                <Label htmlFor={`${reasonKey}_chat`} className="font-bold text-sm cursor-pointer">{t(reasonKey)}</Label>
-                            </div>
-                        ))}
-                    </RadioGroup>
-                    
-                    <Textarea 
-                        placeholder={t('report.details_placeholder')}
-                        value={reportDescription}
-                        onChange={(e) => setReportDescription(e.target.value)}
-                        className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20"
-                    />
-                </div>
-                <DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl">
-                    <Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button>
-                    <Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground" onClick={handleReportSubmit}>{t('report.button.send')}</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-        
-        {selectedChat && (
-          <VideoCallDialog 
-            open={isVideoCall}
-            onOpenChange={setIsVideoCall}
-            user={selectedChat}
-          />
-        )}
+        <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}><DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow"><DialogHeader className="p-6 pb-4 text-left"><DialogTitle className="flex items-center gap-2 font-black tracking-tight"><Flag size={20} className="text-destructive" />{t('report.title')}</DialogTitle><DialogDescription className="pt-2">{t('report.description')}</DialogDescription></DialogHeader><div className="px-6 space-y-4"><RadioGroup value={reportReason} onValueChange={setReportReason} className="space-y-2">{REPORT_REASONS.map(reasonKey => (<div key={reasonKey} className="flex items-center space-x-3 bg-muted/40 p-3 rounded-lg"><RadioGroupItem value={t(reasonKey)} id={`${reasonKey}_chat`} /><Label htmlFor={`${reasonKey}_chat`} className="font-bold text-sm cursor-pointer">{t(reasonKey)}</Label></div>))}</RadioGroup><Textarea placeholder={t('report.details_placeholder')} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20" /></div><DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl"><Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button><Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground" onClick={handleReportSubmit}>{t('report.button.send')}</Button></DialogFooter></DialogContent></Dialog>
+        {selectedChat && <VideoCallDialog open={isVideoCall} onOpenChange={setIsVideoCall} user={selectedChat} />}
       </div>
     );
   }
@@ -490,58 +137,7 @@ function ChatsContent() {
   return (
     <>
       <AppHeader />
-      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
-        <div className="flex justify-between items-center mb-6 px-1">
-          <div>
-            <h2 className="text-2xl font-black font-headline tracking-tight text-foreground">{t('chats.title')}</h2>
-            <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 opacity-60">{t('chats.subtitle')}</p>
-          </div>
-          <Badge className="gradient-bg text-white rounded-full px-3 py-1 font-black text-[10px] border-0 shadow-lg shadow-primary/20">3 {t('activity.new')}</Badge>
-        </div>
-
-        <div className="relative mb-8 px-1">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={16} />
-          <Input 
-            className="pl-12 h-12 bg-white border-0 rounded-2xl placeholder:text-muted-foreground/50 focus-visible:ring-primary/20 app-shadow text-sm font-medium" 
-            placeholder={t('chats.search')} 
-          />
-        </div>
-
-        <div className="space-y-1 px-1">
-          {ALL_DEMO_USERS.map((chat) => (
-            <div 
-              key={chat.id} 
-              onClick={() => openChat(chat)}
-              className="flex items-center gap-3 p-2 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white"
-            >
-              <div className="relative flex-shrink-0">
-                <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105">
-                  <Image src={chat.img} alt={chat.name} fill className="object-cover" />
-                </div>
-                {chat.online && (
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-md"></span>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-center mb-0.5">
-                  <span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">{chat.name}</span>
-                  <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">
-                    {chat.time.replace('мин', language === 'RU' ? 'мин' : 'min').replace('час', language === 'RU' ? 'час' : 'hour').replace('день', language === 'RU' ? 'день' : 'day').replace('дня', language === 'RU' ? 'дня' : 'days')}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-xs text-muted-foreground truncate pr-3 font-medium opacity-80 leading-snug">{chat.last}</p>
-                  {chat.unread > 0 && (
-                    <Badge className="gradient-bg text-white text-[9px] h-5 min-w-[20px] px-1.5 flex items-center justify-center rounded-full border-0 font-black shadow-md shadow-primary/10">
-                      {chat.unread}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </main>
+      <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]"><div className="flex justify-between items-center mb-6 px-1"><div><h2 className="text-2xl font-black font-headline tracking-tight text-foreground">{t('chats.title')}</h2><p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5 opacity-60">{t('chats.subtitle')}</p></div><Badge className="gradient-bg text-white rounded-full px-3 py-1 font-black text-[10px] border-0 shadow-lg shadow-primary/20">3 {t('activity.new')}</Badge></div><div className="relative mb-8 px-1"><Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={16} /><Input className="pl-12 h-12 bg-white border-0 rounded-2xl app-shadow text-sm font-medium" placeholder={t('chats.search')} /></div><div className="space-y-1 px-1">{ALL_DEMO_USERS.map((chat) => (<div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-2 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white"><div className="relative flex-shrink-0"><div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105"><Image src={chat.img} alt={chat.name} fill className="object-cover" /></div>{chat.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-md"></span>}</div><div className="flex-1 min-w-0"><div className="flex justify-between items-center mb-0.5"><span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">{chat.name}</span></div><div className="flex justify-between items-center"><p className="text-xs text-muted-foreground truncate pr-3 font-medium opacity-80 leading-snug">{language === 'RU' ? 'Привет!' : 'Hi!'}</p></div></div></div>))}</div></main>
       <BottomNav />
     </>
   );
