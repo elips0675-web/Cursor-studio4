@@ -166,14 +166,20 @@ export default function ProfilePage() {
         </div>
 
         <div className="px-5 -mt-12 text-center">
-          <div className="relative inline-block mb-4">
+          <div className="relative inline-block mb-4 group">
             <div 
-              onClick={() => openPhotoViewer(0)}
-              className="relative w-36 h-36 rounded-[2.5rem] border-[6px] border-white app-shadow overflow-hidden bg-muted transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+              className="relative w-36 h-36 rounded-[2.5rem] border-[6px] border-white app-shadow overflow-hidden bg-muted transition-all duration-300"
             >
               <Image src={photos[0]} alt={profile.name} fill className="object-cover" priority />
             </div>
-            <div className="absolute bottom-2 right-2 bg-white p-1 rounded-xl shadow-xl border border-border">
+            {/* Кнопка Сменить */}
+            <Link 
+              href="/profile/edit" 
+              className="absolute -bottom-1 -right-1 bg-white p-3 rounded-2xl shadow-xl border-2 border-primary/10 text-primary hover:bg-primary hover:text-white transition-all active:scale-90"
+            >
+               <Camera size={18} />
+            </Link>
+            <div className="absolute top-2 right-2 bg-white/80 backdrop-blur-md p-1 rounded-xl border border-white/50 shadow-sm pointer-events-none">
               <Badge className="bg-primary text-white border-0 font-black text-[8px] h-5 px-2 rounded-lg uppercase tracking-widest">
                 {t('profile.pro')}
               </Badge>
