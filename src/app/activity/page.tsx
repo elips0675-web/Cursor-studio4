@@ -121,15 +121,15 @@ export default function ActivityPage() {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowAd(true)}
-              className="w-full h-14 rounded-2xl border-2 border-dashed border-primary/20 text-primary font-black text-[10px] uppercase tracking-[0.15em] gap-3 bg-primary/5 hover:bg-primary/10 transition-all flex items-center justify-center shadow-sm group"
+              className="w-full h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary font-black text-[10px] uppercase tracking-[0.15em] gap-3 bg-primary/5 hover:bg-primary/10 transition-all flex items-center justify-center shadow-sm group"
             >
-              <div className="w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                <Play size={12} className="ml-0.5 fill-primary text-primary" />
+              <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                <Play size={10} className="ml-0.5 fill-primary text-primary" />
               </div>
               {t('button.unlock')}
             </motion.button>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               <AnimatePresence mode="popLayout">
                 {filteredActivity.length > 0 ? (
                   filteredActivity.map((item) => (
@@ -300,9 +300,9 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
   
   const getIcon = () => {
     switch (item.type) {
-      case 'like': return <Heart size={12} className="text-white" fill="currentColor" />;
-      case 'visit': return <Eye size={12} className="text-white" />;
-      case 'match': return <UserPlus size={12} className="text-white" />;
+      case 'like': return <Heart size={10} className="text-white" fill="currentColor" />;
+      case 'visit': return <Eye size={10} className="text-white" />;
+      case 'match': return <UserPlus size={10} className="text-white" />;
       default: return null;
     }
   };
@@ -327,27 +327,27 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
 
   return (
     <div className={cn(
-      "flex items-center gap-4 p-3 rounded-2xl transition-all cursor-pointer group relative overflow-hidden",
-      item.seen ? "bg-white/40 opacity-70" : "bg-white app-shadow hover:translate-y-[-2px] border border-white"
+      "flex items-center gap-3 p-2 rounded-2xl transition-all cursor-pointer group relative overflow-hidden",
+      item.seen ? "bg-white/40 opacity-70" : "bg-white app-shadow hover:translate-y-[-1px] border border-white"
     )}>
       {!item.seen && (
-        <div className="absolute top-0 left-0 w-1.5 h-full gradient-bg opacity-40"></div>
+        <div className="absolute top-0 left-0 w-1 h-full gradient-bg opacity-40"></div>
       )}
       
       <div className="relative flex-shrink-0">
         <div className={cn(
-          "w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-md transition-all duration-500",
+          "w-11 h-11 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-all duration-500",
           item.blurred && "blur-[6px] grayscale opacity-60 scale-95"
         )}>
           <Image src={item.img} alt={item.user} fill className="object-cover" />
           {item.blurred && (
              <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
-                <Sparkles className="text-white/40" size={16} />
+                <Sparkles className="text-white/40" size={14} />
              </div>
           )}
         </div>
         <div className={cn(
-          "absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-lg z-20",
+          "absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-lg z-20",
           getBgColor()
         )}>
           {getIcon()}
@@ -356,7 +356,7 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
       
       <div className="flex-1 min-w-0 pr-1">
         <div className="flex justify-between items-start">
-          <p className="text-[11px] leading-tight text-foreground/90 font-medium">
+          <p className="text-[10px] leading-snug text-foreground/90 font-medium">
             {item.blurred ? (
               <span><span className="font-black text-primary">{t('profile.someone')}</span> {getMessage()}</span>
             ) : (
@@ -366,27 +366,27 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
             )}
           </p>
           {!item.seen && (
-            <div className="relative flex h-2 w-2 mt-0.5 ml-2 flex-shrink-0">
+            <div className="relative flex h-1.5 w-1.5 mt-0.5 ml-1 flex-shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
             </div>
           )}
         </div>
-        <p className="text-[8px] text-muted-foreground font-black tracking-widest uppercase opacity-40 mt-1">
+        <p className="text-[8px] text-muted-foreground font-black tracking-widest uppercase opacity-40 mt-0.5">
           {item.time.replace('мин назад', language === 'RU' ? 'мин назад' : 'min ago').replace('час назад', language === 'RU' ? 'час назад' : 'hour ago').replace('дня назад', language === 'RU' ? 'дня назад' : 'days ago')}
         </p>
         
         {item.blurred && (
           <button 
             onClick={(e) => { e.stopPropagation(); onUnlock(); }}
-            className="text-[8px] font-black text-primary flex items-center gap-1.5 mt-2 bg-primary/5 px-3 py-1.5 rounded-full w-fit hover:bg-primary/10 transition-all uppercase tracking-[0.1em] shadow-sm border border-primary/10"
+            className="text-[7px] font-black text-primary flex items-center gap-1 mt-1 bg-primary/5 px-2 py-1 rounded-full w-fit hover:bg-primary/10 transition-all uppercase tracking-widest shadow-sm border border-primary/10"
           >
-            <Sparkles size={10} className="animate-pulse" /> {language === 'RU' ? 'Раскрыть' : 'Reveal'}
+            <Sparkles size={8} className="animate-pulse" /> {language === 'RU' ? 'Раскрыть' : 'Reveal'}
           </button>
         )}
       </div>
 
-      <ChevronRight size={14} className="text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" strokeWidth={3} />
+      <ChevronRight size={12} className="text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" strokeWidth={3} />
     </div>
   );
 }
