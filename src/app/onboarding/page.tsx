@@ -14,7 +14,8 @@ import {
   Navigation,
   Ruler,
   Target,
-  Stars
+  Stars,
+  Upload
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ export default function OnboardingPage() {
 
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const nextStep = () => {
     if (step < totalSteps) setStep(step + 1);
@@ -156,6 +158,20 @@ export default function OnboardingPage() {
     } finally {
       setIsGeneratingBio(false);
     }
+  };
+
+  const handlePhotoUpload = () => {
+    setIsUploading(true);
+    // Имитация загрузки фото - выбираем рандомное из плейсхолдеров
+    setTimeout(() => {
+      const randomPhoto = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)].imageUrl;
+      setFormData(prev => ({ ...prev, photo: randomPhoto }));
+      setIsUploading(false);
+      toast({
+        title: "Фото загружено!",
+        description: "Ваш профиль теперь выглядит отлично.",
+      });
+    }, 1200);
   };
 
   const handleFinish = () => {
@@ -346,15 +362,30 @@ export default function OnboardingPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2 text-center">
               <div className="relative inline-block mx-auto mb-4">
-                <div className="w-32 h-32 rounded-[2.5rem] border-4 border-white shadow-2xl overflow-hidden relative group">
-                  <Image src={formData.photo} alt="Me" fill className="object-cover" />
-                  <button className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Camera className="text-white" size={24} />
-                  </button>
+                <div 
+                  onClick={handlePhotoUpload}
+                  className="w-40 h-40 rounded-[2.5rem] border-[6px] border-white shadow-2xl overflow-hidden relative group cursor-pointer transition-transform active:scale-95"
+                >
+                  <Image src={formData.photo} alt="Me" fill className={cn("object-cover transition-all", isUploading && "blur-sm grayscale")} />
+                  <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
+                    <Camera className="text-white mb-1" size={32} />
+                    <span className="text-white text-[9px] font-black uppercase tracking-widest">Изменить</span>
+                  </div>
+                  {isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-white/20">
+                      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                 </div>
+                <button 
+                  onClick={handlePhotoUpload}
+                  className="absolute -bottom-1 -right-1 bg-primary text-white p-3 rounded-2xl shadow-xl border-2 border-white hover:scale-110 transition-transform active:scale-90"
+                >
+                  <Upload size={18} />
+                </button>
               </div>
               <h2 className="text-3xl font-black font-headline tracking-tight">Почти готово!</h2>
-              <p className="text-muted-foreground text-sm">Добавь немного о себе или позволь AI помочь.</p>
+              <p className="text-muted-foreground text-sm px-4">Добавь яркое фото и расскажи о себе или позволь AI помочь.</p>
             </div>
             
             <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 space-y-4">
@@ -363,7 +394,7 @@ export default function OnboardingPage() {
                 <button 
                   onClick={handleGenerateBio}
                   disabled={isGeneratingBio}
-                  className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors"
+                  className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors shadow-sm"
                 >
                   <Sparkles size={12} className={cn(isGeneratingBio && "animate-spin")} /> AI Создать
                 </button>
@@ -372,7 +403,7 @@ export default function OnboardingPage() {
                 value={formData.bio}
                 onChange={e => setFormData({...formData, bio: e.target.value})}
                 placeholder="Расскажи о своих увлечениях..."
-                className="min-h-[120px] rounded-2xl bg-muted/30 border-0 text-sm font-medium p-4 resize-none"
+                className="min-h-[120px] rounded-2xl bg-muted/30 border-0 text-sm font-medium p-4 resize-none focus-visible:ring-primary/10"
               />
             </div>
           </div>
