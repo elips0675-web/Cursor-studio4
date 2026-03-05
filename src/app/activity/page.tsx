@@ -160,55 +160,55 @@ export default function ActivityPage() {
           whileHover={{ y: -4 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowPremium(true)}
-          className="gradient-bg rounded-[2rem] p-6 text-white mb-12 relative overflow-hidden app-shadow cursor-pointer group transition-all"
+          className="gradient-bg rounded-[2rem] p-4 text-white mb-8 relative overflow-hidden app-shadow cursor-pointer group transition-all"
         >
           <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all duration-700">
-            <Sparkles size={100} />
+            <Sparkles size={80} />
           </div>
           <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
           
           <div className="relative z-10">
             <div className="flex items-center gap-2 mb-2">
               <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md border border-white/20">
-                <Star size={16} className="text-yellow-300" fill="currentColor" />
+                <Star size={14} className="text-yellow-300" fill="currentColor" />
               </div>
-              <h4 className="font-black text-xl tracking-tighter">{t('activity.premium_title')}</h4>
+              <h4 className="font-black text-lg tracking-tighter">{t('activity.premium_title')}</h4>
             </div>
-            <p className="text-xs text-white/90 mb-6 max-w-[220px] leading-relaxed font-medium">
+            <p className="text-[10px] text-white/90 mb-4 max-w-[220px] leading-relaxed font-medium">
               {t('activity.premium_desc')}
             </p>
-            <div className="inline-flex items-center gap-2 bg-white text-primary text-[9px] font-black uppercase tracking-[0.2em] py-3 px-8 rounded-full shadow-2xl hover:bg-orange-50 transition-colors">
-              {t('button.continue')} <ChevronRight size={12} strokeWidth={4} />
+            <div className="inline-flex items-center gap-2 bg-white text-primary text-[8px] font-black uppercase tracking-[0.2em] py-2.5 px-6 rounded-full shadow-2xl hover:bg-orange-50 transition-colors">
+              {t('button.continue')} <ChevronRight size={10} strokeWidth={4} />
             </div>
           </div>
         </motion.div>
       </main>
 
       <Dialog open={showPremium} onOpenChange={setShowPremium}>
-        <DialogContent className="max-w-[380px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
-          <div className="relative h-40 gradient-bg flex flex-col items-center justify-center text-white p-6 overflow-hidden">
+        <DialogContent className="max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
+          <div className="relative h-32 gradient-bg flex flex-col items-center justify-center text-white p-6 overflow-hidden">
              <div className="absolute inset-0 bg-black/5"></div>
              <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                 className="absolute opacity-10"
              >
-                <Sparkles size={160} />
+                <Sparkles size={120} />
              </motion.div>
-             <Star className="text-yellow-300 mb-2 drop-shadow-lg relative z-10" size={48} fill="currentColor" />
-             <DialogTitle className="text-2xl font-black uppercase tracking-tighter relative z-10">Premium</DialogTitle>
-             <p className="text-[9px] text-white/80 font-bold uppercase tracking-[0.3em] relative z-10 mt-1">
+             <Star className="text-yellow-300 mb-1 drop-shadow-lg relative z-10" size={32} fill="currentColor" />
+             <DialogTitle className="text-xl font-black uppercase tracking-tighter relative z-10">Premium</DialogTitle>
+             <p className="text-[8px] text-white/80 font-bold uppercase tracking-[0.3em] relative z-10 mt-0.5">
                {language === 'RU' ? 'Выберите план' : 'Select plan'}
              </p>
           </div>
 
-          <div className="p-6 space-y-3">
+          <div className="p-5 space-y-2.5">
             {PREMIUM_PLANS.map((plan) => (
               <div 
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
                 className={cn(
-                  "relative p-4 rounded-2xl border-2 transition-all cursor-pointer flex justify-between items-center group",
+                  "relative p-3.5 rounded-2xl border-2 transition-all cursor-pointer flex justify-between items-center group",
                   selectedPlan === plan.id 
                     ? "border-primary bg-primary/5 shadow-md scale-[1.01]" 
                     : "border-muted hover:border-muted-foreground/20"
@@ -222,42 +222,42 @@ export default function ActivityPage() {
                 )}
                 
                 <div>
-                  <h6 className="font-bold text-xs text-foreground/80 group-hover:text-foreground">
+                  <h6 className="font-bold text-[10px] text-foreground/80 group-hover:text-foreground">
                     {language === 'RU' ? plan.name_ru : plan.name_en}
                   </h6>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-xl font-black text-foreground">{plan.price}</span>
-                    {plan.oldPrice && <span className="text-[9px] text-muted-foreground line-through decoration-primary/40 opacity-60">{plan.oldPrice}</span>}
+                    <span className="text-lg font-black text-foreground">{plan.price}</span>
+                    {plan.oldPrice && <span className="text-[8px] text-muted-foreground line-through decoration-primary/40 opacity-60">{plan.oldPrice}</span>}
                   </div>
                 </div>
 
                 <div className={cn(
-                  "w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all",
+                  "w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all",
                   selectedPlan === plan.id ? "border-primary bg-primary text-white scale-110 shadow-lg shadow-primary/20" : "border-muted"
                 )}>
-                  {selectedPlan === plan.id && <Check size={16} strokeWidth={4} />}
+                  {selectedPlan === plan.id && <Check size={14} strokeWidth={4} />}
                 </div>
               </div>
             ))}
 
-            <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-4 border-t border-muted mt-2">
-               <div className="flex items-center gap-2 text-[8px] text-muted-foreground font-black uppercase tracking-widest">
-                 <Zap size={12} className="text-primary" /> {language === 'RU' ? 'Безлимит' : 'Unlimited'}
+            <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-3 border-t border-muted mt-1">
+               <div className="flex items-center gap-1.5 text-[7px] text-muted-foreground font-black uppercase tracking-widest">
+                 <Zap size={10} className="text-primary" /> {language === 'RU' ? 'Безлимит' : 'Unlimited'}
                </div>
-               <div className="flex items-center gap-2 text-[8px] text-muted-foreground font-black uppercase tracking-widest">
-                 <Eye size={12} className="text-primary" /> {language === 'RU' ? 'Просмотры' : 'Views'}
+               <div className="flex items-center gap-1.5 text-[7px] text-muted-foreground font-black uppercase tracking-widest">
+                 <Eye size={10} className="text-primary" /> {language === 'RU' ? 'Просмотры' : 'Views'}
                </div>
-               <div className="flex items-center gap-2 text-[8px] text-muted-foreground font-black uppercase tracking-widest">
-                 <ShieldCheck size={12} className="text-primary" /> {language === 'RU' ? 'Инкогнито' : 'Incognito'}
+               <div className="flex items-center gap-1.5 text-[7px] text-muted-foreground font-black uppercase tracking-widest">
+                 <ShieldCheck size={10} className="text-primary" /> {language === 'RU' ? 'Инкогнито' : 'Incognito'}
                </div>
-               <div className="flex items-center gap-2 text-[8px] text-muted-foreground font-black uppercase tracking-widest">
-                 <Sparkles size={12} className="text-primary" /> {language === 'RU' ? 'Супер-лайки' : 'Super-likes'}
+               <div className="flex items-center gap-1.5 text-[7px] text-muted-foreground font-black uppercase tracking-widest">
+                 <Sparkles size={10} className="text-primary" /> {language === 'RU' ? 'Супер-лайки' : 'Super-likes'}
                </div>
             </div>
           </div>
 
-          <DialogFooter className="p-6 pt-0">
-            <Button className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all text-[10px] border-0">
+          <DialogFooter className="p-5 pt-0">
+            <Button className="w-full h-12 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all text-[9px] border-0">
               {language === 'RU' ? 'Начать сейчас' : 'Start now'}
             </Button>
           </DialogFooter>
@@ -327,7 +327,7 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
 
   return (
     <div className={cn(
-      "flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer group relative overflow-hidden h-[72px]",
+      "flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer group relative overflow-hidden h-[64px]",
       item.seen ? "bg-white/40 opacity-70" : "bg-white app-shadow hover:translate-y-[-1px] border border-white"
     )}>
       {!item.seen && (
@@ -336,18 +336,18 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
       
       <div className="relative flex-shrink-0">
         <div className={cn(
-          "w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-all duration-500",
+          "w-10 h-10 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-all duration-500",
           item.blurred && "blur-[6px] grayscale opacity-60 scale-95"
         )}>
           <Image src={item.img} alt={item.user} fill className="object-cover" />
           {item.blurred && (
              <div className="absolute inset-0 bg-black/5 flex items-center justify-center">
-                <Sparkles className="text-white/40" size={14} />
+                <Sparkles className="text-white/40" size={12} />
              </div>
           )}
         </div>
         <div className={cn(
-          "absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-lg z-20",
+          "absolute -bottom-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white shadow-lg z-20",
           getBgColor()
         )}>
           {getIcon()}
@@ -356,7 +356,7 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
       
       <div className="flex-1 min-w-0 pr-1">
         <div className="flex justify-between items-start">
-          <p className="text-[10px] leading-snug text-foreground/90 font-medium">
+          <p className="text-[9px] leading-snug text-foreground/90 font-medium">
             {item.blurred ? (
               <span><span className="font-black text-primary">{t('profile.someone')}</span> {getMessage()}</span>
             ) : (
@@ -366,27 +366,27 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
             )}
           </p>
           {!item.seen && (
-            <div className="relative flex h-1.5 w-1.5 mt-0.5 ml-1 flex-shrink-0">
+            <div className="relative flex h-1 w-1 mt-0.5 ml-1 flex-shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+              <span className="relative inline-flex rounded-full h-1 w-1 bg-primary"></span>
             </div>
           )}
         </div>
-        <p className="text-[8px] text-muted-foreground font-black tracking-widest uppercase opacity-40 mt-0.5">
+        <p className="text-[7px] text-muted-foreground font-black tracking-widest uppercase opacity-40 mt-0.5">
           {item.time.replace('мин назад', language === 'RU' ? 'мин назад' : 'min ago').replace('час назад', language === 'RU' ? 'час назад' : 'hour ago').replace('дня назад', language === 'RU' ? 'дня назад' : 'days ago')}
         </p>
         
         {item.blurred && (
           <button 
             onClick={(e) => { e.stopPropagation(); onUnlock(); }}
-            className="text-[7px] font-black text-primary flex items-center gap-1 mt-1 bg-primary/5 px-2 py-1 rounded-full w-fit hover:bg-primary/10 transition-all uppercase tracking-widest shadow-sm border border-primary/10"
+            className="text-[6px] font-black text-primary flex items-center gap-1 mt-0.5 bg-primary/5 px-1.5 py-0.5 rounded-full w-fit hover:bg-primary/10 transition-all uppercase tracking-widest shadow-sm border border-primary/10"
           >
-            <Sparkles size={8} className="animate-pulse" /> {language === 'RU' ? 'Раскрыть' : 'Reveal'}
+            <Sparkles size={6} className="animate-pulse" /> {language === 'RU' ? 'Раскрыть' : 'Reveal'}
           </button>
         )}
       </div>
 
-      <ChevronRight size={12} className="text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" strokeWidth={3} />
+      <ChevronRight size={10} className="text-muted-foreground/20 group-hover:text-primary group-hover:translate-x-1 transition-all flex-shrink-0" strokeWidth={3} />
     </div>
   );
 }
