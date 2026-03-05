@@ -2,10 +2,10 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { Heart, MapPin, Sparkles, X } from "lucide-react";
+import { Heart, MapPin, Sparkles, X, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "motion/react";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -14,13 +14,8 @@ import { Button } from "@/components/ui/button";
 import { 
   Dialog, 
   DialogContent, 
-  DialogHeader, 
   DialogTitle, 
-  DialogDescription,
-  DialogFooter
 } from "@/components/ui/dialog";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 
@@ -36,8 +31,6 @@ const ALL_USERS = [
   { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, interests: ['Мода', 'Дизайн', 'Вечеринки'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.', distance: 6, match: 83, gender: 'female' },
   { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, interests: ['Наука', 'История', 'Музеи'], bio: 'Люблю узнавать что-то новое каждый день.', distance: 9, match: 77, gender: 'male' }
 ];
-
-const INTEREST_OPTIONS = ["Фотография", "Путешествия", "Кофе", "Искусство", "Книги", "Бизнес", "Спорт", "Музыка", "Игры", "Йога", "Мода", "Дизайн", "История"];
 
 function HeartConfetti() {
   const hearts = Array.from({ length: 25 });
@@ -72,12 +65,11 @@ export default function SearchPage() {
   const [compatibility, setCompatibility] = useState("");
   const [loadingAi, setLoadingAi] = useState(false);
 
-  // Filter States
-  const [ageRange, setAgeRange] = useState([18, 40]);
-  const [maxDistance, setMaxDistance] = useState([50]);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [selectedGender, setSelectedGender] = useState<string>('all');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  // Filter States (hidden but preserved)
+  const [ageRange] = useState([18, 40]);
+  const [maxDistance] = useState([50]);
+  const [selectedInterests] = useState<string[]>([]);
+  const [selectedGender] = useState<string>('all');
 
   const filteredUsers = useMemo(() => {
     return ALL_USERS.filter(user => {
@@ -129,6 +121,10 @@ export default function SearchPage() {
     if (matchUser) router.push(`/chats?matchId=${matchUser.id}`);
   };
 
+  const handleDirectMessage = () => {
+    if (user) router.push(`/chats?matchId=${user.id}`);
+  };
+
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-25, 25]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
@@ -160,7 +156,7 @@ export default function SearchPage() {
                 whileDrag={{ scale: 1.05 }}
                 className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow flex flex-col border-4 border-white"
               >
-                <div className="relative flex-[6] pointer-events-none select-none">
+                <div className="relative flex-1 pointer-events-none select-none">
                   <Image src={user.img} alt={user.name} fill className="object-cover" priority />
                   <div className="absolute top-4 left-4">
                      <Badge className="bg-[#2ecc71] text-white border-0 px-3 py-1 text-[10px] font-bold shadow-lg">Онлайн</Badge>
@@ -170,38 +166,54 @@ export default function SearchPage() {
                        {user.match}% совпадение
                      </Badge>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  <div className="absolute bottom-8 left-6 right-6 text-white text-left">
+                  <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 right-6 text-white text-left">
                     <h3 className="text-3xl font-black font-headline mb-1 drop-shadow-md">{user.name}, {user.age}</h3>
-                    <p className="text-white/90 text-xs flex items-center gap-1 font-bold">
+                    <p className="text-white/90 text-xs flex items-center gap-1 font-bold mb-3">
                       <MapPin size={14} /> {user.distance} км от вас
                     </p>
+                    <div className="flex flex-wrap gap-1.5 mb-2">
+                      {user.interests.slice(0, 3).map(i => (
+                        <span key={i} className="px-2 py-0.5 bg-white/20 backdrop-blur-md text-white text-[8px] rounded-full font-black uppercase tracking-widest border border-white/10">{i}</span>
+                      ))}
+                    </div>
+                    <p className="text-white/80 text-[10px] leading-tight italic line-clamp-2">"{user.bio}"</p>
                   </div>
-                </div>
-                <div className="p-5 bg-white flex flex-col justify-start relative -mt-6 rounded-t-[2.5rem] shadow-2xl min-h-[100px]">
-                  <div className="flex flex-wrap gap-1.5 mb-2">
-                    {user.interests.slice(0, 3).map(i => (
-                      <span key={i} className="px-2 py-0.5 bg-primary/5 text-primary text-[8px] rounded-full font-black uppercase tracking-widest border border-primary/10">{i}</span>
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground text-[10px] leading-tight italic px-1 line-clamp-1">"{user.bio}"</p>
                 </div>
               </motion.div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full w-full text-center p-8 bg-white/50 rounded-[2.5rem] border-2 border-dashed border-muted shadow-inner">
                 <X size={32} className="text-muted-foreground mb-4" />
-                <h4 className="text-lg font-bold">Никого не нашли</h4>
+                <h4 className="text-lg font-bold uppercase tracking-tight">Никого не нашли</h4>
+                <p className="text-xs text-muted-foreground mt-2">Попробуйте зайти позже</p>
               </div>
             )}
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center justify-center gap-5 z-10">
-          <button onClick={() => setIndex(prev => prev + 1)} className="w-12 h-12 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow border border-border/40">
-            <X size={20} />
+        <div className="flex items-center justify-center gap-4 z-10 pb-4">
+          <button 
+            onClick={() => setIndex(prev => prev + 1)} 
+            className="w-14 h-14 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow border border-border/40 group"
+          >
+            <X size={24} className="group-hover:rotate-90 transition-transform" />
           </button>
-          <button disabled={filteredUsers.length === 0} onClick={handleLike} className="w-16 h-16 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all app-shadow disabled:opacity-50 group">
-            <Heart size={28} fill="currentColor" className="group-hover:animate-pulse" />
+          
+          <button 
+            disabled={filteredUsers.length === 0} 
+            onClick={handleLike} 
+            className="w-20 h-20 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all app-shadow disabled:opacity-50 group"
+          >
+            <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
+          </button>
+
+          <button 
+            disabled={filteredUsers.length === 0}
+            onClick={handleDirectMessage}
+            className="w-14 h-14 rounded-full bg-white text-blue-500 flex items-center justify-center hover:bg-blue-50 active:scale-90 transition-all app-shadow border border-blue-100 group"
+            title="Личные сообщения"
+          >
+            <MessageCircle size={24} className="group-hover:scale-110 transition-transform" />
           </button>
         </div>
       </main>
@@ -227,7 +239,7 @@ export default function SearchPage() {
             <div className="bg-primary/5 p-5 rounded-[2rem] mb-8 text-left border border-primary/10">
               <p className="text-xs leading-relaxed text-foreground/80 italic">{compatibility}</p>
             </div>
-            <Button onClick={handleStartChat} className="w-full h-14 rounded-full gradient-bg text-white font-bold uppercase tracking-widest text-xs">Написать первым</Button>
+            <Button onClick={handleStartChat} className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20">Написать первым</Button>
           </div>
         </DialogContent>
       </Dialog>
