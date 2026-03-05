@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle } from "lucide-react";
+import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle, User } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -37,6 +37,7 @@ export function AppHeader() {
   const [unreadCount, setUnreadCount] = useState(4);
 
   const isHomePage = pathname === "/";
+  const isLoginPage = pathname === "/login";
 
   const handleLangChange = (newLang: 'RU' | 'EN') => {
     setLanguage(newLang);
@@ -46,12 +47,7 @@ export function AppHeader() {
     });
   };
 
-  const handleLogin = () => {
-    toast({
-      title: language === "RU" ? "Вход в систему" : "Logging in",
-      description: language === "RU" ? "Функция входа будет доступна скоро" : "Login feature coming soon",
-    });
-  };
+  if (isLoginPage) return null;
 
   return (
     <header className="sticky top-0 w-full bg-white/95 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between z-50 h-16 relative">
@@ -159,13 +155,15 @@ export function AppHeader() {
 
         {/* Кнопка Вход */}
         <Button 
+          asChild
           variant="ghost" 
           size="sm" 
-          onClick={handleLogin}
           className="text-[10px] font-black uppercase tracking-widest gap-1.5 text-muted-foreground hover:text-primary transition-colors h-9 px-2 ml-1"
         >
-          <LogIn size={14} />
-          <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
+          <Link href="/login">
+            <LogIn size={14} />
+            <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
+          </Link>
         </Button>
       </div>
     </header>

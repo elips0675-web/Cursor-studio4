@@ -1,0 +1,27 @@
+
+{
+  "entities": {
+    "UserProfile": {
+      "title": "Профиль пользователя",
+      "description": "Основная информация о пользователе приложения.",
+      "type": "object",
+      "properties": {
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "bio": { "type": "string" },
+        "interests": { "type": "array", "items": { "type": "string" } },
+        "age": { "type": "number" },
+        "city": { "type": "string" }
+      }
+    }
+  },
+  "auth": {
+    "providers": ["google.com", "password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Данные профиля пользователя"
+    }
+  }
+}
