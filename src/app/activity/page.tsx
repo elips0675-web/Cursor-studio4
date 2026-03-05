@@ -94,25 +94,10 @@ export default function ActivityPage() {
         </div>
 
         <Tabs defaultValue="all" className="w-full mb-6" onValueChange={setActiveTab}>
-          <TabsList className="flex w-full bg-transparent h-auto p-0 gap-3 border-0 shadow-none">
-            <TabsTrigger 
-              value="all" 
-              className="flex-1 h-12 rounded-[2.5rem] text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 bg-white border border-border/50 text-muted-foreground data-[state=active]:gradient-bg data-[state=active]:!text-white data-[state=active]:border-0 data-[state=active]:shadow-xl data-[state=active]:shadow-primary/30"
-            >
-              {t('activity.all')}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="likes" 
-              className="flex-1 h-12 rounded-[2.5rem] text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 bg-white border border-border/50 text-muted-foreground data-[state=active]:gradient-bg data-[state=active]:!text-white data-[state=active]:border-0 data-[state=active]:shadow-xl data-[state=active]:shadow-primary/30"
-            >
-              {t('activity.likes')}
-            </TabsTrigger>
-            <TabsTrigger 
-              value="visits" 
-              className="flex-1 h-12 rounded-[2.5rem] text-[11px] font-black uppercase tracking-widest transition-all active:scale-95 bg-white border border-border/50 text-muted-foreground data-[state=active]:gradient-bg data-[state=active]:!text-white data-[state=active]:border-0 data-[state=active]:shadow-xl data-[state=active]:shadow-primary/30"
-            >
-              {t('activity.visits')}
-            </TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="all">{t('activity.all')}</TabsTrigger>
+            <TabsTrigger value="likes">{t('activity.likes')}</TabsTrigger>
+            <TabsTrigger value="visits">{t('activity.visits')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-6 space-y-4 outline-none">
@@ -355,7 +340,7 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
       
       <div className="flex-1 min-w-0 pr-1 ml-1">
         <div className="flex justify-between items-start">
-          <p className="text-[13px] leading-tight text-foreground/90 font-semibold">
+          <p className="text-sm leading-tight text-foreground/90 font-semibold">
             {item.blurred ? (
               <span><span className="font-black text-primary">{t('profile.someone')}</span> {getMessage()}</span>
             ) : (
@@ -371,7 +356,7 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
             </div>
           )}
         </div>
-        <p className="text-[11px] text-muted-foreground font-black tracking-widest uppercase opacity-40 mt-1">
+        <p className="text-xs text-muted-foreground font-black tracking-widest uppercase opacity-40 mt-1">
           {item.time.replace('мин назад', language === 'RU' ? 'мин назад' : 'min ago').replace('час назад', language === 'RU' ? 'час назад' : 'hour ago').replace('дня назад', language === 'RU' ? 'дня назад' : 'days ago')}
         </p>
         
