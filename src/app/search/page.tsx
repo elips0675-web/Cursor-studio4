@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from "react";
-import { Heart, MapPin, Sparkles, X, User, Cpu } from "lucide-react";
+import { Heart, MapPin, Sparkles, X, User, Cpu, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
@@ -93,14 +93,6 @@ export default function SearchPage() {
 
   const user = filteredUsers[index % filteredUsers.length];
 
-  const handleSwipe = useCallback((direction: 'left' | 'right') => {
-    if (direction === 'right') {
-      handleLike();
-    } else {
-      setIndex(prev => prev + 1);
-    }
-  }, [user, filteredUsers]);
-
   const handleLike = async () => {
     if (!user) return;
     if (Math.random() > 0.6) {
@@ -110,6 +102,14 @@ export default function SearchPage() {
       setIndex(prev => prev + 1);
     }
   };
+
+  const handleSwipe = useCallback((direction: 'left' | 'right') => {
+    if (direction === 'right') {
+      handleLike();
+    } else {
+      setIndex(prev => prev + 1);
+    }
+  }, [user, filteredUsers, handleLike]);
 
   const getAiInsight = async (targetUser: any) => {
     setLoadingAi(true);
@@ -133,6 +133,8 @@ export default function SearchPage() {
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-25, 25]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const nopeOpacity = useTransform(x, [-100, -20], [1, 0]);
+  const likeOpacity = useTransform(x, [20, 100], [0, 1]);
 
   return (
     <>
@@ -171,6 +173,10 @@ export default function SearchPage() {
                        {user.match}% {language === 'RU' ? 'совпадение' : 'match'}
                      </Badge>
                   </div>
+
+                  <motion.div style={{ opacity: nopeOpacity }} className="absolute top-12 left-8 text-rose-500 font-black text-4xl uppercase -rotate-[20deg] border-4 border-rose-500 rounded-2xl px-4 py-1 tracking-widest">НЕТ</motion.div>
+                  <motion.div style={{ opacity: likeOpacity }} className="absolute top-12 right-8 text-emerald-400 font-black text-4xl uppercase rotate-[20deg] border-4 border-emerald-400 rounded-2xl px-4 py-1 tracking-widest">ЛАЙК</motion.div>
+
                   <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                   <div className="absolute bottom-6 left-6 right-6 text-white text-left">
                     <h3 className="text-3xl font-black font-headline mb-1 drop-shadow-md">{user.name}, {user.age}</h3>
@@ -196,29 +202,39 @@ export default function SearchPage() {
           </AnimatePresence>
         </div>
 
-        <div className="flex items-center justify-center gap-4 z-10 pb-4">
+        <div className="flex items-center justify-around w-full max-w-md z-10 pb-4">
           <button 
-            onClick={() => setIndex(prev => prev + 1)} 
-            className="w-14 h-14 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow border border-border/40 group"
+            onClick={() => handleSwipe('left')} 
+            disabled={filteredUsers.length === 0}
+            className="w-16 h-16 rounded-full bg-white text-muted-foreground flex items-center justify-center hover:bg-muted active:scale-90 transition-all app-shadow border border-border/40 group"
           >
-            <X size={24} className="group-hover:rotate-90 transition-transform" />
+            <X size={28} />
           </button>
           
-          <button 
-            disabled={filteredUsers.length === 0} 
-            onClick={handleLike} 
-            className="w-20 h-20 rounded-full bg-white border-4 border-primary text-primary flex items-center justify-center hover:scale-110 active:scale-95 transition-all app-shadow disabled:opacity-50 group"
-          >
-            <Heart size={36} fill="currentColor" className="group-hover:animate-pulse" />
-          </button>
-
           <button 
             disabled={filteredUsers.length === 0}
             onClick={() => router.push(`/user?id=${user.id}`)}
             className="w-14 h-14 rounded-full bg-white text-blue-500 flex items-center justify-center hover:bg-blue-50 active:scale-90 transition-all app-shadow border border-blue-100 group"
             title={language === 'RU' ? "Просмотр Профиля" : "View Profile"}
           >
-            <User size={24} className="group-hover:scale-110 transition-transform" />
+            <User size={24} />
+          </button>
+          
+          <button 
+            disabled={filteredUsers.length === 0}
+            onClick={() => router.push(`/chats?matchId=${user.id}`)}
+            className="w-14 h-14 rounded-full bg-white text-green-500 flex items-center justify-center hover:bg-green-50 active:scale-90 transition-all app-shadow border border-green-100 group"
+            title={language === 'RU' ? "Написать ЛС" : "Write DM"}
+          >
+            <MessageCircle size={24} />
+          </button>
+
+          <button 
+            disabled={filteredUsers.length === 0} 
+            onClick={() => handleSwipe('right')} 
+            className="w-16 h-16 rounded-full bg-white text-primary flex items-center justify-center hover:bg-primary/5 active:scale-95 transition-all app-shadow border-2 border-primary group"
+          >
+            <Heart size={32} className="group-hover:fill-current transition-colors" />
           </button>
         </div>
       </main>
