@@ -51,7 +51,6 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
-// Zodiac Icons SVG Map
 const ZodiacIcon = ({ sign }: { sign: string }) => {
   const signs: Record<string, string> = {
     "Овен": "♈", "Телец": "♉", "Близнецы": "♊", "Рак": "♋", "Лев": "♌", "Дева": "♍",
@@ -61,7 +60,6 @@ const ZodiacIcon = ({ sign }: { sign: string }) => {
 };
 
 export default function ProfilePage() {
-  // Profile State
   const [profile] = useState({
     name: "Анна",
     age: 24,
@@ -72,7 +70,6 @@ export default function ProfilePage() {
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки", "Рост: 172 см", "Сова"]
   });
 
-  // Photo Gallery State
   const [photos, setPhotos] = useState([
     PlaceHolderImages[0].imageUrl,
     PlaceHolderImages[2].imageUrl,
@@ -81,7 +78,6 @@ export default function ProfilePage() {
     PlaceHolderImages[8].imageUrl,
   ]);
 
-  // Gallery Viewer State
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
@@ -98,7 +94,6 @@ export default function ProfilePage() {
     setPhotos(prev => [...prev, newPhoto]);
     toast({
       title: "Фото добавлено",
-      description: "Ваша галерея обновлена.",
     });
   };
 
@@ -122,7 +117,6 @@ export default function ProfilePage() {
     setIsViewerOpen(true);
   };
 
-  // Карта иконок для всех возможных интересов и деталей
   const interestMap = [
     { label: "Фотография", icon: Camera },
     { label: "Путешествия", icon: Globe },
@@ -141,156 +135,122 @@ export default function ProfilePage() {
     { label: "Жаворонок", icon: Sun },
   ];
 
-  // Разделение интересов на "Стиль жизни" и "Хобби"
   const lifestyleKeywords = ["Рост:", "Сова", "Жаворонок", "Собаки", "Кошки"];
-  
-  const lifestyleDetails = profile.interests.filter(i => 
-    lifestyleKeywords.some(key => i.includes(key))
-  );
-  
-  const generalInterests = profile.interests.filter(i => 
-    !lifestyleKeywords.some(key => i.includes(key))
-  );
-
-  // Extract height specifically for top display
+  const lifestyleDetails = profile.interests.filter(i => lifestyleKeywords.some(key => i.includes(key)));
+  const generalInterests = profile.interests.filter(i => !lifestyleKeywords.some(key => i.includes(key)));
   const heightInfo = profile.interests.find(i => i.includes("Рост:"));
 
   return (
     <>
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
-        {/* Profile Header Background - SMALLER */}
-        <div className="h-28 gradient-bg relative shadow-md">
-          <div className="absolute top-4 left-6 text-white text-xl font-black uppercase tracking-tighter opacity-80">SwiftMatch</div>
-          <Link 
-            href="/settings"
-            className="absolute top-4 right-6 text-white/90 p-2 bg-black/10 rounded-full hover:bg-black/20 transition-colors backdrop-blur-sm"
-          >
+        {/* Header with Background */}
+        <div className="h-32 gradient-bg relative shadow-lg">
+          <Link href="/settings" className="absolute top-6 right-6 text-white/90 p-2.5 bg-black/15 rounded-full hover:bg-black/25 transition-all backdrop-blur-md">
             <Settings size={20} />
           </Link>
         </div>
 
-        {/* Profile Info */}
-        <div className="px-5 -mt-10 text-center">
+        {/* Profile Info Block */}
+        <div className="px-5 -mt-12 text-center">
           <div className="relative inline-block mb-4">
             <div 
               onClick={() => openPhotoViewer(0)}
-              className="relative w-32 h-32 rounded-[2.25rem] border-4 border-white app-shadow overflow-hidden bg-muted transition-transform duration-500 hover:scale-[1.02] cursor-pointer"
+              className="relative w-36 h-36 rounded-[2.5rem] border-[6px] border-white app-shadow overflow-hidden bg-muted transition-all duration-300 hover:scale-[1.02] cursor-pointer"
             >
-              <Image 
-                src={photos[0]} 
-                alt={profile.name} 
-                fill 
-                className="object-cover" 
-                priority
-              />
+              <Image src={photos[0]} alt={profile.name} fill className="object-cover" priority />
             </div>
-            <Badge className="absolute bottom-1 right-1 bg-primary text-white border-2 border-white font-black text-[8px] h-6 px-2.5 flex items-center justify-center rounded-full shadow-xl z-20 uppercase tracking-widest pointer-events-none">
+            <Badge className="absolute bottom-2 right-2 bg-primary text-white border-2 border-white font-black text-[9px] h-6 px-2.5 rounded-full shadow-xl uppercase tracking-widest">
               PRO 💎
             </Badge>
           </div>
 
-          <div className="mb-4">
-            <h3 className="text-xl font-black font-headline mb-0.5 flex items-center justify-center gap-2">
-              {profile.name}, {profile.age} <CheckCircle2 size={18} className="text-primary" fill="currentColor" />
+          <div className="mb-6 space-y-2">
+            <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">
+              {profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" />
             </h3>
-            <div className="flex flex-col items-center gap-1.5">
-              <p className="text-muted-foreground text-[10px] font-bold flex items-center justify-center gap-1.5 uppercase tracking-wider opacity-60">
+            
+            <div className="flex flex-col items-center gap-2">
+              <p className="text-muted-foreground text-[11px] font-black flex items-center justify-center gap-1.5 uppercase tracking-[0.15em] opacity-70">
                 <MapPin size={12} className="text-primary" /> {profile.city}
               </p>
               
-              {/* Quick Info: Zodiac and Height */}
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-1 py-1 px-2 font-bold text-[9px] rounded-lg shadow-sm">
+              {/* Main Attributes under city */}
+              <div className="flex items-center justify-center gap-2">
+                <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-1.5 py-1.5 px-3 font-bold text-[10px] rounded-xl shadow-sm">
                   <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
                 </Badge>
                 {heightInfo && (
-                  <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-1 py-1 px-2 font-bold text-[9px] rounded-lg shadow-sm">
-                    <Ruler size={10} /> {heightInfo.replace("Рост: ", "")}
+                  <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-1.5 py-1.5 px-3 font-bold text-[10px] rounded-xl shadow-sm">
+                    <Ruler size={12} /> {heightInfo.replace("Рост: ", "")}
                   </Badge>
                 )}
-              </div>
-
-              <div className="flex flex-wrap justify-center gap-1.5">
-                <Badge variant="secondary" className="bg-primary/5 text-primary border-0 gap-1.5 py-1 px-3 font-black text-[9px] rounded-full uppercase tracking-widest">
+                <Badge variant="secondary" className="bg-primary/5 text-primary border-0 gap-1.5 py-1.5 px-3 font-bold text-[10px] rounded-xl shadow-sm">
                   <Target size={12} /> {profile.datingGoal}
                 </Badge>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-center gap-3 mb-6">
-            <Button 
-              asChild
-              className="rounded-xl gradient-bg text-white h-12 px-10 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0"
-            >
-              <Link href="/profile/edit">
-                <Edit2 size={14} className="mr-2" /> Изменить
-              </Link>
+          <div className="flex justify-center gap-3 mb-8">
+            <Button asChild className="rounded-2xl gradient-bg text-white h-12 px-12 font-black uppercase text-[11px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0">
+              <Link href="/profile/edit"><Edit2 size={16} className="mr-2" /> Изменить</Link>
             </Button>
-            <Button 
-              asChild
-              variant="outline" 
-              className="rounded-xl h-12 w-12 p-0 font-black border-border text-muted-foreground bg-white shadow-sm active:scale-95 transition-all"
-            >
-              <Link href="/settings"><Settings size={18} /></Link>
+            <Button asChild variant="outline" className="rounded-2xl h-12 w-12 p-0 border-border bg-white shadow-sm hover:bg-muted active:scale-95 transition-all">
+              <Link href="/settings"><Settings size={20} className="text-muted-foreground" /></Link>
             </Button>
           </div>
 
-          {/* Stats Bar - COMPACT */}
-          <div className="bg-white rounded-[1.75rem] p-3 app-shadow border border-border/40 mb-5">
-            <div className="grid grid-cols-2">
-              <div className="text-center">
-                <div className="text-lg font-black text-primary leading-none">128</div>
-                <div className="text-[8px] text-muted-foreground uppercase font-black tracking-[0.1em] mt-1">Лайков</div>
-              </div>
-              <div className="text-center border-l border-border/50">
-                <div className="text-lg font-black text-primary leading-none">45</div>
-                <div className="text-[8px] text-muted-foreground uppercase font-black tracking-[0.1em] mt-1">Мэтчей</div>
-              </div>
+          {/* Stats Section */}
+          <div className="bg-white rounded-[2rem] p-4 app-shadow border border-border/40 mb-6 flex divide-x divide-border/50">
+            <div className="flex-1 py-1">
+              <div className="text-xl font-black text-primary leading-none">128</div>
+              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">Лайков</div>
+            </div>
+            <div className="flex-1 py-1">
+              <div className="text-xl font-black text-primary leading-none">45</div>
+              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">Мэтчей</div>
             </div>
           </div>
 
-          {/* About Section - COMPACT */}
-          <div className="bg-white rounded-[1.75rem] p-5 app-shadow border border-border/40 mb-5 text-left">
-            <div className="flex items-center gap-2 mb-2.5">
-              <Sparkles size={12} className="text-primary" />
-              <h4 className="font-black text-[8px] uppercase tracking-[0.1em] text-muted-foreground">О себе</h4>
+          {/* About Me Section */}
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles size={14} className="text-primary" />
+              <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">О себе</h4>
             </div>
-            <p className="text-[11px] text-foreground/80 leading-snug font-medium">
+            <p className="text-[12px] text-foreground/80 leading-relaxed font-medium">
               {profile.bio}
             </p>
           </div>
 
-          {/* Lifestyle Section - COMPACT */}
-          <div className="bg-white rounded-[1.75rem] p-5 app-shadow border border-border/40 mb-5 text-left">
-            <div className="space-y-3.5">
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 mb-1">Стиль жизни</p>
-              <div className="flex flex-wrap gap-1.5">
+          {/* Interests and Lifestyle Sections */}
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
+            <div className="space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Стиль жизни</p>
+              <div className="flex flex-wrap gap-2">
                 {lifestyleDetails.filter(d => !d.includes("Рост:")).map((detail) => {
                   const mapItem = interestMap.find(m => detail.includes(m.label));
                   const Icon = mapItem?.icon || Star;
                   return (
-                    <Badge key={detail} variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-1.5 py-1.5 px-3 font-bold text-[9px] rounded-lg shadow-sm">
-                      <Icon size={12} /> {detail}
+                    <Badge key={detail} variant="secondary" className="bg-blue-50/50 text-blue-600 border-0 gap-2 py-2 px-4 font-bold text-[10px] rounded-xl">
+                      <Icon size={14} /> {detail}
                     </Badge>
                   );
                 })}
-                {/* Fallback to show something if only height was there */}
-                {lifestyleDetails.filter(d => !d.includes("Рост:")).length === 0 && (
-                  <span className="text-[9px] text-muted-foreground italic ml-1">Другие детали не указаны</span>
-                )}
               </div>
+            </div>
 
-              <div className="h-px bg-muted/50 w-full" />
-              
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 mb-1">Интересы</p>
-              <div className="flex flex-wrap gap-1.5">
+            <div className="h-px bg-muted/60" />
+            
+            <div className="space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Интересы</p>
+              <div className="flex flex-wrap gap-2">
                 {generalInterests.map((interest) => {
                   const mapItem = interestMap.find(m => interest.includes(m.label));
                   const Icon = mapItem?.icon || Heart;
                   return (
-                    <Badge key={interest} variant="secondary" className="bg-[#f5f7fa] text-foreground/80 border-0 gap-1.5 py-1.5 px-3 font-bold text-[9px] rounded-lg hover:bg-muted transition-colors shadow-sm">
-                      <Icon size={12} className="text-primary" /> {interest}
+                    <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[10px] rounded-xl hover:bg-muted transition-all">
+                      <Icon size={14} className="text-primary" /> {interest}
                     </Badge>
                   );
                 })}
@@ -298,111 +258,72 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Gallery Management Section - KEPT AS P-8 */}
-          <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-10 text-left">
+          {/* Gallery Management */}
+          <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-12 text-left">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
-                <Camera size={16} className="text-primary" />
-                <h4 className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Галерея</h4>
+                <Camera size={18} className="text-primary" />
+                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Галерея</h4>
               </div>
-              <button 
-                onClick={handleAddPhoto}
-                className="text-primary flex items-center gap-1.5 text-[10px] font-black uppercase hover:underline tracking-widest"
-              >
-                <Plus size={16} /> Добавить
+              <button onClick={handleAddPhoto} className="text-primary flex items-center gap-1.5 text-[11px] font-black uppercase hover:underline tracking-widest">
+                <Plus size={18} /> Добавить
               </button>
             </div>
             <div className="grid grid-cols-2 gap-5">
               {photos.map((url, idx) => (
-                <div 
-                  key={idx} 
-                  onClick={() => openPhotoViewer(idx)}
-                  className="relative aspect-[3/4] rounded-[1.75rem] overflow-hidden bg-muted group shadow-lg border border-border/10 cursor-pointer hover:scale-[1.02] transition-transform active:scale-95"
-                >
+                <div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-[3/4] rounded-[2rem] overflow-hidden bg-muted group shadow-md border border-border/10 cursor-pointer hover:scale-[1.02] transition-all">
                   <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 backdrop-blur-[1px]">
-                    <div className="p-2.5 bg-white/20 backdrop-blur-md text-white rounded-full">
-                      <Maximize2 size={18} />
-                    </div>
-                    <button 
-                      onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }}
-                      className="p-2.5 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-destructive/70 transition-colors"
-                    >
-                      <Trash2 size={18} />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
+                    <div className="p-3 bg-white/20 backdrop-blur-md text-white rounded-full"><Maximize2 size={20} /></div>
+                    <button onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }} className="p-3 bg-white/20 backdrop-blur-md text-white rounded-full hover:bg-destructive/80 transition-colors">
+                      <Trash2 size={20} />
                     </button>
                   </div>
                 </div>
               ))}
               {photos.length < 10 && (
-                <button 
-                  onClick={handleAddPhoto}
-                  className="aspect-[3/4] rounded-[1.75rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all group shadow-sm bg-muted/5"
-                >
-                  <Plus size={36} className="group-hover:text-primary transition-colors opacity-40" />
-                  <span className="text-[9px] font-black mt-3 uppercase tracking-[0.2em] opacity-60">Добавить</span>
+                <button onClick={handleAddPhoto} className="aspect-[3/4] rounded-[2rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all shadow-sm">
+                  <Plus size={40} className="opacity-30 group-hover:text-primary transition-colors" />
+                  <span className="text-[10px] font-black mt-3 uppercase tracking-widest opacity-50">Загрузить</span>
                 </button>
               )}
             </div>
           </div>
 
-          {/* Premium CTA */}
+          {/* Premium Banner */}
           <div className="gradient-bg rounded-[2.5rem] p-8 text-white text-center app-shadow mb-12 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-              <Star size={80} fill="currentColor" />
+            <div className="absolute -top-4 -right-4 p-4 opacity-15 rotate-12 group-hover:scale-110 transition-transform">
+              <Star size={100} fill="currentColor" />
             </div>
-            <h5 className="font-black text-xl mb-1 relative z-10 tracking-tight">SwiftMatch Premium</h5>
-            <p className="text-[10px] text-white/80 mb-6 max-w-[200px] mx-auto relative z-10 leading-relaxed font-bold uppercase tracking-wider">
-              Твои мэтчи ждут тебя — узнай кто тебя лайкнул первым
+            <h5 className="font-black text-2xl mb-1 relative z-10 tracking-tight">SwiftMatch Premium</h5>
+            <p className="text-[11px] text-white/80 mb-6 max-w-[240px] mx-auto relative z-10 font-bold uppercase tracking-widest leading-relaxed">
+              Узнай кто тебя лайкнул и получи безлимит возможностей
             </p>
-            <Button variant="secondary" className="w-full rounded-xl h-12 bg-white text-primary font-black uppercase text-[10px] tracking-[0.15em] hover:bg-white/90 shadow-2xl relative z-10 active:scale-95 transition-all border-0">
+            <Button variant="secondary" className="w-full rounded-2xl h-14 bg-white text-primary font-black uppercase text-[11px] tracking-widest hover:bg-white/90 shadow-2xl relative z-10 active:scale-95 transition-all border-0">
               Стать Premium
             </Button>
           </div>
         </div>
       </main>
 
-      {/* Fullscreen Photo Viewer */}
+      {/* Photo Viewer Dialog */}
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
-        <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none overflow-hidden flex flex-col items-center justify-center outline-none">
+        <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center outline-none">
           <DialogTitle className="sr-only">Просмотр фото</DialogTitle>
-          <button 
-            onClick={() => setIsViewerOpen(false)}
-            className="absolute top-4 right-4 z-50 p-3 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-black/70 transition-all active:scale-90"
-          >
+          <button onClick={() => setIsViewerOpen(false)} className="absolute top-4 right-4 z-50 p-3 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-black/70 active:scale-90 transition-all">
             <X size={24} />
           </button>
           
-          <Carousel 
-            className="w-full h-full" 
-            opts={{ startIndex: activePhotoIndex }}
-            key={activePhotoIndex} 
-          >
+          <Carousel className="w-full h-full" opts={{ startIndex: activePhotoIndex }}>
             <CarouselContent className="h-full ml-0">
               {photos.map((url, idx) => (
-                <CarouselItem key={idx} className="pl-0 h-[80vh] flex items-center justify-center relative">
+                <CarouselItem key={idx} className="pl-0 h-[80vh] flex items-center justify-center">
                   <div className="relative w-full h-full rounded-[3rem] overflow-hidden app-shadow border-4 border-white/10">
-                    <Image 
-                      src={url} 
-                      alt={`Gallery view ${idx}`} 
-                      fill 
-                      className="object-cover"
-                      sizes="(max-width: 480px) 100vw, 440px"
-                    />
+                    <Image src={url} alt={`Gallery view ${idx}`} fill className="object-cover" sizes="(max-width: 480px) 100vw, 440px" />
                   </div>
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <div className="absolute -bottom-10 left-0 right-0 flex justify-center gap-2">
-              {photos.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-all duration-300",
-                    activePhotoIndex === i ? "bg-white scale-125" : "bg-white/30"
-                  )} 
-                />
-              ))}
-            </div>
             <CarouselPrevious className="left-4 h-14 w-14 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
             <CarouselNext className="right-4 h-14 w-14 bg-white/10 hover:bg-white/20 border-0 text-white backdrop-blur-md" />
           </Carousel>
@@ -413,4 +334,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
