@@ -5,6 +5,7 @@ import { FirebaseClientProvider } from '@/firebase';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/context/language-context';
 import { Poppins, Quicksand } from 'next/font/google';
+import { AppContainer } from '@/components/layout/app-container';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -36,9 +37,9 @@ export default function RootLayout({
       <body className={`${quicksand.variable} ${poppins.variable} font-body antialiased selection:bg-primary/20`}>
         <LanguageProvider>
           <FirebaseClientProvider>
-            <div className="mx-auto max-w-[480px] min-h-svh bg-white relative flex flex-col overflow-x-hidden shadow-2xl">
+            <AppContainer>
               {children}
-            </div>
+            </AppContainer>
             <Toaster />
           </FirebaseClientProvider>
         </LanguageProvider>
