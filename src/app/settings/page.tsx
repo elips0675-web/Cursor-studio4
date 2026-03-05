@@ -11,7 +11,8 @@ import {
   ShieldCheck, 
   LogOut, 
   Trash2,
-  Lock
+  Lock,
+  MapPin
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -25,7 +26,8 @@ export default function SettingsPage() {
     discovery: true,
     incognito: false,
     smartPhotos: true,
-    security: true
+    security: true,
+    location: true
   });
 
   const handleSave = () => {
@@ -65,6 +67,23 @@ export default function SettingsPage() {
                   onCheckedChange={(val) => setSettings({...settings, notifications: val})} 
                 />
               </div>
+              
+              <div className="flex items-center justify-between py-3 border-b border-border/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <MapPin size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Геолокация</p>
+                    <p className="text-[10px] text-muted-foreground">Использовать текущее местоположение</p>
+                  </div>
+                </div>
+                <Switch 
+                  checked={settings.location} 
+                  onCheckedChange={(val) => setSettings({...settings, location: val})} 
+                />
+              </div>
+
               <div className="flex items-center justify-between py-3 border-b border-border/50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
