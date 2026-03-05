@@ -54,8 +54,9 @@ export function AppHeader() {
   };
 
   return (
-    <header className="sticky top-0 w-full bg-white/95 backdrop-blur-md border-b border-border px-4 py-3 flex justify-between items-center z-50">
-      <div className="flex items-center gap-2">
+    <header className="sticky top-0 w-full bg-white/95 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between z-50 h-16 relative">
+      {/* Левая часть: кнопка Назад */}
+      <div className="flex items-center min-w-[40px]">
         {!isHomePage && (
           <Button 
             variant="ghost" 
@@ -66,23 +67,25 @@ export function AppHeader() {
             <ChevronLeft size={22} />
           </Button>
         )}
+      </div>
+
+      {/* Центр: Логотип */}
+      <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
         <Link href="/">
-          <h1 className={cn(
-            "text-xl font-black font-headline gradient-text cursor-pointer tracking-tight",
-            !isHomePage && "hidden sm:block"
-          )}>
+          <h1 className="text-xl font-black font-headline gradient-text cursor-pointer tracking-tight">
             SwiftMatch
           </h1>
         </Link>
       </div>
 
-      <div className="flex items-center gap-1.5">
+      {/* Правая часть: Вход + Язык + Уведомления */}
+      <div className="flex items-center gap-1">
         {/* Кнопка Вход */}
         <Button 
           variant="ghost" 
           size="sm" 
           onClick={handleLogin}
-          className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-primary transition-colors"
+          className="text-[10px] font-black uppercase tracking-widest gap-1.5 text-muted-foreground hover:text-primary transition-colors h-9 px-2"
         >
           <LogIn size={14} />
           <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
