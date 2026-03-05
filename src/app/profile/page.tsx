@@ -37,6 +37,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/language-context";
 import {
   Carousel,
   CarouselContent,
@@ -54,20 +55,28 @@ import { cn } from "@/lib/utils";
 const ZodiacIcon = ({ sign }: { sign: string }) => {
   const signs: Record<string, string> = {
     "Овен": "♈", "Телец": "♉", "Близнецы": "♊", "Рак": "♋", "Лев": "♌", "Дева": "♍",
-    "Весы": "♎", "Скорпион": "♏", "Стрелец": "♐", "Козерог": "♑", "Водолей": "♒", "Рыбы": "♓"
+    "Весы": "♎", "Скорпион": "♏", "Стрелец": "♐", "Козерог": "♑", "Водолей": "♒", "Рыбы": "♓",
+    "Aries": "♈", "Taurus": "♉", "Gemini": "♊", "Cancer": "♋", "Leo": "♌", "Virgo": "♍",
+    "Libra": "♎", "Scorpio": "♏", "Sagittarius": "♐", "Capricorn": "♑", "Aquarius": "♒", "Pisces": "♓"
   };
   return <span className="text-xl leading-none">{signs[sign] || "✨"}</span>;
 };
 
 export default function ProfilePage() {
+  const { t, language } = useLanguage();
+  
   const [profile] = useState({
     name: "Анна",
     age: 24,
-    city: "Москва",
-    datingGoal: "Серьезные отношения",
-    zodiac: "Лев",
-    bio: "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты.",
-    interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки", "Рост: 172 см", "Сова"]
+    city: t('profile.city'),
+    datingGoal: t('profile.goal_value'),
+    zodiac: language === 'RU' ? "Лев" : "Leo",
+    bio: language === 'RU' 
+      ? "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты."
+      : "I love sunsets, good coffee, and interesting conversations. Looking for someone to share these moments with.",
+    interests: language === 'RU' 
+      ? ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки", "Рост: 172 см", "Сова"]
+      : ["Photography", "Travel", "Coffee", "Music", "Sports", "Art", "Dogs", "Height: 172 cm", "Night owl"]
   });
 
   const [photos, setPhotos] = useState([
@@ -85,15 +94,15 @@ export default function ProfilePage() {
     if (photos.length >= 10) {
       toast({
         variant: "destructive",
-        title: "Лимит достигнут",
-        description: "Максимум 10 фотографий в профиле.",
+        title: language === 'RU' ? "Лимит достигнут" : "Limit reached",
+        description: language === 'RU' ? "Максимум 10 фотографий в профиле." : "Maximum 10 photos in profile.",
       });
       return;
     }
     const newPhoto = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)].imageUrl;
     setPhotos(prev => [...prev, newPhoto]);
     toast({
-      title: "Фото добавлено",
+      title: language === 'RU' ? "Фото добавлено" : "Photo added",
     });
   };
 
@@ -101,14 +110,14 @@ export default function ProfilePage() {
     if (photos.length <= 1) {
       toast({
         variant: "destructive",
-        title: "Ошибка",
-        description: "В профиле должно быть хотя бы одно фото.",
+        title: language === 'RU' ? "Ошибка" : "Error",
+        description: language === 'RU' ? "В профиле должно быть хотя бы одно фото." : "At least one photo must be in profile.",
       });
       return;
     }
     setPhotos(prev => prev.filter((_, i) => i !== index));
     toast({
-      title: "Фото удалено",
+      title: language === 'RU' ? "Фото удалено" : "Photo deleted",
     });
   };
 
@@ -118,39 +127,44 @@ export default function ProfilePage() {
   };
 
   const interestMap = [
-    { label: "Фотография", icon: Camera },
-    { label: "Путешествия", icon: Globe },
-    { label: "Кофе", icon: Coffee },
-    { label: "Музыка", icon: Music },
-    { label: "Спорт", icon: Dumbbell },
-    { label: "Искусство", icon: Palette },
-    { label: "Кино", icon: Film },
-    { label: "Йога", icon: Flower2 },
-    { label: "Бизнес", icon: Briefcase },
-    { label: "Игры", icon: Gamepad2 },
-    { label: "Собаки", icon: Dog },
-    { label: "Кошки", icon: Dog }, 
-    { label: "Рост:", icon: Ruler },
-    { label: "Сова", icon: Moon },
-    { label: "Жаворонок", icon: Sun },
+    { label: language === 'RU' ? "Фотография" : "Photography", icon: Camera },
+    { label: language === 'RU' ? "Путешествия" : "Travel", icon: Globe },
+    { label: language === 'RU' ? "Кофе" : "Coffee", icon: Coffee },
+    { label: language === 'RU' ? "Музыка" : "Music", icon: Music },
+    { label: language === 'RU' ? "Спорт" : "Sports", icon: Dumbbell },
+    { label: language === 'RU' ? "Искусство" : "Art", icon: Palette },
+    { label: language === 'RU' ? "Кино" : "Movies", icon: Film },
+    { label: language === 'RU' ? "Йога" : "Yoga", icon: Flower2 },
+    { label: language === 'RU' ? "Бизнес" : "Business", icon: Briefcase },
+    { label: language === 'RU' ? "Игры" : "Gaming", icon: Gamepad2 },
+    { label: language === 'RU' ? "Собаки" : "Dogs", icon: Dog },
+    { label: language === 'RU' ? "Кошки" : "Cats", icon: Dog }, 
+    { label: language === 'RU' ? "Рост:" : "Height:", icon: Ruler },
+    { label: language === 'RU' ? "Сова" : "Night owl", icon: Moon },
+    { label: language === 'RU' ? "Жаворонок" : "Early bird", icon: Sun },
   ];
 
-  const lifestyleKeywords = ["Рост:", "Сова", "Жаворонок", "Собаки", "Кошки"];
+  const lifestyleKeywords = [
+    language === 'RU' ? "Рост:" : "Height:", 
+    language === 'RU' ? "Сова" : "Night owl", 
+    language === 'RU' ? "Жаворонок" : "Early bird", 
+    language === 'RU' ? "Собаки" : "Dogs", 
+    language === 'RU' ? "Кошки" : "Cats"
+  ];
+
   const lifestyleDetails = profile.interests.filter(i => lifestyleKeywords.some(key => i.includes(key)));
   const generalInterests = profile.interests.filter(i => !lifestyleKeywords.some(key => i.includes(key)));
-  const heightInfo = profile.interests.find(i => i.includes("Рост:"));
+  const heightInfo = profile.interests.find(i => i.includes(language === 'RU' ? "Рост:" : "Height:"));
 
   return (
     <>
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
-        {/* Header with Background */}
         <div className="h-32 gradient-bg relative shadow-lg">
           <Link href="/settings" className="absolute top-6 right-6 text-white/90 p-2.5 bg-black/15 rounded-full hover:bg-black/25 transition-all backdrop-blur-md">
             <Settings size={20} />
           </Link>
         </div>
 
-        {/* Profile Info Block */}
         <div className="px-5 -mt-12 text-center">
           <div className="relative inline-block mb-4">
             <div 
@@ -161,7 +175,7 @@ export default function ProfilePage() {
             </div>
             <div className="absolute bottom-2 right-2 bg-white p-1 rounded-xl shadow-xl border border-border">
               <Badge className="bg-primary text-white border-0 font-black text-[8px] h-5 px-2 rounded-lg uppercase tracking-widest">
-                PRO 💎
+                {t('profile.pro')}
               </Badge>
             </div>
           </div>
@@ -173,7 +187,7 @@ export default function ProfilePage() {
             
             <div className="flex flex-col items-center gap-2.5">
               <p className="text-muted-foreground text-[10px] font-black flex items-center justify-center gap-1.5 uppercase tracking-widest opacity-80">
-                <MapPin size={12} className="text-primary" /> {profile.city}
+                <MapPin size={12} className="text-primary" /> {t('profile.city')}
               </p>
               
               <div className="flex items-center justify-center gap-2">
@@ -182,11 +196,11 @@ export default function ProfilePage() {
                 </Badge>
                 {heightInfo && (
                   <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-1.5 py-1.5 px-3 font-bold text-[10px] rounded-xl shadow-sm">
-                    <Ruler size={12} /> {heightInfo.replace("Рост: ", "")}
+                    <Ruler size={12} /> {heightInfo.replace(language === 'RU' ? "Рост: " : "Height: ", "")}
                   </Badge>
                 )}
                 <Badge variant="secondary" className="bg-primary/5 text-primary border-0 gap-1.5 py-1.5 px-3 font-bold text-[10px] rounded-xl shadow-sm">
-                  <Target size={12} /> {profile.datingGoal}
+                  <Target size={12} /> {t('profile.goal_value')}
                 </Badge>
               </div>
             </div>
@@ -194,42 +208,39 @@ export default function ProfilePage() {
 
           <div className="flex justify-center gap-3 mb-8">
             <Button asChild className="rounded-2xl gradient-bg text-white h-12 px-10 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0">
-              <Link href="/profile/edit"><Edit2 size={16} className="mr-2" /> Изменить</Link>
+              <Link href="/profile/edit"><Edit2 size={16} className="mr-2" /> {t('profile.edit')}</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-2xl h-12 w-12 p-0 border-border bg-white shadow-sm hover:bg-muted active:scale-95 transition-all">
               <Link href="/settings"><Settings size={20} className="text-muted-foreground" /></Link>
             </Button>
           </div>
 
-          {/* Stats Section - MORE COMPACT */}
           <div className="bg-white rounded-[2rem] p-4 app-shadow border border-border/40 mb-6 flex divide-x divide-border/50">
             <div className="flex-1 py-1">
               <div className="text-xl font-black text-primary leading-none tracking-tighter">128</div>
-              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">Лайков</div>
+              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">{t('profile.likes')}</div>
             </div>
             <div className="flex-1 py-1">
               <div className="text-xl font-black text-primary leading-none tracking-tighter">45</div>
-              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">Мэтчей</div>
+              <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">{t('profile.matches')}</div>
             </div>
           </div>
 
-          {/* About Me Section - COMPACT */}
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={14} className="text-primary" />
-              <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">О себе</h4>
+              <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4>
             </div>
             <p className="text-[12px] text-foreground/80 leading-relaxed font-medium">
               {profile.bio}
             </p>
           </div>
 
-          {/* Interests and Lifestyle - COMPACT & CLEAN */}
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
             <div className="space-y-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Стиль жизни</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{t('profile.lifestyle')}</p>
               <div className="flex flex-wrap gap-2">
-                {lifestyleDetails.filter(d => !d.includes("Рост:")).map((detail) => {
+                {lifestyleDetails.filter(d => !d.includes(language === 'RU' ? "Рост:" : "Height:")).map((detail) => {
                   const mapItem = interestMap.find(m => detail.includes(m.label));
                   const Icon = mapItem?.icon || Star;
                   return (
@@ -244,7 +255,7 @@ export default function ProfilePage() {
             <div className="h-px bg-muted/60" />
             
             <div className="space-y-4">
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Интересы</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{t('profile.interests')}</p>
               <div className="flex flex-wrap gap-2">
                 {generalInterests.map((interest) => {
                   const mapItem = interestMap.find(m => interest.includes(m.label));
@@ -259,15 +270,14 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Gallery Management */}
           <div className="bg-white rounded-[2.5rem] p-8 app-shadow border border-border/40 mb-12 text-left">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-2">
                 <Camera size={18} className="text-primary" />
-                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Галерея</h4>
+                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
               </div>
               <button onClick={handleAddPhoto} className="text-primary flex items-center gap-1.5 text-[11px] font-black uppercase hover:underline tracking-widest">
-                <Plus size={18} /> Добавить
+                <Plus size={18} /> {t('profile.add')}
               </button>
             </div>
             <div className="grid grid-cols-2 gap-5">
@@ -285,32 +295,17 @@ export default function ProfilePage() {
               {photos.length < 10 && (
                 <button onClick={handleAddPhoto} className="aspect-[3/4] rounded-[2rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all shadow-sm">
                   <Plus size={40} className="opacity-30 group-hover:text-primary transition-colors" />
-                  <span className="text-[10px] font-black mt-3 uppercase tracking-widest opacity-50">Загрузить</span>
+                  <span className="text-[10px] font-black mt-3 uppercase tracking-widest opacity-50">{t('profile.add')}</span>
                 </button>
               )}
             </div>
           </div>
-
-          {/* Premium Banner */}
-          <div className="gradient-bg rounded-[2.5rem] p-8 text-white text-center app-shadow mb-12 relative overflow-hidden group">
-            <div className="absolute -top-4 -right-4 p-4 opacity-15 rotate-12 group-hover:scale-110 transition-transform">
-              <Star size={100} fill="currentColor" />
-            </div>
-            <h5 className="font-black text-2xl mb-1 relative z-10 tracking-tight">SwiftMatch Premium</h5>
-            <p className="text-[10px] text-white/80 mb-6 max-w-[240px] mx-auto relative z-10 font-bold uppercase tracking-widest leading-relaxed">
-              Узнай кто тебя лайкнул и получи безлимит возможностей
-            </p>
-            <Button variant="secondary" className="w-full rounded-2xl h-14 bg-white text-primary font-black uppercase text-[11px] tracking-widest hover:bg-white/90 shadow-2xl relative z-10 active:scale-95 transition-all border-0">
-              Стать Premium
-            </Button>
-          </div>
         </div>
       </main>
 
-      {/* Photo Viewer Dialog */}
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center outline-none">
-          <DialogTitle className="sr-only">Просмотр фото</DialogTitle>
+          <DialogTitle className="sr-only">Viewer</DialogTitle>
           <button onClick={() => setIsViewerOpen(false)} className="absolute top-4 right-4 z-50 p-3 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-black/70 active:scale-90 transition-all">
             <X size={24} />
           </button>

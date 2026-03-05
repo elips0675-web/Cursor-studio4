@@ -9,14 +9,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
 
 export function AppHeader() {
-  const [lang, setLang] = useState("RU");
+  const { language, setLanguage } = useLanguage();
 
-  const handleLangChange = (newLang: string) => {
-    setLang(newLang);
+  const handleLangChange = (newLang: 'RU' | 'EN') => {
+    setLanguage(newLang);
     toast({
       title: newLang === "RU" ? "Язык изменен" : "Language changed",
       description: newLang === "RU" ? "Выбран русский язык" : "English language selected",
@@ -35,7 +35,7 @@ export function AppHeader() {
           <DropdownMenuTrigger asChild>
             <button className="h-10 px-3 rounded-full bg-[#f5f7fa] flex items-center justify-center text-foreground hover:bg-border transition-all active:scale-95 gap-1.5 border border-transparent hover:border-border/50">
               <Languages size={16} className="text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-tight">{lang}</span>
+              <span className="text-[10px] font-black uppercase tracking-tight">{language}</span>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="rounded-[1.5rem] border-0 app-shadow p-2 min-w-[120px] bg-white z-50">
