@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { 
   MapPin, 
@@ -28,7 +28,16 @@ import {
   Heart,
   MessageCircle,
   ChevronLeft,
-  Cpu
+  Cpu,
+  Anchor,
+  Map,
+  Sprout,
+  BookOpen,
+  Scissors,
+  FlaskConical,
+  Car,
+  ChefHat,
+  Brush
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,15 +67,15 @@ import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibi
 
 const ALL_DEMO_USERS = [
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, distance: 2, match: 87, city: 'Москва', zodiac: 'Лев', interests: ['Фотография', 'Кофе', 'Музыка', 'Путешествия'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', height: 172, goal: 'Серьезные отношения' },
-  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, hint: PlaceHolderImages[1].imageHint, distance: 5, match: 92, city: 'Питер', zodiac: 'Овен', interests: ['Спорт', 'IT', 'Книги'], bio: 'Ищу компанию для пробежек и обсуждения технологий.', height: 185, goal: 'Новые друзья' },
-  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, hint: PlaceHolderImages[2].imageHint, distance: 3, match: 81, city: 'Москва', zodiac: 'Рыбы', interests: ['Искусство', 'Книги', 'Вино'], bio: 'Ищу кого-то, кто любит музеи и долгие прогулки.', height: 168, goal: 'Свидания' },
+  { id: 2, name: 'Максим', age: 28, img: PlaceHolderImages[1].imageUrl, hint: PlaceHolderImages[1].imageHint, distance: 5, match: 92, city: 'Питер', zodiac: 'Овен', interests: ['Спорт', 'IT технологии', 'Чтение'], bio: 'Ищу компанию для пробежек и обсуждения технологий.', height: 185, goal: 'Новые друзья' },
+  { id: 3, name: 'Елена', age: 26, img: PlaceHolderImages[2].imageUrl, hint: PlaceHolderImages[2].imageHint, distance: 3, match: 81, city: 'Москва', zodiac: 'Рыбы', interests: ['Искусство', 'Чтение', 'Кулинария'], bio: 'Ищу кого-то, кто любит музеи и долгие прогулки.', height: 168, goal: 'Свидания' },
   { id: 4, name: 'Дмитрий', age: 31, img: PlaceHolderImages[3].imageUrl, hint: PlaceHolderImages[3].imageHint, distance: 12, match: 75, city: 'Казань', zodiac: 'Телец', interests: ['Бизнес', 'Авто', 'Спорт'], bio: 'Ценю время и качественный отдых.', height: 182, goal: 'Серьезные отношения' },
-  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, hint: PlaceHolderImages[4].imageHint, distance: 7, match: 88, city: 'Москва', zodiac: 'Дева', interests: ['Музыка', 'Гитара', 'Фотография'], bio: 'Мечтаю собрать свою группу и объехать мир.', height: 165, goal: 'Просто общение' },
-  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, hint: PlaceHolderImages[5].imageHint, distance: 4, match: 69, city: 'Питер', zodiac: 'Близнецы', interests: ['Игры', 'Аниме', 'IT'], bio: 'Давай поиграем вместе или посмотрим сериал.', height: 178, goal: 'Свидания' },
+  { id: 5, name: 'София', age: 22, img: PlaceHolderImages[4].imageUrl, hint: PlaceHolderImages[4].imageHint, distance: 7, match: 88, city: 'Москва', zodiac: 'Дева', interests: ['Музыка', 'Творчество', 'Фотография'], bio: 'Мечтаю собрать свою группу и объехать мир.', height: 165, goal: 'Просто общение' },
+  { id: 6, name: 'Артем', age: 25, img: PlaceHolderImages[5].imageUrl, hint: PlaceHolderImages[5].imageHint, distance: 4, match: 69, city: 'Питер', zodiac: 'Близнецы', interests: ['Игры', 'Кино', 'IT технологии'], bio: 'Давай поиграем вместе или посмотрим сериал.', height: 178, goal: 'Свидания' },
   { id: 7, name: 'Мария', age: 29, img: PlaceHolderImages[6].imageUrl, hint: PlaceHolderImages[6].imageHint, distance: 1, match: 94, city: 'Москва', zodiac: 'Скорпион', interests: ['Йога', 'Природа', 'Путешествия'], bio: 'Люблю готовить полезную еду и ходить в походы.', height: 170, goal: 'Серьезные отношения' },
-  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, hint: PlaceHolderImages[7].imageHint, distance: 15, match: 72, city: 'Сочи', zodiac: 'Стрелец', interests: ['Горы', 'Фотография', 'Спорт'], bio: 'Пейзажный фотограф в поисках приключений.', height: 188, goal: 'Новые друзья' },
-  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, hint: PlaceHolderImages[8].imageHint, distance: 6, match: 83, city: 'Москва', zodiac: 'Козерог', interests: ['Мода', 'Дизайн', 'Искусство'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.', height: 174, goal: 'Серьезные отношения' },
-  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, distance: 9, match: 77, city: 'Питер', zodiac: 'Водолей', interests: ['Наука', 'История', 'Книги'], bio: 'Люблю узнавать что-то новое каждый день.', height: 180, goal: 'Просто общение' }
+  { id: 8, name: 'Иван', age: 27, img: PlaceHolderImages[7].imageUrl, hint: PlaceHolderImages[7].imageHint, distance: 15, match: 72, city: 'Сочи', zodiac: 'Стрелец', interests: ['Туризм', 'Фотография', 'Спорт'], bio: 'Пейзажный фотограф в поисках приключений.', height: 188, goal: 'Новые друзья' },
+  { id: 9, name: 'Ксения', age: 23, img: PlaceHolderImages[8].imageUrl, hint: PlaceHolderImages[8].imageHint, distance: 6, match: 83, city: 'Москва', zodiac: 'Козерог', interests: ['Рукоделие', 'Дизайн', 'Искусство'], bio: 'Жизнь слишком коротка, чтобы носить скучную одежду.', height: 174, goal: 'Серьезные отношения' },
+  { id: 10, name: 'Никита', age: 30, img: PlaceHolderImages[9].imageUrl, hint: PlaceHolderImages[9].imageHint, distance: 9, match: 77, city: 'Питер', zodiac: 'Водолей', interests: ['Наука', 'История', 'Чтение'], bio: 'Люблю узнавать что-то новое каждый день.', height: 180, goal: 'Просто общение' }
 ];
 
 const ZodiacIcon = ({ sign }: { sign: string }) => {
@@ -80,31 +89,36 @@ const ZodiacIcon = ({ sign }: { sign: string }) => {
 };
 
 const interestIcons: Record<string, any> = {
-  "Фотография": Camera,
-  "Путешествия": Globe,
-  "Кофе": Coffee,
-  "Музыка": Music,
-  "Спорт": Dumbbell,
-  "Искусство": Palette,
-  "Кино": Film,
-  "Йога": Flower2,
-  "Бизнес": Briefcase,
-  "Игры": Gamepad2,
-  "IT": Sparkles,
-  "Книги": Star,
-  "Природа": Sun,
-  "Photography": Camera,
-  "Travel": Globe,
-  "Coffee": Coffee,
-  "Music": Music,
-  "Sports": Dumbbell,
-  "Art": Palette,
-  "Movies": Film,
-  "Yoga": Flower2,
-  "Business": Briefcase,
-  "Gaming": Gamepad2,
-  "Books": Star,
-  "Nature": Sun
+    "Фотография": Camera,
+    "Путешествия": Globe,
+    "Кофе": Coffee,
+    "Музыка": Music,
+    "Спорт": Dumbbell,
+    "Искусство": Palette,
+    "Кино": Film,
+    "Йога": Flower2,
+    "Бизнес": Briefcase,
+    "Игры": Gamepad2,
+    "IT технологии": Cpu,
+    "Рыбалка": Anchor,
+    "Туризм": Map,
+    "Садоводство": Sprout,
+    "Чтение": BookOpen,
+    "Книги": BookOpen,
+    "Рукоделие": Scissors,
+    "Наука": FlaskConical,
+    "Авто": Car,
+    "Животные": Dog,
+    "Кулинария": ChefHat,
+    "Творчество": Brush,
+    "Природа": Sun,
+    "Собаки": Dog,
+    "Кошки": Dog,
+    "IT": Cpu,
+    "Дизайн": Palette,
+    "Горы": Mountain,
+    "Мода": Sparkles,
+    "Вино": Wine,
 };
 
 function HeartConfetti() {
@@ -447,3 +461,5 @@ export default function UserProfilePage() {
     </Suspense>
   );
 }
+
+    
