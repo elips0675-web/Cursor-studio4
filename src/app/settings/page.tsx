@@ -12,7 +12,8 @@ import {
   LogOut, 
   Trash2,
   Lock,
-  MapPin
+  MapPin,
+  Camera
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -27,7 +28,8 @@ export default function SettingsPage() {
     incognito: false,
     smartPhotos: true,
     security: true,
-    location: true
+    location: true,
+    photoVerification: true
   });
 
   const handleSave = () => {
@@ -103,7 +105,7 @@ export default function SettingsPage() {
           </section>
 
           <section className="space-y-4">
-            <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Приватность</h5>
+            <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">Приватность и безопасность</h5>
             <div className="space-y-1">
               <div className="flex items-center justify-between py-3 border-b border-border/50">
                 <div className="flex items-center gap-3">
@@ -120,6 +122,23 @@ export default function SettingsPage() {
                   onCheckedChange={(val) => setSettings({...settings, incognito: val})} 
                 />
               </div>
+
+              <div className="flex items-center justify-between py-3 border-b border-border/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                    <Camera size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Проверка фото</p>
+                    <p className="text-[10px] text-muted-foreground">Автоматическая проверка на неприемлемый контент</p>
+                  </div>
+                </div>
+                <Switch 
+                  checked={settings.photoVerification} 
+                  onCheckedChange={(val) => setSettings({...settings, photoVerification: val})} 
+                />
+              </div>
+
               <div className="flex items-center justify-between py-3 border-b border-border/50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
