@@ -282,7 +282,7 @@ export default function ProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-5">
               {photos.map((url, idx) => (
-                <div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-[3/4] rounded-[2rem] overflow-hidden bg-muted group shadow-md border border-border/10 cursor-pointer hover:scale-[1.02] transition-all">
+                <div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-square rounded-[2rem] overflow-hidden bg-muted group shadow-md border border-border/10 cursor-pointer hover:scale-[1.02] transition-all">
                   <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
                     <div className="p-3 bg-white/20 backdrop-blur-md text-white rounded-full"><Maximize2 size={20} /></div>
@@ -293,7 +293,7 @@ export default function ProfilePage() {
                 </div>
               ))}
               {photos.length < 10 && (
-                <button onClick={handleAddPhoto} className="aspect-[3/4] rounded-[2rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all shadow-sm">
+                <button onClick={handleAddPhoto} className="aspect-square rounded-[2rem] border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/30 hover:border-primary/30 transition-all shadow-sm">
                   <Plus size={40} className="opacity-30 group-hover:text-primary transition-colors" />
                   <span className="text-[10px] font-black mt-3 uppercase tracking-widest opacity-50">{t('profile.add')}</span>
                 </button>
