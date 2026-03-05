@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { 
   Settings, 
   MapPin, 
@@ -28,7 +28,8 @@ import {
   Sun,
   Target,
   Sparkles,
-  Heart
+  Heart,
+  Upload
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -63,6 +64,7 @@ const ZodiacIcon = ({ sign }: { sign: string }) => {
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [profile] = useState({
     name: "Анна",
@@ -89,20 +91,34 @@ export default function ProfilePage() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
-  const handleAddPhoto = () => {
-    if (photos.length >= 10) {
-      toast({
-        variant: "destructive",
-        title: language === 'RU' ? "Лимит достигнут" : "Limit reached",
-        description: language === 'RU' ? "Максимум 10 фотографий в профиле." : "Maximum 10 photos in profile.",
-      });
-      return;
+  const handleTriggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (photos.length >= 10) {
+        toast({
+          variant: "destructive",
+          title: language === 'RU' ? "Лимит достигнут" : "Limit reached",
+          description: language === 'RU' ? "Максимум 10 фотографий в профиле." : "Maximum 10 photos in profile.",
+        });
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotos(prev => [...prev, reader.result as string]);
+        toast({
+          title: language === 'RU' ? "Фото добавлено" : "Photo added",
+          description: language === 'RU' ? "Ваша галерея обновлена." : "Your gallery has been updated.",
+        });
+      };
+      reader.readAsDataURL(file);
+      // Сбрасываем значение input, чтобы можно было выбрать тот же файл снова
+      e.target.value = '';
     }
-    const newPhoto = PlaceHolderImages[Math.floor(Math.random() * PlaceHolderImages.length)].imageUrl;
-    setPhotos(prev => [...prev, newPhoto]);
-    toast({
-      title: language === 'RU' ? "Фото добавлено" : "Photo added",
-    });
   };
 
   const handleDeletePhoto = (index: number) => {
@@ -251,9 +267,19 @@ export default function ProfilePage() {
                 <Camera size={18} className="text-primary" />
                 <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
               </div>
-              <button onClick={handleAddPhoto} className="text-primary flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest">
+              <button 
+                onClick={handleTriggerFileInput} 
+                className="text-primary flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest hover:opacity-80 transition-opacity active:scale-95"
+              >
                 <Plus size={18} /> {t('profile.add')}
               </button>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                accept="image/*" 
+                className="hidden" 
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               {photos.map((url, idx) => (
