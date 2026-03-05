@@ -113,17 +113,17 @@ export default function EditProfilePage() {
       </header>
 
       <main className="flex-1 overflow-y-auto p-4 space-y-5 pb-8">
-        {/* Photo Section */}
+        {/* Photo Section - Increased Size */}
         <div className="flex flex-col items-center gap-2 pt-2">
           <div className="relative group">
-            <div className="w-24 h-24 rounded-[2rem] border-4 border-white overflow-hidden relative shadow-lg transform transition-transform group-hover:scale-[1.02]">
+            <div className="w-36 h-36 rounded-[2.5rem] border-4 border-white overflow-hidden relative shadow-lg transform transition-transform group-hover:scale-[1.02]">
               <Image src={PlaceHolderImages[0].imageUrl} alt="Profile" fill className="object-cover" />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-[2px]">
-                <Camera className="text-white" size={20} />
+                <Camera className="text-white" size={24} />
               </div>
             </div>
-            <button className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-xl shadow-md border-2 border-white active:scale-90 transition-transform">
-              <Camera size={14} />
+            <button className="absolute bottom-1 right-1 bg-primary text-white p-2.5 rounded-2xl shadow-md border-2 border-white active:scale-90 transition-transform">
+              <Camera size={16} />
             </button>
           </div>
           <p className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.2em] mt-1">Главное фото</p>
