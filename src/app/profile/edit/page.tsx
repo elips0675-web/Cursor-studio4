@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -108,14 +109,14 @@ export default function EditProfilePage() {
         <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full h-9 w-9">
           <ChevronLeft size={20} />
         </Button>
-        <h1 className="text-lg font-black font-headline tracking-tight">Изменить профиль</h1>
+        <h1 className="text-lg font-black font-headline tracking-tight uppercase">Изменить профиль</h1>
       </header>
 
-      <main className="flex-1 overflow-y-auto p-4 space-y-5 pb-6">
+      <main className="flex-1 overflow-y-auto p-4 space-y-5 pb-8">
         {/* Photo Section */}
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 pt-2">
           <div className="relative group">
-            <div className="w-28 h-28 rounded-[2rem] border-4 border-white overflow-hidden relative shadow-lg transform transition-transform group-hover:scale-[1.02]">
+            <div className="w-24 h-24 rounded-[2rem] border-4 border-white overflow-hidden relative shadow-lg transform transition-transform group-hover:scale-[1.02]">
               <Image src={PlaceHolderImages[0].imageUrl} alt="Profile" fill className="object-cover" />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-[2px]">
                 <Camera className="text-white" size={20} />
@@ -125,11 +126,11 @@ export default function EditProfilePage() {
               <Camera size={14} />
             </button>
           </div>
-          <p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">Главное фото</p>
+          <p className="text-[9px] text-muted-foreground font-black uppercase tracking-[0.2em] mt-1">Главное фото</p>
         </div>
 
         {/* Main Data Card */}
-        <div className="bg-white rounded-[2rem] p-6 app-shadow space-y-5 border border-border/40">
+        <div className="bg-white rounded-[2rem] p-6 app-shadow space-y-6 border border-border/40">
           
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
@@ -234,7 +235,7 @@ export default function EditProfilePage() {
               value={profile.bio} 
               onChange={e => setProfile({...profile, bio: e.target.value})}
               placeholder="Расскажите о себе..."
-              className="rounded-2xl bg-muted/30 border-0 min-h-[100px] text-xs resize-none focus-visible:ring-primary/20 leading-relaxed font-medium p-4"
+              className="rounded-2xl bg-muted/30 border-0 min-h-[90px] text-xs resize-none focus-visible:ring-primary/20 leading-relaxed font-medium p-4"
             />
           </div>
 

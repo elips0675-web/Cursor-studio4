@@ -108,7 +108,7 @@ export default function Home() {
       });
       setCompatibility(res.explanation);
     } catch (e) {
-      setCompatibility("Вы отлично подходите друг другу! Общие интересы в области " + (targetUser.interests[0] || "жизни") + " станут отличным началом разговора.");
+      setCompatibility("Вы отлично подходите друг другу! Общие интересы станут отличным началом разговора.");
     } finally {
       setLoadingAi(false);
     }
@@ -130,11 +130,6 @@ export default function Home() {
   const handleAutoSearch = () => {
     setIsAutoSearching(true);
     setShowResults(false);
-    
-    toast({
-      title: "Автопоиск запущен",
-      description: "Применяем ваши фильтры для поиска идеальных анкет...",
-    });
     
     setTimeout(() => {
       const filtered = ALL_DEMO_USERS.filter(user => {
@@ -172,7 +167,7 @@ export default function Home() {
           <Badge variant="secondary" className="mb-3 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-bold uppercase tracking-widest">
             <Flame size={12} fill="currentColor" /> Популярное сейчас
           </Badge>
-          <h2 className="text-2xl font-black font-headline mb-2 leading-tight">
+          <h2 className="text-2xl font-black font-headline mb-2 leading-tight tracking-tight text-foreground">
             Твой идеальный <br />
             <span className="gradient-text">мэтч</span> ждет тебя
           </h2>
@@ -199,12 +194,12 @@ export default function Home() {
 
         {/* Featured Users */}
         <section className="mb-10">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-4 px-1">
             <div className="flex items-center gap-2">
-              <Trophy size={20} className="text-primary" />
-              <h5 className="font-black text-lg font-headline">Топ недели</h5>
+              <Trophy size={18} className="text-primary" />
+              <h5 className="font-black text-lg font-headline tracking-tight">Топ недели</h5>
             </div>
-            <Button asChild variant="outline" className="text-primary font-black uppercase tracking-widest text-[9px] h-8 px-4 rounded-full border-primary/20 hover:bg-primary/5 bg-white transition-all shadow-sm">
+            <Button asChild variant="ghost" className="text-primary font-bold uppercase tracking-widest text-[10px] h-auto p-0 hover:bg-transparent">
                <Link href="/search">Все</Link>
             </Button>
           </div>
@@ -217,10 +212,10 @@ export default function Home() {
 
         {/* Recommended Section */}
         <section className="scroll-mt-6 mb-10">
-          <div className="flex justify-between items-end mb-4">
+          <div className="flex justify-between items-end mb-4 px-1">
             <div className="flex items-center gap-2">
-              <Sparkles size={20} className="text-primary" />
-              <h5 className="font-black text-lg font-headline">Рекомендуем</h5>
+              <Sparkles size={18} className="text-primary" />
+              <h5 className="font-black text-lg font-headline tracking-tight">Рекомендуем</h5>
             </div>
             <Badge variant="outline" className="text-[9px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">Рядом</Badge>
           </div>
@@ -241,12 +236,12 @@ export default function Home() {
           )}
 
           {showResults && (
-            <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12">
+            <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 pb-12 px-1">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Zap size={20} className="text-primary fill-current" />
+                  <Zap size={18} className="text-primary fill-current" />
                   <div>
-                    <h5 className="font-black text-lg font-headline">Результаты</h5>
+                    <h5 className="font-black text-lg font-headline tracking-tight">Результаты</h5>
                     <p className="text-[9px] text-primary font-bold uppercase tracking-wider">Найдено: {searchResults.length}</p>
                   </div>
                 </div>
@@ -267,7 +262,7 @@ export default function Home() {
                   ))}
                 </div>
               ) : (
-                <div className="bg-white rounded-[2rem] p-6 text-center app-shadow border border-dashed border-muted">
+                <div className="bg-white rounded-[2rem] p-8 text-center app-shadow border border-dashed border-muted/50">
                   <p className="text-xs text-muted-foreground font-medium mb-4 leading-tight">По вашим параметрам пока никого нет.</p>
                   <Button 
                     variant="outline" 
@@ -333,10 +328,10 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-3 w-full">
-              <Button onClick={() => router.push(`/chats?matchId=${matchUser.id}`)} className="w-full h-14 rounded-full gradient-bg text-white font-bold app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0">
+              <Button onClick={() => router.push(`/chats?matchId=${matchUser.id}`)} className="w-full h-14 rounded-full gradient-bg text-white font-bold app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-widest text-xs">
                 Написать первым
               </Button>
-              <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-12 text-muted-foreground font-semibold hover:bg-muted shadow-sm">
+              <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-12 text-muted-foreground font-bold hover:bg-muted shadow-sm uppercase tracking-widest text-[10px]">
                 Продолжить
               </Button>
             </div>
@@ -416,38 +411,6 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
-            {/* Zodiac */}
-            <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Знак зодиака</label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedZodiac("Все")}
-                  className={cn(
-                    "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-tight transition-all border-2",
-                    selectedZodiac === "Все" 
-                      ? "border-primary bg-primary/5 text-primary" 
-                      : "border-muted text-muted-foreground"
-                  )}
-                >
-                  Любой
-                </button>
-                {ZODIAC_SIGNS.slice(0, 6).map(sign => (
-                  <button
-                    key={sign}
-                    onClick={() => setSelectedZodiac(sign)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-tight transition-all border-2",
-                      selectedZodiac === sign 
-                        ? "border-primary bg-primary/5 text-primary" 
-                        : "border-muted text-muted-foreground"
-                    )}
-                  >
-                    {sign}
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
 
           <DialogFooter className="p-8 pt-0">
@@ -485,8 +448,8 @@ function FeaturedCard({ user, onLike }: { user: any; onLike: () => void }) {
              </Badge>
         </div>
         <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-          <p className="text-white font-bold text-sm leading-tight truncate">{user.name}, {user.age}</p>
-          <div className="text-white/80 text-[10px] flex items-center gap-1 font-medium mt-0.5">
+          <p className="text-white font-bold text-sm leading-tight truncate tracking-tight">{user.name}, {user.age}</p>
+          <div className="text-white/80 text-[10px] flex items-center gap-1 font-bold mt-0.5">
             <MapPin size={10} /> {user.distance} км
           </div>
         </div>
@@ -536,7 +499,7 @@ function ProfilePreviewCard({ user, showActions = false, onLike }: { user: any; 
       <div className="p-3 flex-1 flex flex-col justify-between">
         <div className="mb-2">
           <div className="flex justify-between items-center mb-0.5">
-            <span className="font-bold text-sm truncate pr-1">{user.name}, {user.age}</span>
+            <span className="font-bold text-sm truncate pr-1 tracking-tight">{user.name}, {user.age}</span>
             <span className="text-primary text-[10px] font-black">{user.match}%</span>
           </div>
           <div className="text-muted-foreground text-[10px] flex items-center gap-1 font-medium truncate">

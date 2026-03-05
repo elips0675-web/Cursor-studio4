@@ -159,22 +159,23 @@ export default function ProfilePage() {
             >
               <Image src={photos[0]} alt={profile.name} fill className="object-cover" priority />
             </div>
-            <Badge className="absolute bottom-2 right-2 bg-primary text-white border-2 border-white font-black text-[9px] h-6 px-2.5 rounded-full shadow-xl uppercase tracking-widest">
-              PRO 💎
-            </Badge>
+            <div className="absolute bottom-2 right-2 bg-white p-1 rounded-xl shadow-xl border border-border">
+              <Badge className="bg-primary text-white border-0 font-black text-[8px] h-5 px-2 rounded-lg uppercase tracking-widest">
+                PRO 💎
+              </Badge>
+            </div>
           </div>
 
-          <div className="mb-6 space-y-2">
+          <div className="mb-6 space-y-3">
             <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">
               {profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" />
             </h3>
             
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-muted-foreground text-[11px] font-black flex items-center justify-center gap-1.5 uppercase tracking-[0.15em] opacity-70">
+            <div className="flex flex-col items-center gap-2.5">
+              <p className="text-muted-foreground text-[10px] font-black flex items-center justify-center gap-1.5 uppercase tracking-widest opacity-80">
                 <MapPin size={12} className="text-primary" /> {profile.city}
               </p>
               
-              {/* Main Attributes under city */}
               <div className="flex items-center justify-center gap-2">
                 <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-1.5 py-1.5 px-3 font-bold text-[10px] rounded-xl shadow-sm">
                   <ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}
@@ -192,7 +193,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="flex justify-center gap-3 mb-8">
-            <Button asChild className="rounded-2xl gradient-bg text-white h-12 px-12 font-black uppercase text-[11px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0">
+            <Button asChild className="rounded-2xl gradient-bg text-white h-12 px-10 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0">
               <Link href="/profile/edit"><Edit2 size={16} className="mr-2" /> Изменить</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-2xl h-12 w-12 p-0 border-border bg-white shadow-sm hover:bg-muted active:scale-95 transition-all">
@@ -200,19 +201,19 @@ export default function ProfilePage() {
             </Button>
           </div>
 
-          {/* Stats Section */}
+          {/* Stats Section - MORE COMPACT */}
           <div className="bg-white rounded-[2rem] p-4 app-shadow border border-border/40 mb-6 flex divide-x divide-border/50">
             <div className="flex-1 py-1">
-              <div className="text-xl font-black text-primary leading-none">128</div>
+              <div className="text-xl font-black text-primary leading-none tracking-tighter">128</div>
               <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">Лайков</div>
             </div>
             <div className="flex-1 py-1">
-              <div className="text-xl font-black text-primary leading-none">45</div>
+              <div className="text-xl font-black text-primary leading-none tracking-tighter">45</div>
               <div className="text-[9px] text-muted-foreground uppercase font-black tracking-widest mt-1.5 opacity-60">Мэтчей</div>
             </div>
           </div>
 
-          {/* About Me Section */}
+          {/* About Me Section - COMPACT */}
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles size={14} className="text-primary" />
@@ -223,16 +224,16 @@ export default function ProfilePage() {
             </p>
           </div>
 
-          {/* Interests and Lifestyle Sections */}
+          {/* Interests and Lifestyle - COMPACT & CLEAN */}
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
             <div className="space-y-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Стиль жизни</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Стиль жизни</p>
               <div className="flex flex-wrap gap-2">
                 {lifestyleDetails.filter(d => !d.includes("Рост:")).map((detail) => {
                   const mapItem = interestMap.find(m => detail.includes(m.label));
                   const Icon = mapItem?.icon || Star;
                   return (
-                    <Badge key={detail} variant="secondary" className="bg-blue-50/50 text-blue-600 border-0 gap-2 py-2 px-4 font-bold text-[10px] rounded-xl">
+                    <Badge key={detail} variant="secondary" className="bg-blue-50/50 text-blue-600 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-xl">
                       <Icon size={14} /> {detail}
                     </Badge>
                   );
@@ -243,13 +244,13 @@ export default function ProfilePage() {
             <div className="h-px bg-muted/60" />
             
             <div className="space-y-4">
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Интересы</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Интересы</p>
               <div className="flex flex-wrap gap-2">
                 {generalInterests.map((interest) => {
                   const mapItem = interestMap.find(m => interest.includes(m.label));
                   const Icon = mapItem?.icon || Heart;
                   return (
-                    <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[10px] rounded-xl hover:bg-muted transition-all">
+                    <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-xl hover:bg-muted transition-all">
                       <Icon size={14} className="text-primary" /> {interest}
                     </Badge>
                   );
@@ -296,7 +297,7 @@ export default function ProfilePage() {
               <Star size={100} fill="currentColor" />
             </div>
             <h5 className="font-black text-2xl mb-1 relative z-10 tracking-tight">SwiftMatch Premium</h5>
-            <p className="text-[11px] text-white/80 mb-6 max-w-[240px] mx-auto relative z-10 font-bold uppercase tracking-widest leading-relaxed">
+            <p className="text-[10px] text-white/80 mb-6 max-w-[240px] mx-auto relative z-10 font-bold uppercase tracking-widest leading-relaxed">
               Узнай кто тебя лайкнул и получи безлимит возможностей
             </p>
             <Button variant="secondary" className="w-full rounded-2xl h-14 bg-white text-primary font-black uppercase text-[11px] tracking-widest hover:bg-white/90 shadow-2xl relative z-10 active:scale-95 transition-all border-0">
