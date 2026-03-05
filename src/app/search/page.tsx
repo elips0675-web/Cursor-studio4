@@ -15,6 +15,7 @@ import {
   Dialog, 
   DialogContent, 
   DialogTitle, 
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
@@ -43,8 +44,8 @@ function HeartConfetti() {
           animate={{ 
             opacity: [1, 1, 0], 
             scale: [0, 1.3, 0.7], 
-            x: [`0px`, `${(Math.random() - 0.5) * 400}px`], 
-            y: [`0px`, `${(Math.random() - 0.5) * 500}px`],
+            x: [`0px`, `${(Math.random() - 0.5) * 450}px`], 
+            y: [`0px`, `${(Math.random() - 0.5) * 550}px`],
             rotate: Math.random() * 1080
           }}
           transition={{ 
@@ -234,25 +235,83 @@ export default function SearchPage() {
       <Dialog open={!!matchUser} onOpenChange={() => setMatchUser(null)}>
         <DialogContent className="max-w-[360px] rounded-[2.5rem] border-0 bg-white p-0 overflow-hidden app-shadow">
           <HeartConfetti />
-          <div className="relative h-32 gradient-bg flex items-center justify-center">
-             <div className="relative z-10 bg-white p-3 rounded-full shadow-2xl">
+          
+          <div className="relative h-40 gradient-bg flex items-center justify-center">
+             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+             <motion.div 
+               initial={{ scale: 0 }}
+               animate={{ scale: 1 }}
+               transition={{ type: "spring", damping: 10, stiffness: 100 }}
+               className="relative z-10 bg-white p-4 rounded-full shadow-2xl"
+             >
                <Heart className="text-primary animate-pulse" size={32} fill="currentColor" />
-             </div>
+             </motion.div>
           </div>
-          <div className="px-6 py-8 text-center -mt-12 bg-white rounded-t-[2.5rem] relative">
-            <div className="flex items-center justify-center gap-0 mb-6 relative">
-               <div className="w-24 h-24 rounded-full border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-4 bg-muted">
-                  <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill data-ai-hint={PlaceHolderImages[10].imageHint} className="object-cover" />
-               </div>
-               <div className="w-24 h-24 rounded-full border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted">
-                  <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name} fill data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
-               </div>
+
+          <div className="px-6 py-10 text-center -mt-10 bg-white rounded-t-[2.5rem] relative">
+            <div className="flex items-center justify-center gap-0 mb-8 relative h-28">
+               <motion.div 
+                 initial={{ x: -50, opacity: 0, rotate: -10 }}
+                 animate={{ x: 0, opacity: 1, rotate: -5 }}
+                 transition={{ delay: 0.2 }}
+                 className="w-28 h-28 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-6"
+               >
+                  <Image 
+                    src={PlaceHolderImages[10].imageUrl} 
+                    alt="Вы" 
+                    fill 
+                    data-ai-hint={PlaceHolderImages[10].imageHint}
+                    className="object-cover" 
+                  />
+               </motion.div>
+               <motion.div 
+                 initial={{ x: 50, opacity: 0, rotate: 10 }}
+                 animate={{ x: 0, opacity: 1, rotate: 5 }}
+                 transition={{ delay: 0.3 }}
+                 className="w-28 h-28 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0"
+               >
+                  <Image 
+                    src={matchUser?.img || PlaceHolderImages[0].imageUrl} 
+                    alt={matchUser?.name} 
+                    fill 
+                    data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint}
+                    className="object-cover" 
+                  />
+               </motion.div>
             </div>
+
             <DialogTitle className="text-2xl font-black font-headline mb-2 gradient-text uppercase tracking-tight">Это совпадение!</DialogTitle>
-            <div className="bg-primary/5 p-5 rounded-[2rem] mb-8 text-left border border-primary/10">
-              <p className="text-xs leading-relaxed text-foreground/80 italic">{compatibility}</p>
+            <DialogDescription className="text-muted-foreground text-sm mb-6 px-4 leading-relaxed font-medium">
+               Вы с <span className="font-bold text-foreground">{matchUser?.name}</span> понравились друг другу.
+            </DialogDescription>
+            
+            <div className="bg-primary/5 p-5 rounded-[2rem] mb-8 text-left border border-primary/10 relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-2 text-primary/20">
+                <Sparkles size={24} />
+              </div>
+              <h4 className="text-[10px] font-black text-primary mb-2 flex items-center gap-1 uppercase tracking-widest">
+                <Sparkles size={12} /> AI Инсайт
+              </h4>
+              {loadingAi ? (
+                <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                  <div className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  Анализируем...
+                </div>
+              ) : (
+                <p className="text-[11px] leading-relaxed text-foreground/80 italic font-medium">
+                  {compatibility}
+                </p>
+              )}
             </div>
-            <Button onClick={handleStartChat} className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-primary/20">Написать первым</Button>
+            
+            <div className="flex flex-col gap-3">
+              <Button onClick={handleStartChat} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.15em] text-[11px] shadow-lg shadow-primary/20">
+                Написать первым
+              </Button>
+              <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full h-12 rounded-full text-muted-foreground font-black uppercase tracking-[0.1em] text-[10px]">
+                Продолжить
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
