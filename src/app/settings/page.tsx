@@ -116,7 +116,7 @@ export default function SettingsPage() {
 
           <section className="space-y-2 pt-4">
             <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground font-semibold h-12 gap-3 px-0"><LogOut size={18} /> Выйти</Button>
-            <Button variant="ghost" className="w-full justify-start text-destructive hover:text-destructive/80 font-semibold h-12 gap-3 px-0"><Trash2 size={18} /> Удалить профиль</Button>
+            <Button variant="ghost" className="w-full justify-start text-muted-foreground/80 hover:text-destructive text-sm font-normal h-auto py-3 gap-3 px-0"><Trash2 size={16} /> Удалить профиль</Button>
           </section>
         </div>
 
