@@ -78,19 +78,8 @@ export function AppHeader() {
         </Link>
       </div>
 
-      {/* Правая часть: Вход + Язык + Уведомления */}
+      {/* Правая часть: Язык + Уведомления + Вход */}
       <div className="flex items-center gap-1">
-        {/* Кнопка Вход */}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          onClick={handleLogin}
-          className="text-[10px] font-black uppercase tracking-widest gap-1.5 text-muted-foreground hover:text-primary transition-colors h-9 px-2"
-        >
-          <LogIn size={14} />
-          <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
-        </Button>
-
         {/* Смена языка */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -167,6 +156,17 @@ export function AppHeader() {
             </div>
           </PopoverContent>
         </Popover>
+
+        {/* Кнопка Вход */}
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleLogin}
+          className="text-[10px] font-black uppercase tracking-widest gap-1.5 text-muted-foreground hover:text-primary transition-colors h-9 px-2 ml-1"
+        >
+          <LogIn size={14} />
+          <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
+        </Button>
       </div>
     </header>
   );
