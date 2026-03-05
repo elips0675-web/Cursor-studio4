@@ -216,7 +216,7 @@ function ChatsContent() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-5 space-y-5">
+        <main className="flex-1 overflow-y-auto p-5 space-y-4">
           <div className="text-center my-2">
             <Badge variant="secondary" className="bg-white/50 text-[10px] text-muted-foreground border-0 font-black uppercase tracking-widest px-3 py-1">{t('chats.today')}</Badge>
           </div>
@@ -228,21 +228,21 @@ function ChatsContent() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 key={msg.id} 
                 className={cn(
-                  "flex flex-col max-w-[85%]",
+                  "flex flex-col max-w-[80%]",
                   msg.sender === "me" ? "ml-auto items-end" : "items-start"
                 )}
               >
                 <div 
                   className={cn(
-                    "px-4 py-3 rounded-[1.25rem] text-sm shadow-sm font-medium leading-relaxed transition-all",
+                    "px-3.5 py-2.5 rounded-xl text-sm shadow-sm font-medium leading-normal transition-all",
                     msg.sender === "me" 
-                      ? "gradient-bg text-white rounded-tr-none shadow-primary/10" 
-                      : "bg-white text-foreground rounded-tl-none border border-border/40"
+                      ? "gradient-bg text-white rounded-br-none shadow-primary/10" 
+                      : "bg-white text-foreground rounded-bl-none border border-border/40"
                   )}
                 >
                   {msg.text}
                 </div>
-                <span className="text-[9px] text-muted-foreground mt-1.5 px-1 font-bold uppercase tracking-tighter opacity-70">
+                <span className="text-[9px] text-muted-foreground mt-1 px-1 font-bold uppercase tracking-tighter opacity-70">
                   {msg.time}
                 </span>
               </motion.div>
@@ -255,7 +255,7 @@ function ChatsContent() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center gap-1.5 text-muted-foreground"
             >
-              <div className="flex gap-1 bg-white px-3 py-2.5 rounded-[1.25rem] border border-border/40 shadow-sm rounded-tl-none">
+              <div className="flex gap-1 bg-white px-3 py-2.5 rounded-xl border border-border/40 shadow-sm rounded-bl-none">
                 <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
                 <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
                 <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>

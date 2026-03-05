@@ -247,9 +247,6 @@ export default function SearchPage() {
           </div>
           
           <div className="relative z-10">
-            <Button variant="ghost" size="icon" onClick={() => setMatchUser(null)} className="absolute top-6 right-6 z-50 rounded-full bg-black/20 backdrop-blur-sm text-white hover:bg-black/40 transition-all h-10 w-10">
-                <X size={20} />
-            </Button>
             <div className="relative h-56 flex items-center justify-center p-6">
               <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
               

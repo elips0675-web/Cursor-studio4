@@ -228,9 +228,9 @@ export default function ProfilePage() {
               </div>
               <Link 
                 href="/profile/edit" 
-                className="absolute -bottom-1 -right-1 bg-white p-2.5 rounded-2xl shadow-xl border-2 border-primary/10 text-primary hover:bg-primary hover:text-white transition-all active:scale-90"
+                className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-2xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"
               >
-                 <Camera size={16} />
+                 <Edit2 size={18} />
               </Link>
             </div>
 
@@ -242,12 +242,6 @@ export default function ProfilePage() {
                 <MapPin size={12} className="text-primary" /> {profile.city}
               </p>
             </div>
-          </div>
-          
-          <div className="flex justify-center gap-3 mb-8">
-            <Button asChild className="rounded-2xl gradient-bg text-white h-12 px-10 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/30 active:scale-95 transition-all border-0">
-              <Link href="/profile/edit"><Edit2 size={16} className="mr-2" /> {t('profile.edit')}</Link>
-            </Button>
           </div>
 
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
