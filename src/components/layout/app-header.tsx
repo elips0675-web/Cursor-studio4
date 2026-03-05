@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle, User } from "lucide-react";
+import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle, User, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
@@ -27,7 +27,7 @@ const NOTIFICATIONS = [
   { id: 1, type: 'like', text: 'Анна поставила вам лайк!', time: '2 мин назад', icon: Heart, color: 'text-primary' },
   { id: 2, type: 'match', text: 'У вас новое совпадение с Максимом!', time: '15 мин назад', icon: Sparkles, color: 'text-yellow-500' },
   { id: 3, type: 'message', text: 'Елена прислала вам сообщение', time: '1 час назад', icon: MessageCircle, color: 'text-blue-500' },
-  { id: 4, type: 'system', text: 'Ваш профиль стал популярнее на 20%', time: '3 часа назад', icon: Bell, color: 'text-green-500' },
+  { id: 4, type: 'system', text: 'Ваш профиль стал популярнее на 20%', time: '3 часа назад', icon: Zap, color: 'text-green-500' },
 ];
 
 export function AppHeader() {
@@ -51,7 +51,6 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 w-full bg-white/95 backdrop-blur-md border-b border-border px-4 py-3 flex items-center justify-between z-50 h-16 relative">
-      {/* Левая часть: кнопка Назад */}
       <div className="flex items-center min-w-[40px]">
         {!isHomePage && (
           <Button 
@@ -65,7 +64,6 @@ export function AppHeader() {
         )}
       </div>
 
-      {/* Центр: Логотип */}
       <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
         <Link href="/">
           <h1 className="text-xl font-black font-headline gradient-text cursor-pointer tracking-tight">
@@ -74,9 +72,7 @@ export function AppHeader() {
         </Link>
       </div>
 
-      {/* Правая часть: Язык + Уведомления + Вход */}
       <div className="flex items-center gap-1">
-        {/* Смена языка */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="h-9 px-2.5 rounded-full bg-muted/50 flex items-center justify-center text-foreground hover:bg-muted transition-all active:scale-95 gap-1.5 border border-transparent">
@@ -100,11 +96,10 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Уведомления */}
         <Popover onOpenChange={(open) => open && setUnreadCount(0)}>
           <PopoverTrigger asChild>
             <button className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center text-foreground hover:bg-muted transition-all active:scale-95 relative">
-              <Bell size={16} />
+              <Zap size={16} />
               {unreadCount > 0 && (
                 <Badge className="absolute -top-1 -right-1 h-4 min-w-[16px] px-1 bg-primary text-white border-2 border-white flex items-center justify-center text-[8px] font-black animate-in zoom-in">
                   {unreadCount}
@@ -168,7 +163,6 @@ export function AppHeader() {
           </PopoverContent>
         </Popover>
 
-        {/* Кнопка Вход */}
         <Button 
           asChild
           variant="ghost" 

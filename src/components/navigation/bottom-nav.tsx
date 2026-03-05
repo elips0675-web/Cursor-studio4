@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, MessageCircle, User, Bell } from "lucide-react";
+import { Home, Search, MessageCircle, User, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
 
@@ -14,7 +14,7 @@ export function BottomNav() {
   const navItems = [
     { href: "/", label: t('nav.home'), icon: Home },
     { href: "/search", label: t('nav.swipes'), icon: Search },
-    { href: "/activity", label: t('nav.activity'), icon: Bell, badge: 5 },
+    { href: "/activity", label: t('nav.activity'), icon: Zap, badge: 5 },
     { href: "/chats", label: t('nav.chats'), icon: MessageCircle, badge: 2 },
     { href: "/profile", label: t('nav.profile'), icon: User },
   ];
