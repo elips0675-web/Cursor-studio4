@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, Search, Heart, MapPin, Zap, SlidersHorizontal, Check, MessageCircle, Sparkles, X, Trophy, ChevronDown } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, SlidersHorizontal, Check, MessageCircle, Sparkles, X, Trophy, ChevronDown, Cpu } from "lucide-react";
 import Link from "next/link";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
@@ -375,24 +375,49 @@ export default function Home() {
               {t('match.desc')}
             </DialogDescription>
             
-            <div className="bg-gradient-to-br from-primary/5 to-orange-500/5 p-6 rounded-[2.5rem] mb-8 text-left border border-primary/10 relative overflow-hidden group shadow-sm">
-              <div className="absolute top-0 right-0 p-3 text-primary/10 group-hover:text-primary/30 transition-colors">
-                <Sparkles size={36} />
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-primary/20 bg-gradient-to-br from-white via-primary/[0.02] to-orange-500/[0.02] shadow-xl shadow-primary/5 overflow-hidden group"
+            >
+              {/* Background Glass Decorations */}
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+              <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl opacity-40"></div>
+              
+              <div className="flex items-center justify-between mb-4 relative z-10">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                    <Cpu size={14} className="animate-pulse" />
+                  </div>
+                  <h4 className="text-[11px] font-black text-primary uppercase tracking-[0.2em]">{t('match.insight')}</h4>
+                </div>
+                <motion.div 
+                  animate={{ rotate: [0, 15, -15, 0] }}
+                  transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+                >
+                  <Sparkles size={20} className="text-orange-400 opacity-60" />
+                </motion.div>
               </div>
-              <h4 className="text-[11px] font-black text-primary mb-2.5 flex items-center gap-1.5 uppercase tracking-[0.15em]">
-                <Sparkles size={14} /> {t('match.insight')}
-              </h4>
+
               {loadingAi ? (
-                <div className="flex items-center gap-3 text-xs text-muted-foreground py-2">
+                <div className="flex items-center gap-3 text-xs text-muted-foreground py-2 relative z-10">
                   <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                  <span className="animate-pulse">{t('home.searching')}</span>
+                  <span className="animate-pulse font-bold uppercase tracking-widest text-[10px]">{t('home.searching')}</span>
                 </div>
               ) : (
-                <p className="text-[12px] leading-relaxed text-foreground/80 italic font-medium relative z-10 pr-2">
-                  {compatibility}
-                </p>
+                <div className="relative z-10">
+                  <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-primary/30 pl-4 py-1">
+                    "{compatibility}"
+                  </p>
+                </div>
               )}
-            </div>
+
+              {/* Decorative Subtle Icon in Corner */}
+              <div className="absolute bottom-2 right-4 text-primary/5 group-hover:text-primary/10 transition-colors">
+                <Sparkles size={48} />
+              </div>
+            </motion.div>
 
             <div className="flex flex-col gap-4 w-full">
               <Button 
