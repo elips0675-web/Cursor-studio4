@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo, memo, useCallback } from "react";
+import { useState, useMemo, memo, useCallback, useEffect } from "react";
 import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, MoreVertical, Flag, Sparkles, RotateCcw, Zap } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
@@ -70,19 +70,36 @@ export default function SearchPage() {
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
 
+  // Authorized user logic
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('userProfile');
+    if (saved) {
+      try {
+        const profile = JSON.parse(saved);
+        if (profile.gender === 'male' || profile.gender === 'мужской') profile.gender = 'male';
+        if (profile.gender === 'female' || profile.gender === 'женский') profile.gender = 'female';
+        setCurrentUser(profile);
+      } catch (e) {
+        setCurrentUser(ALL_DEMO_USERS.find(u => u.name === "Анна"));
+      }
+    } else {
+      setCurrentUser(ALL_DEMO_USERS.find(u => u.name === "Анна"));
+    }
+  }, []);
+
   // Gender-based filtering for Swipes
   const filteredUsers = useMemo(() => {
-    // Simulating current user "Anna" (female)
-    const currentUser = ALL_DEMO_USERS.find(u => u.name === "Анна");
-    if (!currentUser) return ALL_DEMO_USERS;
+    if (!currentUser) return ALL_DEMO_USERS.filter(u => u.name !== "Анна");
 
     // Opposite gender matching logic
     const targetGender = currentUser.gender === 'female' ? 'male' : 'female';
     
     return ALL_DEMO_USERS.filter(user => 
-      user.gender === targetGender && user.id !== currentUser.id
+      user.gender === targetGender && user.name !== currentUser.name
     );
-  }, []);
+  }, [currentUser]);
   
   const user = currentIndex < filteredUsers.length ? filteredUsers[currentIndex] : null;
 
@@ -110,7 +127,12 @@ export default function SearchPage() {
     setLoadingAi(true);
     try {
       const res = await generateMatchCompatibilityInsight({
-        currentUser: { name: "Вы", age: 25, interests: ["Спорт", "Кино", "Кофе"], bio: "Активный пользователь SwiftMatch, люблю общение и новые открытия." },
+        currentUser: { 
+          name: currentUser?.name || "Вы", 
+          age: parseInt(currentUser?.age) || 25, 
+          interests: currentUser?.interests || ["Спорт", "Кино", "Кофе"], 
+          bio: currentUser?.bio || "Активный пользователь SwiftMatch, люблю общение и новые открытия." 
+        },
         matchUser: { name: targetUser.name, age: targetUser.age, interests: targetUser.interests, bio: targetUser.bio || "" }
       });
       setCompatibility(res.explanation);

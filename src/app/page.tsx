@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users } from "lucide-react";
@@ -171,49 +172,67 @@ export default function Home() {
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  // Get current authorized user from localStorage or fallback to demo
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('userProfile');
+    if (saved) {
+      try {
+        const profile = JSON.parse(saved);
+        // Normalize gender if needed (male/female)
+        if (profile.gender === 'male' || profile.gender === 'мужской') profile.gender = 'male';
+        if (profile.gender === 'female' || profile.gender === 'женский') profile.gender = 'female';
+        setCurrentUser(profile);
+      } catch (e) {
+        setCurrentUser(ALL_DEMO_USERS.find(u => u.name === "Анна"));
+      }
+    } else {
+      setCurrentUser(ALL_DEMO_USERS.find(u => u.name === "Анна"));
+    }
+  }, []);
+
   // Requirement for Top of Week: Highest match
   const topUsers = useMemo(() => {
     return [...ALL_DEMO_USERS]
+      .filter(u => u.name !== (currentUser?.name || "Анна"))
       .sort((a, b) => b.match - a.match)
       .slice(0, 4);
-  }, []);
+  }, [currentUser]);
 
-  // Requirement for Recommendations: Based on shared interests with "Me" (Anna)
+  // Requirement for Recommendations: Based on shared interests with current user
   const recommendedUsers = useMemo(() => {
-    const myInterests = ["Фотография", "Кофе", "Музыка", "Путешествия"];
-    return ALL_DEMO_USERS.filter(u => u.name !== "Анна")
+    const myInterests = currentUser?.interests || ["Фотография", "Кофе", "Музыка", "Путешествия"];
+    return ALL_DEMO_USERS.filter(u => u.name !== (currentUser?.name || "Анна"))
       .map(u => ({
         ...u,
         commonInterests: u.interests.filter(i => myInterests.includes(i)).length
       }))
       .sort((a, b) => b.commonInterests - a.commonInterests)
       .slice(0, 4);
-  }, []);
+  }, [currentUser]);
 
   useEffect(() => {
-    if (isFilterDialogOpen) {
-      const currentUser = ALL_DEMO_USERS.find(u => u.name === "Анна");
+    if (isFilterDialogOpen && currentUser) {
+      setSelectedInterests(currentUser.interests?.filter((interest: string) => INTEREST_OPTIONS.includes(interest)) || []);
+      if (currentUser.city && [...CAPITALS, "Все"].includes(currentUser.city)) {
+          setSelectedCity(currentUser.city);
+      } else {
+          setSelectedCity("Все");
+      }
+      const baseAge = parseInt(currentUser.age) || 25;
+      setAgeRange([Math.max(18, baseAge - 5), Math.min(60, baseAge + 5)]);
       
-      if(currentUser) {
-        setSelectedInterests(currentUser.interests.filter(interest => INTEREST_OPTIONS.includes(interest)));
-        if ([...CAPITALS, "Все"].includes(currentUser.city)) {
-            setSelectedCity(currentUser.city);
-        } else {
-            setSelectedCity("Все");
-        }
-        setAgeRange([Math.max(18, currentUser.age - 5), currentUser.age + 5]);
-        
-        // Логика: Женщина ищет Мужчину, Мужчина ищет Женщину
-        if (currentUser.gender === 'female') {
-          setGenderPreference('male');
-        } else if (currentUser.gender === 'male') {
-          setGenderPreference('female');
-        } else {
-          setGenderPreference('all');
-        }
+      // Логика: Женщина ищет Мужчину, Мужчина ищет Женщину
+      if (currentUser.gender === 'female') {
+        setGenderPreference('male');
+      } else if (currentUser.gender === 'male') {
+        setGenderPreference('female');
+      } else {
+        setGenderPreference('all');
       }
     }
-  }, [isFilterDialogOpen]);
+  }, [isFilterDialogOpen, currentUser]);
 
   const paginatedResults = useMemo(() => {
     return searchResults.slice(0, visibleResultsCount);
@@ -232,10 +251,10 @@ export default function Home() {
     try {
       const res = await generateMatchCompatibilityInsight({
         currentUser: {
-          name: "Вы",
-          age: 25,
-          interests: ["Спорт", "Кино", "Кофе"],
-          bio: "Активный пользователь SwiftMatch, люблю общение и новые открытия."
+          name: currentUser?.name || "Вы",
+          age: parseInt(currentUser?.age) || 25,
+          interests: currentUser?.interests || ["Спорт", "Кино", "Кофе"],
+          bio: currentUser?.bio || "Активный пользователь SwiftMatch, люблю общение и новые открытия."
         },
         matchUser: {
           name: targetUser.name,
@@ -262,7 +281,7 @@ export default function Home() {
       setMatchUser(user);
       getAiInsight(user);
     }
-  }, [aiCompatibilityEnabled, t]);
+  }, [aiCompatibilityEnabled, t, currentUser]);
 
   const handleAutoSearch = () => {
     setIsAutoSearching(true);
@@ -271,8 +290,8 @@ export default function Home() {
     
     setTimeout(() => {
       const filtered = ALL_DEMO_USERS.filter(user => {
-        // Исключаем саму Анну (текущего пользователя)
-        if (user.name === "Анна") return false;
+        // Исключаем текущего пользователя
+        if (user.name === (currentUser?.name || "Анна")) return false;
 
         const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
         const matchesInterests = selectedInterests.length === 0 || 
@@ -466,7 +485,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Dialogs remain the same as they handle important UX flows */}
       <AnimatePresence>
         {matchUser && (
           <Dialog open={!!matchUser} onOpenChange={(open) => !open && setMatchUser(null)}>
