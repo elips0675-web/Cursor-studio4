@@ -154,13 +154,6 @@ export default function SearchPage() {
     }
   };
 
-  const handleSuperLike = () => {
-    if (!user) return;
-    toast({ title: "Super Like! 🌟", description: `You really like ${user.name}!` });
-    setMatchUser(user);
-    getAiInsight(user);
-  };
-
   const handleReportSubmit = () => {
     if (!reportReason) {
       toast({ variant: 'destructive', title: t('report.toast.no_reason_title'), description: t('report.toast.no_reason_desc') });
@@ -283,8 +276,10 @@ export default function SearchPage() {
           <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-xl shadow-primary/30 transition-all active:scale-90" onClick={handleLike}>
               <Heart size={36} fill="currentColor" />
           </Button>
-          <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-primary/20 bg-white hover:bg-primary/5 text-blue-500 transition-all active:scale-90 shadow-lg" onClick={handleSuperLike}>
-              <Sparkles size={28} fill="currentColor" />
+          <Button asChild variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-primary/20 bg-white hover:bg-primary/5 text-primary transition-all active:scale-90 shadow-lg">
+            <Link href={`/chats?matchId=${user.id}`}>
+              <MessageCircle size={28} />
+            </Link>
           </Button>
           <Button asChild variant="outline" size="icon" className="w-12 h-12 rounded-full border-2 border-muted bg-white hover:bg-muted text-foreground transition-all active:scale-90 shadow-md">
             <Link href={`/user?id=${user.id}`} prefetch={false}>
@@ -338,7 +333,12 @@ export default function SearchPage() {
         <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow">
           <DialogHeader className="p-6 pb-4 text-left"><DialogTitle className="flex items-center gap-2 font-black tracking-tight"><Flag size={20} className="text-destructive" />{t('report.title')}</DialogTitle><DialogDescription className="pt-2">{t('report.description')}</DialogDescription></DialogHeader>
           <div className="px-6 space-y-4">
-              <RadioGroup value={reportReason} onValueChange={setReportReason} className="space-y-2">{REPORT_REASONS.map(reasonKey => (<div key={reasonKey} className="flex items-center space-x-3 bg-muted/40 p-3 rounded-lg"><RadioGroupItem value={t(reasonKey)} id={`${reasonKey}_swipe`} /><Label htmlFor={`${reasonKey}_swipe`} className="font-bold text-sm cursor-pointer">{t(reasonKey)}</Label></div>))}</RadioGroup>
+              <RadioGroup value={reportReason} onValueChange={setReportReason} className="space-y-2">{REPORT_REASONS.map(reasonKey => (
+                      <div key={reasonKey} className="flex items-center space-x-3 bg-muted/40 p-3 rounded-lg">
+                          <RadioGroupItem value={t(reasonKey)} id={`${reasonKey}_swipe`} />
+                          <Label htmlFor={`${reasonKey}_swipe`} className="font-bold text-sm cursor-pointer">{t(reasonKey)}</Label>
+                      </div>
+                  ))}</RadioGroup>
               <Textarea placeholder={t('report.details_placeholder')} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20" />
           </div>
           <DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl"><Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button><Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg shadow-destructive/20 border-0" onClick={handleReportSubmit}>{t('report.button.send')}</Button></DialogFooter>
