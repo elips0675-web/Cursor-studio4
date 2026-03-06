@@ -189,18 +189,18 @@ export default function Home() {
 
           <div className="grid grid-cols-2 gap-3 max-w-[360px] mx-auto">
             <Button 
-              asChild
+              onClick={() => setShowAutosearchDialog(true)}
               className="h-12 rounded-2xl gradient-bg text-white font-black text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-widest"
+            >
+              <Zap size={14} fill="currentColor" /> {t('button.autosearch')}
+            </Button>
+            <Button 
+              asChild
+              className="h-12 rounded-2xl bg-white border-2 border-primary text-primary font-black text-[10px] shadow-lg shadow-primary/5 hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-widest"
             >
               <Link href="/search?mode=nearby">
                 <Search size={14} className="stroke-[3px]" /> {t('button.browse_profiles')}
               </Link>
-            </Button>
-            <Button 
-              onClick={() => setShowAutosearchDialog(true)}
-              className="h-12 rounded-2xl bg-white border-2 border-primary text-primary font-black text-[10px] shadow-lg shadow-primary/5 hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-widest"
-            >
-              <Zap size={14} fill={"none"} /> {t('button.autosearch')}
             </Button>
           </div>
         </section>
