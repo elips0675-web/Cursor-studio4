@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useMemo, memo, useCallback, useEffect } from "react";
-import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, MoreVertical, Flag, Sparkles, RotateCcw, Zap } from "lucide-react";
+import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, MoreVertical, Flag, Sparkles, Zap } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import { useRouter } from "next/navigation";
@@ -93,8 +93,11 @@ export default function SearchPage() {
   const filteredUsers = useMemo(() => {
     if (!currentUser) return ALL_DEMO_USERS.filter(u => u.name !== "Анна");
 
-    // Opposite gender matching logic
-    const targetGender = currentUser.gender === 'female' ? 'male' : 'female';
+    const targetGender = currentUser.lookingFor === 'all' ? undefined : currentUser.lookingFor;
+    
+    if (!targetGender) {
+        return ALL_DEMO_USERS.filter(user => user.name !== currentUser.name);
+    }
     
     return ALL_DEMO_USERS.filter(user => 
       user.gender === targetGender && user.name !== currentUser.name
@@ -114,13 +117,6 @@ export default function SearchPage() {
       setCurrentIndex(prev => prev - 1);
     }
   }, [currentIndex]);
-
-  const handleRewind = () => {
-    if (currentIndex > 0) {
-      handlePrev();
-      toast({ title: language === 'RU' ? "Действие отменено" : "Action undone", description: "Premium Feature" });
-    }
-  };
 
   const getAiInsight = async (targetUser: any) => {
     if (!targetUser) return;
@@ -267,9 +263,6 @@ export default function SearchPage() {
         </div>
 
         <div className="flex justify-center items-center gap-3 sm:gap-4 w-full px-2">
-          <Button variant="outline" size="icon" className="w-12 h-12 rounded-full border-2 border-muted bg-white hover:bg-muted text-yellow-600 transition-all active:scale-90 shadow-md" onClick={handleRewind}>
-              <RotateCcw size={20} strokeWidth={3} />
-          </Button>
           <Button variant="outline" size="icon" className="w-16 h-16 rounded-full border-2 border-muted bg-white hover:bg-muted text-muted-foreground transition-all active:scale-90 shadow-lg" onClick={handleNext}>
               <X size={28} />
           </Button>
@@ -341,7 +334,7 @@ export default function SearchPage() {
                   ))}</RadioGroup>
               <Textarea placeholder={t('report.details_placeholder')} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20" />
           </div>
-          <DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl"><Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button><Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground shadow-lg shadow-destructive/20 border-0" onClick={handleReportSubmit}>{t('report.button.send')}</Button></DialogFooter>
+          <DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl"><Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button><Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground" onClick={handleReportSubmit}>{t('report.button.send')}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
       <BottomNav />
