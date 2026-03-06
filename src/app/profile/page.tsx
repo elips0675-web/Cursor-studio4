@@ -1,12 +1,12 @@
-
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
-  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Dog, Ruler, Moon, Sun, Target, Sparkles, Heart, Upload, Info, User, GraduationCap, Bed, Trophy, RotateCcw, Zap
+  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Dog, Ruler, Moon, Sun, Target, Sparkles, Heart, Upload, Info, User, GraduationCap, Bed, Trophy, RotateCcw, Zap, Play, CreditCard
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import dynamic from 'next/dynamic';
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { AppHeader } from "@/components/layout/app-header";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -26,8 +26,12 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogDescription,
+  DialogHeader,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { ZodiacIcon } from "@/components/shared/zodiac-icon";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
@@ -59,6 +63,8 @@ export default function ProfilePage() {
   ]);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const [showBoostDialog, setShowBoostDialog] = useState(false);
+  const [isBoostLoading, setIsBoostLoading] = useState(false);
 
   const stats = { likes: 124, matches: 15 };
   const earnedTitles = useMemo(() => getUserTitles(profile, language), [profile, language]);
@@ -108,10 +114,21 @@ export default function ProfilePage() {
     toast({ title: language === 'RU' ? "Фото удалено" : "Photo deleted" });
   };
 
-  const handleBoost = () => {
+  const handleBoostAd = () => {
+    setIsBoostLoading(true);
+    setTimeout(() => {
+      setIsBoostLoading(false);
+      setShowBoostDialog(false);
+      toast({
+        title: t('boost.success_ad'),
+      });
+    }, 3000);
+  };
+
+  const handleBoostPaid = () => {
+    setShowBoostDialog(false);
     toast({
-      title: language === 'RU' ? "Буст активирован! 🔥" : "Boost activated! 🔥",
-      description: language === 'RU' ? "Ваш профиль увидят в 10 раз больше людей." : "10x more people will see your profile now.",
+      title: t('boost.success_paid'),
     });
   };
 
@@ -162,7 +179,7 @@ export default function ProfilePage() {
                 <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest">{t('profile.matches')}</p>
               </div>
               <button 
-                onClick={handleBoost}
+                onClick={() => setShowBoostDialog(true)}
                 className="gradient-bg rounded-2xl p-3 shadow-lg shadow-primary/20 text-white flex flex-col items-center justify-center group active:scale-95 transition-all"
               >
                 <Zap size={18} className="animate-pulse" fill="currentColor" />
@@ -221,6 +238,83 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
+
+      <AnimatePresence>
+        {showBoostDialog && (
+          <Dialog open={showBoostDialog} onOpenChange={setShowBoostDialog}>
+            <DialogContent className="max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
+              <div className="relative h-40 gradient-bg flex flex-col items-center justify-center text-white p-6 overflow-hidden">
+                 <div className="absolute inset-0 bg-black/5"></div>
+                 <motion.div 
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="absolute"
+                 >
+                    <Zap size={160} fill="currentColor" />
+                 </motion.div>
+                 <Zap className="text-yellow-300 mb-2 drop-shadow-lg relative z-10 animate-pulse" size={48} fill="currentColor" />
+                 <DialogTitle className="text-2xl font-black uppercase tracking-tighter relative z-10">{t('boost.title')}</DialogTitle>
+                 <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.1em] relative z-10 mt-1 text-center px-4 leading-relaxed">
+                   {t('boost.desc')}
+                 </p>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <Button 
+                  onClick={handleBoostAd}
+                  disabled={isBoostLoading}
+                  variant="outline"
+                  className="w-full h-16 rounded-2xl border-2 border-primary/20 bg-primary/5 flex flex-col items-center justify-center gap-1 group hover:bg-primary/10 transition-all border-dashed"
+                >
+                  {isBoostLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                        {language === 'RU' ? 'Загрузка...' : 'Loading...'}
+                      </span>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-2 text-primary">
+                        <Play size={14} fill="currentColor" />
+                        <span className="text-[11px] font-black uppercase tracking-widest">{t('boost.free')}</span>
+                      </div>
+                      <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">
+                        {language === 'RU' ? '1 Буст за видео' : '1 Boost for 1 Video'}
+                      </span>
+                    </>
+                  )}
+                </Button>
+
+                <div className="relative py-2">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted"></span></div>
+                  <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest text-muted-foreground bg-white px-4">или</div>
+                </div>
+
+                <Button 
+                  onClick={handleBoostPaid}
+                  className="w-full h-16 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all border-0"
+                >
+                  <div className="flex items-center gap-2">
+                    <CreditCard size={14} />
+                    <span className="text-[11px] font-black uppercase tracking-widest">{t('boost.paid')}</span>
+                  </div>
+                  <span className="text-[8px] text-white/80 font-bold uppercase tracking-tighter">
+                    {language === 'RU' ? 'Всего за 99 ₽' : 'Just $1.99'}
+                  </span>
+                </Button>
+              </div>
+
+              <DialogFooter className="p-6 pt-0">
+                <Button variant="ghost" onClick={() => setShowBoostDialog(false)} className="w-full text-muted-foreground text-[9px] font-black uppercase tracking-widest h-10">
+                  {t('button.not_now')}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
+
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center [&>button]:hidden">
           <DialogTitle className="sr-only">Viewer</DialogTitle>

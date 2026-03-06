@@ -78,6 +78,13 @@ const translations = {
     'activity.unlock_desc': 'Посмотрите рекламу, чтобы открыть анкету бесплатно на 24 часа.',
     'activity.premium_title': 'Premium Доступ',
     'activity.premium_desc': 'Узнайте, кому вы понравились, и получите безлимитные лайки!',
+    // Boost
+    'boost.title': 'Поднять анкету',
+    'boost.desc': 'Ваш профиль увидят в 10 раз больше людей в течение часа!',
+    'boost.free': 'Бесплатно за рекламу',
+    'boost.paid': 'Купить мгновенно',
+    'boost.success_ad': 'Буст активирован за просмотр рекламы! 🔥',
+    'boost.success_paid': 'Буст успешно куплен и активирован! 🔥',
     // Chats
     'chats.title': 'Сообщения',
     'chats.subtitle': 'Твои диалоги',
@@ -300,6 +307,13 @@ const translations = {
     'activity.unlock_desc': 'Watch an ad to unlock the profile for free for 24 hours.',
     'activity.premium_title': 'Premium Access',
     'activity.premium_desc': 'Find out who liked you and get unlimited likes!',
+    // Boost
+    'boost.title': 'Boost Profile',
+    'boost.desc': 'Your profile will be seen by 10x more people for one hour!',
+    'boost.free': 'Free with Ad',
+    'boost.paid': 'Buy Instant Boost',
+    'boost.success_ad': 'Boost activated via ad! 🔥',
+    'boost.success_paid': 'Boost purchased and activated! 🔥',
     // Chats
     'chats.title': 'Messages',
     'chats.subtitle': 'Your dialogs',
