@@ -263,7 +263,7 @@ function UserProfileContent() {
             {/* Achievements Section */}
             {earnedTitles.length > 0 && (
               <div>
-                <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Звания</h4></div>
+                <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Звание</h4></div>
                 <div className="flex flex-wrap gap-2">
                   {earnedTitles.map((title) => (
                     <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-all hover:scale-105", title.color)}>

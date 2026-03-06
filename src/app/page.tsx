@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star } from "lucide-react";
@@ -321,7 +322,7 @@ export default function Home() {
         <div className="grid grid-cols-2 gap-2 mb-8">
           <Button 
             asChild
-            className="h-10 rounded-xl gradient-bg text-white font-black text-xs shadow-lg shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-tight"
+            className="h-10 rounded-xl gradient-bg text-white font-black text-xs shadow-xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-tight"
           >
             <Link href="/search">
               <Search size={14} className="stroke-[3px]" /> {ALL_DEMO_USERS.length} {t('swipes.nearby')}
@@ -526,7 +527,7 @@ export default function Home() {
                   <div className="flex flex-col gap-4 w-full">
                     <Button 
                       onClick={() => matchUser?.id && router.push(`/chats?matchId=${matchUser.id}`)} 
-                      className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-primary/30"
+                      className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-primary/30"
                     >
                       {t('button.write_first')}
                     </Button>

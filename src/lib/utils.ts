@@ -7,39 +7,33 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
- * Logic to calculate user titles based on profile data.
- * This makes titles "functional" as they reflect real profile quality.
+ * Logic to calculate a single best user title based on profile data.
+ * Each user gets only ONE title according to the priority hierarchy.
  */
 export function getUserTitles(user: any, language: 'RU' | 'EN'): (TitleMetadata & { displayName: string })[] {
-  const titles: (TitleMetadata & { displayName: string })[] = [];
-  
   if (!user) return [];
 
-  // LEVEL 4: Dating King (High Match / Popularity)
+  let bestTitleId = 'rookie';
+
+  // PRIORITY HIERARCHY:
+  // 1. King (Match 90+)
+  // 2. Party (Interests 5+)
+  // 3. Romantic (Bio length > 20)
+  // 4. Rookie (Default)
+
   if (user.match >= 90) {
-    const meta = ALL_TITLES.find(t => t.id === 'king')!;
-    titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
-  }
-  
-  // LEVEL 3: Life of the Party (Many Interests)
-  if (user.interests && user.interests.length >= 5) {
-    const meta = ALL_TITLES.find(t => t.id === 'party')!;
-    titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
-  }
-  
-  // LEVEL 2: Budding Romantic (Bio Effort)
-  if (user.bio && user.bio.length > 20) {
-    const meta = ALL_TITLES.find(t => t.id === 'romantic')!;
-    titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
-  }
-  
-  // LEVEL 1: Rookie (Default for active profiles)
-  // If no other titles earned, user is a Rookie.
-  if (titles.length === 0) {
-    const meta = ALL_TITLES.find(t => t.id === 'rookie')!;
-    titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
+    bestTitleId = 'king';
+  } else if (user.interests && user.interests.length >= 5) {
+    bestTitleId = 'party';
+  } else if (user.bio && user.bio.length > 20) {
+    bestTitleId = 'romantic';
+  } else {
+    bestTitleId = 'rookie';
   }
 
-  // Sort by priority (higher first)
-  return titles.sort((a, b) => b.priority - a.priority);
+  const meta = ALL_TITLES.find(t => t.id === bestTitleId)!;
+  return [{ 
+    ...meta, 
+    displayName: language === 'RU' ? meta.name_ru : meta.name_en 
+  }];
 }
