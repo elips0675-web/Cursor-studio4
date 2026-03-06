@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
@@ -49,6 +50,8 @@ export default function ProfilePage() {
     datingGoal: t('profile.goal_value'),
     match: 87,
     zodiac: language === 'RU' ? "Лев" : "Leo",
+    gender: "female",
+    lookingFor: "male",
     bio: language === 'RU' 
       ? "Люблю закаты, хороший кофе и интересные разговоры. Ищу человека, с которым можно разделить эти моменты."
       : "I love sunsets, good coffee, and interesting conversations. Looking for someone to share these moments with.",
@@ -119,17 +122,13 @@ export default function ProfilePage() {
     setTimeout(() => {
       setIsBoostLoading(false);
       setShowBoostDialog(false);
-      toast({
-        title: t('boost.success_ad'),
-      });
+      toast({ title: t('boost.success_ad') });
     }, 3000);
   };
 
   const handleBoostPaid = () => {
     setShowBoostDialog(false);
-    toast({
-      title: t('boost.success_paid'),
-    });
+    toast({ title: t('boost.success_paid') });
   };
 
   const openPhotoViewer = (index: number) => { setActivePhotoIndex(index); setIsViewerOpen(true); };
@@ -214,13 +213,11 @@ export default function ProfilePage() {
             <div>
               <div className="flex items-center gap-2 mb-4"><User size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.lifestyle')}</h4></div>
               <div className="grid grid-cols-2 gap-x-3 gap-y-4">
-                <LifestyleItem label={t('profile.label.goal')} value={profile.datingGoal} icon={Target} className="col-span-2" />
+                <LifestyleItem label={t('profile.label.gender')} value={profile.gender === 'male' ? 'Мужчина' : 'Женщина'} icon={User} />
+                <LifestyleItem label={t('profile.label.looking_for')} value={profile.lookingFor === 'male' ? 'Мужчину' : profile.lookingFor === 'female' ? 'Женщину' : 'Всех'} icon={Target} />
                 <LifestyleItem label={t('profile.label.zodiac')} value={profile.zodiac} icon={profile.zodiac} />
                 {profile.height && <LifestyleItem label={t('profile.label.height')} value={`${profile.height} см`} icon={Ruler} />}
-                {profile.education && <LifestyleItem label={t('profile.label.education')} value={profile.education} icon={GraduationCap} />}
-                {profile.work && <LifestyleItem label={t('profile.label.job')} value={profile.work} icon={Briefcase} />}
-                {profile.pets && <LifestyleItem label={t('profile.label.pets')} value={profile.pets} icon={Dog} />}
-                {profile.sleepSchedule && <LifestyleItem label={t('profile.label.sleep')} value={profile.sleepSchedule} icon={getSleepIcon()} />}
+                <LifestyleItem label={t('profile.label.goal')} value={profile.datingGoal} icon={Heart} className="col-span-2" />
               </div>
             </div>
             
@@ -245,71 +242,19 @@ export default function ProfilePage() {
             <DialogContent className="max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
               <div className="relative h-40 gradient-bg flex flex-col items-center justify-center text-white p-6 overflow-hidden">
                  <div className="absolute inset-0 bg-black/5"></div>
-                 <motion.div 
-                    animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute"
-                 >
-                    <Zap size={160} fill="currentColor" />
-                 </motion.div>
+                 <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 2, repeat: Infinity }} className="absolute"><Zap size={160} fill="currentColor" /></motion.div>
                  <Zap className="text-yellow-300 mb-2 drop-shadow-lg relative z-10 animate-pulse" size={48} fill="currentColor" />
                  <DialogTitle className="text-2xl font-black uppercase tracking-tighter relative z-10">{t('boost.title')}</DialogTitle>
-                 <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.1em] relative z-10 mt-1 text-center px-4 leading-relaxed">
-                   {t('boost.desc')}
-                 </p>
+                 <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.1em] relative z-10 mt-1 text-center px-4 leading-relaxed">{t('boost.desc')}</p>
               </div>
-
               <div className="p-6 space-y-4">
-                <Button 
-                  onClick={handleBoostAd}
-                  disabled={isBoostLoading}
-                  variant="outline"
-                  className="w-full h-16 rounded-2xl border-2 border-primary/20 bg-primary/5 flex flex-col items-center justify-center gap-1 group hover:bg-primary/10 transition-all border-dashed"
-                >
-                  {isBoostLoading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-primary">
-                        {language === 'RU' ? 'Загрузка...' : 'Loading...'}
-                      </span>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-center gap-2 text-primary">
-                        <Play size={14} fill="currentColor" />
-                        <span className="text-[11px] font-black uppercase tracking-widest">{t('boost.free')}</span>
-                      </div>
-                      <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">
-                        {language === 'RU' ? '1 Буст за видео' : '1 Boost for 1 Video'}
-                      </span>
-                    </>
-                  )}
+                <Button onClick={handleBoostAd} disabled={isBoostLoading} variant="outline" className="w-full h-16 rounded-2xl border-2 border-primary/20 bg-primary/5 flex flex-col items-center justify-center gap-1 group hover:bg-primary/10 transition-all border-dashed">
+                  {isBoostLoading ? (<div className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div><span className="text-[10px] font-black uppercase tracking-widest text-primary">{language === 'RU' ? 'Загрузка...' : 'Loading...'}</span></div>) : (<><div className="flex items-center gap-2 text-primary"><Play size={14} fill="currentColor" /><span className="text-[11px] font-black uppercase tracking-widest">{t('boost.free')}</span></div><span className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">{language === 'RU' ? '1 Буст за видео' : '1 Boost for 1 Video'}</span></>)}
                 </Button>
-
-                <div className="relative py-2">
-                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted"></span></div>
-                  <div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest text-muted-foreground bg-white px-4">или</div>
-                </div>
-
-                <Button 
-                  onClick={handleBoostPaid}
-                  className="w-full h-16 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all border-0"
-                >
-                  <div className="flex items-center gap-2">
-                    <CreditCard size={14} />
-                    <span className="text-[11px] font-black uppercase tracking-widest">{t('boost.paid')}</span>
-                  </div>
-                  <span className="text-[8px] text-white/80 font-bold uppercase tracking-tighter">
-                    {language === 'RU' ? 'Всего за 99 ₽' : 'Just $1.99'}
-                  </span>
-                </Button>
+                <div className="relative py-2"><div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted"></span></div><div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest text-muted-foreground bg-white px-4">или</div></div>
+                <Button onClick={handleBoostPaid} className="w-full h-16 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all border-0"><div className="flex items-center gap-2"><CreditCard size={14} /><span className="text-[11px] font-black uppercase tracking-widest">{t('boost.paid')}</span></div><span className="text-[8px] text-white/80 font-bold uppercase tracking-tighter">{language === 'RU' ? 'Всего за 99 ₽' : 'Just $1.99'}</span></Button>
               </div>
-
-              <DialogFooter className="p-6 pt-0">
-                <Button variant="ghost" onClick={() => setShowBoostDialog(false)} className="w-full text-muted-foreground text-[9px] font-black uppercase tracking-widest h-10">
-                  {t('button.not_now')}
-                </Button>
-              </DialogFooter>
+              <DialogFooter className="p-6 pt-0"><Button variant="ghost" onClick={() => setShowBoostDialog(false)} className="w-full text-muted-foreground text-[9px] font-black uppercase tracking-widest h-10">{t('button.not_now')}</Button></DialogFooter>
             </DialogContent>
           </Dialog>
         )}
@@ -331,16 +276,8 @@ export default function ProfilePage() {
             <CarouselPrevious className="left-4 bg-black/50 border-0 text-white hover:bg-black/70 z-50" />
             <CarouselNext className="right-4 bg-black/50 border-0 text-white hover:bg-black/70 z-50" />
           </Carousel>
-          
           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50">
-            <Button 
-              variant="outline" 
-              size="icon" 
-              onClick={() => setIsViewerOpen(false)}
-              className="w-14 h-14 rounded-full bg-black/20 backdrop-blur-md border-white/20 text-white hover:bg-black/40 transition-all active:scale-90 shadow-2xl"
-            >
-              <X size={28} />
-            </Button>
+            <Button variant="outline" size="icon" onClick={() => setIsViewerOpen(false)} className="w-14 h-14 rounded-full bg-black/20 backdrop-blur-md border-white/20 text-white hover:bg-black/40 transition-all active:scale-90 shadow-2xl"><X size={28} /></Button>
           </div>
         </DialogContent>
       </Dialog>

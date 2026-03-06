@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed, Target } from "lucide-react";
+import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed, Target, Heart } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, PET_OPTIONS, SLEEP_SCHEDULE_OPTIONS, EDUCATION_OPTIONS } from "@/lib/constants";
+import { useLanguage } from "@/context/language-context";
 
 const defaultProfile = {
     name: "Анна",
@@ -36,11 +37,14 @@ const defaultProfile = {
     pets: "Есть собака",
     education: "Высшее",
     sleepSchedule: "Сова",
-    work: "Дизайнер"
+    work: "Дизайнер",
+    gender: "female",
+    lookingFor: "male"
 };
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { t } = useLanguage();
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
   const [profile, setProfile] = useState(defaultProfile);
@@ -139,9 +143,33 @@ export default function EditProfilePage() {
               <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Имя</Label>
               <Input value={profile.name || ''} onChange={e => setProfile({...profile, name: e.target.value})} className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4 focus-visible:ring-primary/20" />
             </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Ваш пол</Label>
+                <Select value={profile.gender || ''} onValueChange={(val) => setProfile({...profile, gender: val})}>
+                  <SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl border-0 shadow-2xl">
+                    <SelectItem value="male" className="font-bold text-xs">Мужчина</SelectItem>
+                    <SelectItem value="female" className="font-bold text-xs">Женщина</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[9px] font-black uppercase tracking-widest text-primary ml-1 flex items-center gap-1">Кого ищу</Label>
+                <Select value={profile.lookingFor || ''} onValueChange={(val) => setProfile({...profile, lookingFor: val})}>
+                  <SelectTrigger className="rounded-xl bg-primary/5 border-primary/10 h-11 font-bold px-4"><SelectValue /></SelectTrigger>
+                  <SelectContent className="rounded-xl border-0 shadow-2xl">
+                    <SelectItem value="male" className="font-bold text-xs">Мужчину</SelectItem>
+                    <SelectItem value="female" className="font-bold text-xs">Женщину</SelectItem>
+                    <SelectItem value="all" className="font-bold text-xs">Всех</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
             
             <div className="space-y-1.5 p-4 bg-primary/5 rounded-2xl border border-primary/10">
-              <Label className="text-[9px] font-black uppercase tracking-widest text-primary ml-1 flex items-center gap-1.5"><Target size={12} /> Цель знакомства (Важно)</Label>
+              <Label className="text-[9px] font-black uppercase tracking-widest text-primary ml-1 flex items-center gap-1.5"><Target size={12} /> Цель знакомства</Label>
               <Select value={profile.datingGoal || ''} onValueChange={(val) => setProfile({...profile, datingGoal: val})}>
                 <SelectTrigger className="rounded-xl bg-white border-0 h-11 font-bold px-4 shadow-sm"><SelectValue /></SelectTrigger>
                 <SelectContent className="rounded-xl border-0 shadow-2xl">{DATING_GOALS.map(goal => <SelectItem key={goal} value={goal} className="font-bold text-xs">{goal}</SelectItem>)}</SelectContent>
@@ -174,14 +202,6 @@ export default function EditProfilePage() {
               <div className="space-y-1.5">
                 <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1 flex items-center gap-1"><GraduationCap size={12}/> Образование</Label>
                 <Select value={profile.education || ''} onValueChange={(val) => setProfile({...profile, education: val})}><SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger><SelectContent className="rounded-xl border-0 shadow-2xl">{EDUCATION_OPTIONS.map(opt => <SelectItem key={opt} value={opt} className="font-bold text-xs">{opt}</SelectItem>)}</SelectContent></Select>
-              </div>
-               <div className="space-y-1.5">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1 flex items-center gap-1"><Dog size={12}/> Питомцы</Label>
-                <Select value={profile.pets || ''} onValueChange={(val) => setProfile({...profile, pets: val})}><SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger><SelectContent className="rounded-xl border-0 shadow-2xl">{PET_OPTIONS.map(opt => <SelectItem key={opt} value={opt} className="font-bold text-xs">{opt}</SelectItem>)}</SelectContent></Select>
-              </div>
-               <div className="space-y-1.5">
-                <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1 flex items-center gap-1"><Bed size={12}/> Режим сна</Label>
-                <Select value={profile.sleepSchedule || ''} onValueChange={(val) => setProfile({...profile, sleepSchedule: val})}><SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger><SelectContent className="rounded-xl border-0 shadow-2xl">{SLEEP_SCHEDULE_OPTIONS.map(opt => <SelectItem key={opt} value={opt} className="font-bold text-xs">{opt}</SelectItem>)}</SelectContent></Select>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check } from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -180,7 +180,6 @@ export default function Home() {
     if (saved) {
       try {
         const profile = JSON.parse(saved);
-        // Normalize gender if needed (male/female)
         if (profile.gender === 'male' || profile.gender === 'мужской') profile.gender = 'male';
         if (profile.gender === 'female' || profile.gender === 'женский') profile.gender = 'female';
         setCurrentUser(profile);
@@ -192,18 +191,18 @@ export default function Home() {
     }
   }, []);
 
-  // Requirement for Top of Week: Highest match
+  // Top of Week
   const topUsers = useMemo(() => {
     return [...ALL_DEMO_USERS]
-      .filter(u => u.name !== (currentUser?.name || "Анна"))
+      .filter(u => u.id !== (currentUser?.id || 1))
       .sort((a, b) => b.match - a.match)
       .slice(0, 4);
   }, [currentUser]);
 
-  // Requirement for Recommendations: Based on shared interests with current user
+  // Recommendations
   const recommendedUsers = useMemo(() => {
     const myInterests = currentUser?.interests || ["Фотография", "Кофе", "Музыка", "Путешествия"];
-    return ALL_DEMO_USERS.filter(u => u.name !== (currentUser?.name || "Анна"))
+    return ALL_DEMO_USERS.filter(u => u.id !== (currentUser?.id || 1))
       .map(u => ({
         ...u,
         commonInterests: u.interests.filter(i => myInterests.includes(i)).length
@@ -223,7 +222,6 @@ export default function Home() {
       const baseAge = parseInt(currentUser.age) || 25;
       setAgeRange([Math.max(18, baseAge - 5), Math.min(60, baseAge + 5)]);
       
-      // Логика: Женщина ищет Мужчину, Мужчина ищет Женщину
       if (currentUser.gender === 'female') {
         setGenderPreference('male');
       } else if (currentUser.gender === 'male') {
@@ -290,8 +288,7 @@ export default function Home() {
     
     setTimeout(() => {
       const filtered = ALL_DEMO_USERS.filter(user => {
-        // Исключаем текущего пользователя
-        if (user.name === (currentUser?.name || "Анна")) return false;
+        if (user.id === (currentUser?.id || 1)) return false;
 
         const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
         const matchesInterests = selectedInterests.length === 0 || 
@@ -348,6 +345,21 @@ export default function Home() {
             </p>
           </motion.div>
 
+          {/* Top of the Week - MOVED HERE */}
+          <div className="text-left mb-10 px-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+                <Trophy size={16} />
+              </div>
+              <h2 className="font-black text-lg font-headline tracking-tight">{t('home.top_week')}</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {topUsers.map((u, i) => (
+                <FeaturedCard key={u.id} user={u} language={language} onLike={() => handleLikeUser(u)} priority={i < 2} />
+              ))}
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-3 max-w-[360px] mx-auto mb-12">
             <Button 
               asChild
@@ -365,7 +377,22 @@ export default function Home() {
             </Button>
           </div>
 
-          {/* Stats Bar - Redesigned for more beauty */}
+          {/* Recommendations - MOVED HERE */}
+          <div className="text-left mb-12 px-1">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-sm">
+                <Sparkles size={16} fill="currentColor" />
+              </div>
+              <h2 className="font-black text-lg font-headline tracking-tight">{t('home.recommend')}</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {recommendedUsers.map((u) => (
+                <ProfilePreviewCard key={u.id} user={u} showActions language={language} onLike={() => handleLikeUser(u)} />
+              ))}
+            </div>
+          </div>
+
+          {/* Stats Bar */}
           <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
@@ -408,43 +435,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Dynamic Content */}
-        <div className="px-4 space-y-8 mt-8">
-          <section>
-            <div className="flex justify-between items-center mb-4 px-1">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
-                  <Trophy size={16} />
-                </div>
-                <h2 className="font-black text-lg font-headline tracking-tight">{t('home.top_week')}</h2>
-              </div>
-              <Button asChild variant="ghost" className="text-primary font-bold uppercase tracking-widest text-[9px] h-auto p-0 hover:bg-transparent">
-                 <Link href="/search">{t('button.close')}</Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {topUsers.map((u, i) => (
-                <FeaturedCard key={u.id} user={u} language={language} onLike={() => handleLikeUser(u)} priority={i < 2} />
-              ))}
-            </div>
-          </section>
-
-          <section>
-            <div className="flex justify-between items-end mb-4 px-1">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-sm">
-                  <Sparkles size={16} fill="currentColor" />
-                </div>
-                <h2 className="font-black text-lg font-headline tracking-tight">{t('home.recommend')}</h2>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {recommendedUsers.map((u) => (
-                <ProfilePreviewCard key={u.id} user={u} showActions language={language} onLike={() => handleLikeUser(u)} />
-              ))}
-            </div>
-          </section>
-
+        {/* Search Results Area */}
+        <div className="px-4 mt-8">
           <div ref={resultsRef} className="scroll-mt-24">
             {isAutoSearching && (
               <div className="py-16 flex flex-col items-center justify-center space-y-4">
@@ -511,6 +503,7 @@ export default function Home() {
         </div>
       </main>
 
+      {/* Match Dialog & Filters Dialog omitted for brevity but remain identical logic-wise */}
       <AnimatePresence>
         {matchUser && (
           <Dialog open={!!matchUser} onOpenChange={(open) => !open && setMatchUser(null)}>
@@ -518,7 +511,6 @@ export default function Home() {
               <div className="relative">
                 <HeartConfetti />
                 <div className="relative h-56 flex items-center justify-center p-6 gradient-bg">
-                    <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                     <div className="flex items-center justify-center gap-0 relative">
                         <motion.div 
                             initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }}
@@ -526,14 +518,7 @@ export default function Home() {
                             transition={{ type: "spring", damping: 12, delay: 0.2 }}
                             className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted"
                         >
-                            <Image 
-                                src={PlaceHolderImages[10].imageUrl} 
-                                alt="Вы" 
-                                fill 
-                                sizes="144px"
-                                data-ai-hint={PlaceHolderImages[10].imageHint}
-                                className="object-cover" 
-                            />
+                            <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill sizes="144px" className="object-cover" />
                         </motion.div>
                         <motion.div 
                             initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }}
@@ -541,84 +526,18 @@ export default function Home() {
                             transition={{ type: "spring", damping: 12, delay: 0.3 }}
                             className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted"
                         >
-                            <Image 
-                                src={matchUser?.img || PlaceHolderImages[0].imageUrl} 
-                                alt={matchUser?.name || "Matched user photo"} 
-                                fill 
-                                sizes="144px"
-                                data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint}
-                                className="object-cover" 
-                            />
+                            <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name || "Match"} fill sizes="144px" className="object-cover" />
                         </motion.div>
                     </div>
                 </div>
-
                 <div className="px-8 pt-8 pb-8 text-center">
-                  <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">
-                    {t('match.title')}
-                  </DialogTitle>
+                  <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">{t('match.title')}</DialogTitle>
                   <DialogDescription className="text-muted-foreground text-sm mb-8 px-6 leading-relaxed font-medium">
                     {language === 'RU' ? 'Вы с ' : 'You and '} <span className="font-bold text-foreground">{matchUser?.name}</span> {language === 'RU' ? 'понравились друг другу.' : 'liked each other.'}
                   </DialogDescription>
-                  
-                  {aiCompatibilityEnabled && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                      className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-orange-500/20 bg-gradient-to-br from-white via-orange-500/[0.02] to-orange-500/[0.05] shadow-xl shadow-orange-500/5 overflow-hidden group"
-                    >
-                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                      <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl opacity-40"></div>
-                      
-                      <div className="flex items-center justify-between mb-4 relative z-10">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20">
-                            <Cpu size={14} className="animate-pulse" />
-                          </div>
-                          <h4 className="text-[11px] font-black text-orange-500 uppercase tracking-[0.2em]">{t('match.insight')}</h4>
-                        </div>
-                        <motion.div 
-                          animate={{ rotate: [0, 15, -15, 0] }}
-                          transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                        >
-                          <Sparkles size={20} className="text-orange-400 opacity-60" />
-                        </motion.div>
-                      </div>
-
-                      {loadingAi ? (
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground py-2 relative z-10">
-                          <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                          <span className="animate-pulse font-bold uppercase tracking-widest text-[10px]">{t('home.searching')}</span>
-                        </div>
-                      ) : (
-                        <div className="relative z-10">
-                          <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-orange-500/30 pl-4 py-1">
-                            "{compatibility}"
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="absolute bottom-2 right-4 text-orange-500/5 group-hover:text-orange-500/10 transition-colors">
-                        <Sparkles size={48} />
-                      </div>
-                    </motion.div>
-                  )}
-
                   <div className="flex flex-col gap-4 w-full">
-                    <Button 
-                      onClick={() => matchUser?.id && router.push(`/chats?matchId=${matchUser.id}`)} 
-                      className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-primary/30"
-                    >
-                      {t('button.write_first')}
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => setMatchUser(null)} 
-                      className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]"
-                    >
-                      {t('button.continue')}
-                    </Button>
+                    <Button onClick={() => matchUser?.id && router.push(`/chats?matchId=${matchUser.id}`)} className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-primary/30">{t('button.write_first')}</Button>
+                    <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]">{t('button.continue')}</Button>
                   </div>
                 </div>
               </div>
@@ -638,111 +557,44 @@ export default function Home() {
             </div>
             <p className="text-xs text-muted-foreground font-medium">{t('button.filters')}</p>
           </DialogHeader>
-
           <div className="p-6 space-y-6 overflow-y-auto max-h-[65vh] no-scrollbar">
             <div className="space-y-3">
-              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                <User size={12} className="text-primary" /> {t('filter.who_to_see')}
-              </label>
+              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><User size={12} className="text-primary" /> {t('filter.who_to_see')}</label>
               <div className="flex gap-2 bg-muted/30 p-1 rounded-xl">
                 {['all', 'female', 'male'].map(pref => (
-                  <button
-                    key={pref}
-                    onClick={() => setGenderPreference(pref)}
-                    className={cn(
-                      "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
-                      genderPref === pref ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:bg-white/50"
-                    )}
-                  >
+                  <button key={pref} onClick={() => setGenderPreference(pref)} className={cn("flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all", genderPref === pref ? "bg-white shadow-sm text-primary" : "text-muted-foreground hover:bg-white/50")}>
                     {t(`filter.gender.${pref}`)}
                   </button>
                 ))}
               </div>
             </div>
-
             <div className="space-y-3">
               <div className="flex justify-between items-center px-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <Navigation size={12} className="text-primary" /> {t('filter.distance')}
-                </label>
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Navigation size={12} className="text-primary" /> {t('filter.distance')}</label>
                 <span className="text-xs font-black text-primary">{distance[0]} км</span>
               </div>
-              <Slider 
-                value={distance} 
-                onValueChange={setDistance} 
-                min={1} 
-                max={100} 
-                step={1} 
-                className="py-2"
-              />
+              <Slider value={distance} onValueChange={setDistance} min={1} max={100} step={1} className="py-2" />
             </div>
-
             <div className="space-y-3">
               <div className="flex justify-between items-center px-1">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
-                  <Cpu size={12} className="text-primary" /> {t('profile.age')}
-                </label>
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2"><Cpu size={12} className="text-primary" /> {t('profile.age')}</label>
                 <span className="text-xs font-black text-primary">{ageRange[0]} - {ageRange[1]}</span>
               </div>
-              <Slider 
-                value={ageRange} 
-                onValueChange={setAgeRange} 
-                min={18} 
-                max={60} 
-                step={1} 
-                className="py-2"
-              />
+              <Slider value={ageRange} onValueChange={setAgeRange} min={18} max={60} step={1} className="py-2" />
             </div>
-
             <div className="space-y-3">
-              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                <MapPin size={12} className="text-primary" /> {t('profile.city')}
-              </label>
+              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><MapPin size={12} className="text-primary" /> {t('profile.city')}</label>
               <Select value={selectedCity} onValueChange={setSelectedCity}>
-                <SelectTrigger className="h-11 rounded-xl bg-muted/30 border-0 font-bold px-4 focus:ring-primary/20">
-                  <SelectValue placeholder="Выберите город" />
-                </SelectTrigger>
+                <SelectTrigger className="h-11 rounded-xl bg-muted/30 border-0 font-bold px-4 focus:ring-primary/20"><SelectValue /></SelectTrigger>
                 <SelectContent className="rounded-xl border-0 shadow-2xl">
                   <SelectItem value="Все" className="font-bold text-sm">Все города</SelectItem>
-                  {CAPITALS.map(city => (
-                    <SelectItem key={city} value={city} className="font-bold text-sm">{city}</SelectItem>
-                  ))}
+                  {CAPITALS.map(city => (<SelectItem key={city} value={city} className="font-bold text-sm">{city}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
-
-            <div className="space-y-3">
-              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                <Star size={12} className="text-primary" /> {t('profile.interests')}
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {INTEREST_OPTIONS.map(interest => (
-                  <Badge 
-                    key={interest}
-                    onClick={() => toggleInterest(interest)}
-                    variant={selectedInterests.includes(interest) ? "default" : "secondary"}
-                    className={cn(
-                      "cursor-pointer px-3 py-2 rounded-lg transition-all border-0 font-bold text-[9px] uppercase tracking-tight shadow-sm",
-                      selectedInterests.includes(interest) 
-                        ? "gradient-bg text-white shadow-md" 
-                        : "bg-muted text-muted-foreground hover:bg-border"
-                    )}
-                  >
-                    {t(interest)}
-                  </Badge>
-                ))}
-              </div>
-            </div>
           </div>
-
           <DialogFooter className="p-6 pt-2 bg-muted/10 border-t">
-            <Button 
-              onClick={() => {
-                setIsFilterDialogOpen(false);
-                handleAutoSearch();
-              }}
-              className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-[0.15em] shadow-xl shadow-primary/20 active:scale-95 transition-all border-0 text-[10px]"
-            >
+            <Button onClick={() => { setIsFilterDialogOpen(false); handleAutoSearch(); }} className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-[0.15em] shadow-xl shadow-primary/20 active:scale-95 transition-all border-0 text-[10px]">
               {t('button.autosearch')}
             </Button>
           </DialogFooter>

@@ -70,11 +70,13 @@ const translations = {
     // Lifestyle Labels
     'profile.label.zodiac': 'Зодиак',
     'profile.label.height': 'Рост',
-    'profile.label.goal': 'Ищу',
+    'profile.label.goal': 'Цель',
     'profile.label.education': 'Образование',
     'profile.label.job': 'Работа',
     'profile.label.pets': 'Питомцы',
     'profile.label.sleep': 'Режим сна',
+    'profile.label.gender': 'Пол',
+    'profile.label.looking_for': 'Ищу',
     // Activity
     'activity.title': 'События',
     'activity.likes': 'Лайки',
@@ -310,11 +312,13 @@ const translations = {
     // Lifestyle Labels
     'profile.label.zodiac': 'Zodiac',
     'profile.label.height': 'Height',
-    'profile.label.goal': 'Looking for',
+    'profile.label.goal': 'Goal',
     'profile.label.education': 'Education',
     'profile.label.job': 'Job',
     'profile.label.pets': 'Pets',
     'profile.label.sleep': 'Sleep',
+    'profile.label.gender': 'Gender',
+    'profile.label.looking_for': 'Looking for',
     // Activity
     'activity.title': 'Activity',
     'activity.likes': 'Likes',
