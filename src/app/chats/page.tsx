@@ -28,6 +28,7 @@ import { VideoCallDialog } from "@/components/video-call";
 import { VoiceCallDialog } from "@/components/voice-call";
 import { useFeatureFlags } from "@/context/feature-flags-context";
 import { ALL_DEMO_USERS, GROUP_CATEGORIES } from "@/lib/demo-data";
+import { containsForbiddenWords } from "@/lib/word-filter";
 
 const CHAT_THEMES = [
   { id: 'romantic', label_ru: 'Романтика', label_en: 'Romantic', icon: Heart, color: 'text-pink-500', mood: 'Romantic, sweet and poetic' },
@@ -149,6 +150,16 @@ function ChatsContent() {
   const handleSendMessage = (textOverride?: string) => {
     const textToSend = textOverride || inputValue;
     if (!textToSend.trim()) return;
+
+    if (containsForbiddenWords(textToSend)) {
+      toast({
+        variant: 'destructive',
+        title: t('filter.toast.title'),
+        description: t('filter.toast.description'),
+      });
+      return;
+    }
+
     const newMessage = { id: Date.now(), text: textToSend, sender: "me", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) };
     setMessages([...messages, newMessage]); if (!textOverride) setInputValue(""); setShowThemeGrid(false);
     

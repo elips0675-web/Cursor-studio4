@@ -1,10 +1,11 @@
+
 'use client';
 
 import { Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from "next/image";
-import { ChevronLeft, Users, Plus } from 'lucide-react';
+import { ChevronLeft, Users, Plus, Gift } from 'lucide-react';
 import { GROUP_CATEGORIES } from '@/lib/demo-data';
 import { AppHeader } from '@/components/layout/app-header';
 import { BottomNav } from '@/components/navigation/bottom-nav';
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/context/language-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import { toast } from '@/hooks/use-toast';
 
 function SubGroupsContent() {
     const params = useParams();
@@ -45,6 +47,19 @@ function SubGroupsContent() {
                 </div>
             </header>
             <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
+                <div 
+                    onClick={() => toast({ title: t('groups.ad.toast.title'), description: t('groups.ad.toast.description') })}
+                    className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 p-4 rounded-2xl text-white flex items-center gap-4 cursor-pointer hover:scale-[1.02] transition-transform app-shadow"
+                >
+                    <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm border border-white/20">
+                        <Gift size={24} />
+                    </div>
+                    <div>
+                        <h4 className="font-black tracking-tight">{t('groups.ad.title')}</h4>
+                        <p className="text-xs text-white/80 mt-0.5">{t('groups.ad.description')}</p>
+                    </div>
+                </div>
+
                 <div className="space-y-3">
                     {category.subgroups.map(subgroup => (
                         <Link href={`/chats?groupId=${subgroup.id}`} key={subgroup.id} className="flex items-center gap-4 p-3 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">

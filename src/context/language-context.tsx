@@ -142,6 +142,8 @@ const translations = {
     'filter.gender.all': 'Все',
     'filter.gender.male': 'Мужчины',
     'filter.gender.female': 'Женщины',
+    'filter.toast.title': 'Сообщение не отправлено',
+    'filter.toast.description': 'Пожалуйста, избегайте ненормативной лексики, политических тем и ссылок.',
     // Onboarding
     'onboarding.step1.title': 'Как тебя зовут?',
     'onboarding.step1.desc': 'Имя будет отображаться в твоем профиле.',
@@ -302,6 +304,10 @@ const translations = {
     'incognito.banner.description': 'Ваши посещения профилей других пользователей не будут отображаться в их активности.',
     'incognito.toast.title': 'Режим Инкогнито',
     'incognito.toast.description': 'Ваш визит на эту страницу останется анонимным.',
+    'groups.ad.title': 'Разблокировать премиум группу!',
+    'groups.ad.description': 'Посмотрите короткую рекламу и получите доступ.',
+    'groups.ad.toast.title': 'Демонстрация рекламы',
+    'groups.ad.toast.description': 'Здесь мог бы быть просмотр видео для получения бонуса!',
   },
   EN: {
     // Landing / SEO
@@ -430,6 +436,8 @@ const translations = {
     'filter.gender.all': 'All',
     'filter.gender.male': 'Men',
     'filter.gender.female': 'Women',
+    'filter.toast.title': 'Message Not Sent',
+    'filter.toast.description': 'Please avoid profanity, political topics, and links.',
     // Onboarding
     'onboarding.step1.title': "What's your name?",
     'onboarding.step1.desc': 'Name will be displayed in your profile.',
@@ -590,6 +598,10 @@ const translations = {
     'incognito.banner.description': 'Your visits to other profiles will not be shown in their activity.',
     'incognito.toast.title': 'Incognito Mode',
     'incognito.toast.description': 'Your visit to this page will remain anonymous.',
+    'groups.ad.title': 'Unlock a Premium Group!',
+    'groups.ad.description': 'Watch a short ad to get access.',
+    'groups.ad.toast.title': 'Ad Demonstration',
+    'groups.ad.toast.description': 'A video could be playing here to get a bonus!',
   }
 };
 
