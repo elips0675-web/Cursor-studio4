@@ -14,6 +14,7 @@ const FAQ_ITEMS = [
   { id: 'q5', question: 'faq.q5.question', answer: 'faq.q5.answer' },
   { id: 'q6', question: 'faq.q6.question', answer: 'faq.q6.answer' },
   { id: 'q7', question: 'faq.q7.question', answer: 'faq.q7.answer' },
+  { id: 'q8', question: 'faq.q8.question', answer: 'faq.q8.answer' },
 ];
 
 export default function FaqPage() {

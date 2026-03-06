@@ -1,20 +1,35 @@
 const FORBIDDEN_WORD_ROOTS = [
-  // A list of forbidden word roots in lowercase
-  // Russian swear words (example roots)
-  'хуй', 'пизд', 'ебан', 'бля', 'ебл', 'муд', 'сука', 'залуп',
-  // English swear words (example roots)
-  'fuck', 'cunt', 'shit', 'bitch', 'asshole',
-  // Politics (RU & EN)
+  // Нецензурная лексика (Swear words)
+  'хуй', 'пизд', 'ебан', 'бля', 'ебл', 'муд', 'сука', 'залуп', 'уеб',
+  'fuck', 'cunt', 'shit', 'bitch', 'asshole', 'dick',
+
+  // Оскорбления и Дискриминация (Insults & Discrimination)
+  'мразь', 'урод', 'дебил', 'шлюх', 'ниггер', 'хохол', 'кацап', 'жид',
+  'scum', 'freak', 'moron', 'slut', 'nigger', 
+
+  // Призывы к насилию (Calls to violence)
+  'уби', 'насил', 'террор', 'экстрем', 'расправ', 'взорв',
+  'kill', 'murder', 'violen', 'terror', 'extremis', 'slaughter',
+
+  // Политика (Politics)
   'политик', 'президент', 'правительств', 'выбор', 'митинг', 'оппозици', 'война',
-  'politic', 'president', 'government', 'election', 'rally', 'opposition', 'war',
-  // Hate speech (RU & EN)
-  'нацист', 'расист', 'фашист',
-  'nazi', 'racist', 'fascist',
-  // Violence & Extremism (RU & EN)
-  'уби', 'насил', 'террор', 'экстрем',
-  'kill', 'murder', 'violen', 'terror', 'extremis',
-  // Spam / Links
-  'http:', 'https:', 'www.', '.com', '.ru', '.net', '.org', 't.me', 'vk.com'
+  'politic', 'president', 'government', 'election', 'rally', 'opposition', 'war', 'навальн',
+
+  // Спам и Реклама (Spam & Ads)
+  'http:', 'https:', 'www.', '.com', '.ru', '.net', '.org', 't.me', 'vk.com',
+  'купи', 'продай', 'акция', 'скидк', 'заработ', 'казино', 'ставк', 'крипт',
+  'buy', 'sell', 'promo', 'discount', 'earn', 'casino', 'bet', 'crypto',
+
+  // Мошенничество (Scam)
+  'бинарн', 'опцион', 'пирамид',
+  'binary', 'option', 'pyramid',
+
+  // Запрещенные товары и услуги (Forbidden goods & services)
+  'нарко', 'оружи', 'проститут', 'порно',
+  'drug', 'weapon', 'prostitut', 'porn',
+
+  // Конкуренты (Competitors)
+  'tinder', 'badoo', 'mamba', 'pure', 'тиндер', 'баду', 'мамба'
 ];
 
 export const containsForbiddenWords = (text: string): boolean => {
