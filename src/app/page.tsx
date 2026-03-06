@@ -407,7 +407,7 @@ export default function Home() {
                             transition={{ type: "spring", damping: 12, delay: 0.3 }}
                             className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted"
                         >
-                            <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name || "Matched user photo"} fill sizes="144px" data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
+                            <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name || 'Matched user photo'} fill sizes="144px" data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
                         </motion.div>
                     </div>
                 </div>
@@ -472,6 +472,24 @@ export default function Home() {
                   {CAPITALS.map(city => (<SelectItem key={city} value={city} className="font-bold text-sm">{city}</SelectItem>))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Star size={12} className="text-primary" /> {t('profile.interests')}</label>
+              <div className="flex flex-wrap gap-1.5">
+                {INTEREST_OPTIONS.map(interest => (
+                  <Badge
+                    key={interest}
+                    onClick={() => toggleInterest(interest)}
+                    variant={selectedInterests.includes(interest) ? "default" : "secondary"}
+                    className={cn(
+                      "cursor-pointer px-3 py-1.5 rounded-md transition-all border-0 font-bold text-[9px] uppercase tracking-tight shadow-sm",
+                      selectedInterests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted/50 text-muted-foreground hover:bg-border"
+                    )}
+                  >
+                    {t(interest)}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
           <DialogFooter className="p-6 pt-2 bg-muted/10 border-t">
