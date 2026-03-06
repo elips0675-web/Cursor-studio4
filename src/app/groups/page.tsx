@@ -1,6 +1,7 @@
 
 "use client";
 
+import { useState } from "react";
 import { Plus, Users, Search, Heart, PackageX } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { useFeatureFlags } from "@/context/feature-flags-context";
 
 export default function GroupsPage() {
   const { groupsPageEnabled } = useFeatureFlags();
+  const [activeCategory, setActiveCategory] = useState('Все');
 
   if (!groupsPageEnabled) {
       return (
@@ -29,19 +31,24 @@ export default function GroupsPage() {
           </>
       )
   }
+
+  const categories = ['Все', 'Спорт', 'Музыка', 'Творчество', 'IT', 'Чтение', 'Игры', 'Туризм'];
   
   return (
     <>
       <AppHeader />
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
-        <div className="flex overflow-x-auto gap-2 pb-4 no-scrollbar">
-          {['Все', 'Спорт', 'Музыка', 'Творчество', 'IT', 'Чтение', 'Игры', 'Туризм'].map((cat, i) => (
-            <span 
-              key={cat} 
-              className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold cursor-pointer transition-all ${i === 0 ? 'gradient-bg text-white' : 'bg-muted text-muted-foreground hover:bg-border'}`}
+        <div className="flex flex-wrap gap-2 pb-4">
+          {categories.map((cat) => (
+            <Button 
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              variant={activeCategory === cat ? 'default' : 'secondary'}
+              size="sm"
+              className={`rounded-full font-bold transition-all ${activeCategory === cat ? 'gradient-bg text-white shadow-md shadow-primary/20 border-0' : 'text-muted-foreground'}`}
             >
               {cat}
-            </span>
+            </Button>
           ))}
         </div>
 
