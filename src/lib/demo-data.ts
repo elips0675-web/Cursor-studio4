@@ -1,7 +1,7 @@
 import { PlaceHolderImages } from "./placeholder-images";
 
 export const ALL_DEMO_USERS = [
-  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, online: true, distance: 2, match: 87, city: 'Москва', zodiac: 'Лев', interests: ['Фотография', 'Кофе', 'Музыка', 'Путешествия'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', height: 172, goal: 'Серьезные отношения', gender: 'female', lookingFor: 'male' },
+  { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, online: true, distance: 2, match: 87, city: 'Москва', zodiac: 'Лев', interests: ['Фотография', 'Путешествия', 'Кофе', 'Музыка', 'Спорт'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', height: 172, goal: 'Серьезные отношения', gender: 'female', lookingFor: 'male' },
   
   // 5 Men for Anna
   { id: 2, name: 'Александр', age: 26, img: PlaceHolderImages[1].imageUrl, hint: PlaceHolderImages[1].imageHint, online: true, distance: 3, match: 95, city: 'Москва', zodiac: 'Овен', interests: ['Путешествия', 'Фотография', 'Бизнес'], bio: 'Всегда в движении. Ищу ту, кто разделит мою страсть к горам и кофе.', height: 185, goal: 'Серьезные отношения', gender: 'male', lookingFor: 'female' },

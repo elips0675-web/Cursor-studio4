@@ -85,7 +85,7 @@ const Textarea = dynamic(() => import("@/components/ui/textarea").then(mod => mo
 const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 
 const interestIcons: Record<string, any> = {
-    "Фотография": Camera, "Путешествия": Globe, "Кофе": Coffee, "Музыка": Music, "Спорт": Dumbbell, "Искусство": Palette, "Кино": Film, "Йога": Flower2, "Бизнес": Briefcase, "Игры": Gamepad2, "IT технологии": Cpu, "Рыбалка": Anchor, "Туризм": Map, "Садоводство": Sprout, "Чтение": BookOpen, "Книги": BookOpen, "Рукоделие": Scissors, "Наука": FlaskConical, "Авто": Car, "Животные": Dog, "Кулинария": ChefHat, "Творчество": Brush, "Природа": Sun, "Собаки": Dog, "Кошки": Dog, "IT": Cpu, "Дизайн": Palette, "Горы": Mountain, "Мода": Sparkles, "Вино": Wine,
+    "Фотография": Camera, "Путешествия": Globe, "Кофе": Coffee, "Музыка": Music, "Спорт": Dumbbell, "Искусство": Palette, "Кино": Film, "Йога": Flower2, "Бизнес": Briefcase, "Игры": Gamepad2, "IT технологии": Cpu, "Рыбалка": Anchor, "Туризм": Map, "Садоводство": Sprout, "Чтение": BookOpen, "Книги": BookOpen, "Рукоделие": Scissors, "Наука": FlaskConical, "Авто": Car, "Животные": Dog, "Кулинария": ChefHat, "Творчество": Brush, "Природа": Sun, "Кошки": Dog, "IT": Cpu, "Дизайн": Palette, "Горы": Mountain, "Мода": Sparkles, "Вино": Wine,
 };
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
