@@ -21,7 +21,8 @@ import {
   ChevronsRight, 
   MessageSquare, 
   SlidersHorizontal,
-  Languages
+  Languages,
+  DollarSign
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -99,6 +100,18 @@ export function AdminSidebar() {
                         <Link href="/admin/features">
                             <SlidersHorizontal />
                             <span>{t('admin.features')}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={isActive('/admin/monetization')}
+                        tooltip={t('admin.monetization.title')}
+                    >
+                        <Link href="/admin/monetization">
+                            <DollarSign />
+                            <span>{t('admin.monetization.title')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
