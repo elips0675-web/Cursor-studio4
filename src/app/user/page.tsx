@@ -221,7 +221,7 @@ function UserProfileContent() {
       </header>
 
       <main className="flex-1 overflow-y-auto pb-24">
-        <div className="relative aspect-square w-full">
+        <div className="relative aspect-[4/3] w-full">
           <Image src={user.img} alt={user.name} fill sizes="100vw" className="object-cover" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fb] via-transparent to-black/30"></div>
           <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
