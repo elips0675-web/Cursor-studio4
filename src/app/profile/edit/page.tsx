@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -117,7 +116,7 @@ export default function EditProfilePage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-[2rem] p-6 app-shadow space-y-6 border border-border/40">
+        <div className="bg-white rounded-2xl p-6 app-shadow space-y-6 border border-border/40">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
