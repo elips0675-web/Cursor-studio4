@@ -227,7 +227,7 @@ export function AppHeader() {
           className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-primary transition-all h-9 px-3 ml-0.5 rounded-full"
         >
           <Link href="/login" prefetch={false}>
-            <User size={16} />
+            <LogIn size={16} />
             <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
           </Link>
         </Button>
