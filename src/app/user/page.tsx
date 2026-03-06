@@ -353,7 +353,7 @@ function UserProfileContent() {
                         <Image src={PlaceHolderImages[10].imageUrl} alt="Вы" fill sizes="144px" data-ai-hint={PlaceHolderImages[10].imageHint} className="object-cover" />
                     </motion.div>
                     <motion.div initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.3 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted">
-                        <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name} fill sizes="144px" data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
+                        <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name || "Matched user photo"} fill sizes="144px" data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
                     </motion.div>
                 </div>
             </div>

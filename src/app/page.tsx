@@ -407,7 +407,7 @@ export default function Home() {
                             transition={{ type: "spring", damping: 12, delay: 0.3 }}
                             className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted"
                         >
-                            <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name || "Match"} fill sizes="144px" className="object-cover" />
+                            <Image src={matchUser?.img || PlaceHolderImages[0].imageUrl} alt={matchUser?.name || "Matched user photo"} fill sizes="144px" data-ai-hint={matchUser?.hint || PlaceHolderImages[0].imageHint} className="object-cover" />
                         </motion.div>
                     </div>
                 </div>
