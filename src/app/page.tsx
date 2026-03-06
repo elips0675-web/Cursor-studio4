@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star } from "lucide-react";
