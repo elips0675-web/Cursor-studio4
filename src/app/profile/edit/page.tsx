@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed, Trophy } from "lucide-react";
+import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -22,7 +22,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, PET_OPTIONS, SLEEP_SCHEDULE_OPTIONS, EDUCATION_OPTIONS, ALL_TITLES } from "@/lib/constants";
+import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, PET_OPTIONS, SLEEP_SCHEDULE_OPTIONS, EDUCATION_OPTIONS } from "@/lib/constants";
 
 const defaultProfile = {
     name: "Анна",
@@ -36,8 +36,7 @@ const defaultProfile = {
     pets: "Есть собака",
     education: "Высшее",
     sleepSchedule: "Сова",
-    work: "Дизайнер",
-    titles: [] as {id: string, name: string}[]
+    work: "Дизайнер"
 };
 
 export default function EditProfilePage() {
@@ -51,7 +50,6 @@ export default function EditProfilePage() {
     if (savedProfile) {
       try {
         const loadedProfile = JSON.parse(savedProfile);
-        if (!Array.isArray(loadedProfile.titles)) loadedProfile.titles = [];
         setProfile(prev => ({ ...prev, ...loadedProfile }));
       } catch(e) {}
     }
@@ -100,13 +98,6 @@ export default function EditProfilePage() {
       interests: prev.interests.includes(interest) ? prev.interests.filter(i => i !== interest) : [...prev.interests, interest]
     }));
   };
-  
-  const toggleTitle = (title: {id: string, name: string}) => {
-    setProfile(prev => ({
-      ...prev,
-      titles: (prev.titles || []).some(t => t.id === title.id) ? (prev.titles || []).filter(t => t.id !== title.id) : [...(prev.titles || []), title]
-    }));
-  };
 
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
@@ -130,22 +121,12 @@ export default function EditProfilePage() {
                 <h3 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">О себе</h3>
               </div>
               <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-tight bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors shadow-sm">
-                <Sparkles size={11} className={isGeneratingBio ? "animate-spin" : ""} /> AI Улучшить
+                <p className="flex items-center gap-1.5">
+                  <Sparkles size={11} className={isGeneratingBio ? "animate-spin" : ""} /> AI Улучшить
+                </p>
               </button>
             </div>
             <Textarea value={profile.bio || ''} onChange={e => setProfile({...profile, bio: e.target.value})} className="rounded-2xl bg-muted/30 border-0 min-h-[90px] text-xs resize-none font-medium p-4" />
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600"><Trophy size={14} /></div>
-                <h3 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">Звания</h3>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {ALL_TITLES.map(title => (
-                <Badge key={title.id} onClick={() => toggleTitle(title)} variant={(profile.titles || []).some(t => t.id === title.id) ? "default" : "secondary"} className={cn("cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", (profile.titles || []).some(t => t.id === title.id) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>{title.name}</Badge>
-              ))}
-            </div>
           </div>
 
           <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import dynamic from 'next/dynamic';
 import { 
@@ -45,6 +45,10 @@ import {
   GraduationCap,
   User,
   Info,
+  Trophy,
+  Users,
+  Crown,
+  Compass
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -165,6 +169,15 @@ function UserProfileContent() {
     ]);
   }, [user.img]);
 
+  const earnedTitles = useMemo(() => {
+    const titles = [];
+    if (user.match >= 85) titles.push({ id: 'romantic', name: language === 'RU' ? 'Начинающий романтик' : 'Budding Romantic', icon: Heart, color: 'bg-pink-50 text-pink-600' });
+    if (user.match >= 90) titles.push({ id: 'king', name: language === 'RU' ? 'Король свиданий' : 'Dating King', icon: Crown, color: 'bg-amber-50 text-amber-600' });
+    if (user.interests.length >= 4) titles.push({ id: 'party', name: language === 'RU' ? 'Душа компании' : 'Life of the Party', icon: Users, color: 'bg-blue-50 text-blue-600' });
+    if (user.bio.length > 5) titles.push({ id: 'explorer', name: language === 'RU' ? 'Первооткрыватель' : 'The Explorer', icon: Compass, color: 'bg-green-50 text-green-600' });
+    return titles;
+  }, [user.match, user.interests, user.bio, language]);
+
   const getAiInsight = async (targetUser: any) => {
     if (!aiCompatibilityEnabled) {
       setCompatibility(t('match.insight_default'));
@@ -252,6 +265,23 @@ function UserProfileContent() {
 
         <div className="px-5 space-y-6 -mt-2 relative z-10">
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
+            {/* Achievements Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Звания</h4></div>
+              <div className="flex flex-wrap gap-2">
+                {earnedTitles.map((title) => {
+                  const Icon = title.icon;
+                  return (
+                    <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-all", title.color)}>
+                      <Icon size={14} /> {title.name}
+                    </Badge>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="h-px bg-border/50"></div>
+
             {/* О себе */}
             <div>
               <div className="flex items-center gap-2 mb-3">

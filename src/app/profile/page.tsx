@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
   Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Dog, Ruler, Moon, Sun, Target, Sparkles, Heart, Upload, Info, User, GraduationCap, Bed, Trophy, Users, Crown, Compass
 } from "lucide-react";
@@ -50,7 +50,6 @@ export default function ProfilePage() {
     interests: language === 'RU' 
       ? ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство", "Собаки"]
       : ["Photography", "Travel", "Coffee", "Music", "Sports", "Art", "Dogs"],
-    titles: [] as {id: string, name: string}[]
   };
 
   const [profile, setProfile] = useState(defaultProfile);
@@ -59,6 +58,18 @@ export default function ProfilePage() {
   ]);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+
+  // Mock stats for achievements
+  const stats = { likes: 124, matches: 15 };
+
+  const earnedTitles = useMemo(() => {
+    const titles = [];
+    if (stats.likes >= 10) titles.push({ id: 'romantic', name: language === 'RU' ? 'Начинающий романтик' : 'Budding Romantic', icon: Heart, color: 'bg-pink-50 text-pink-600' });
+    if (stats.likes >= 100) titles.push({ id: 'king', name: language === 'RU' ? 'Король свиданий' : 'Dating King', icon: Crown, color: 'bg-amber-50 text-amber-600' });
+    if (profile.interests.length >= 5) titles.push({ id: 'party', name: language === 'RU' ? 'Душа компании' : 'Life of the Party', icon: Users, color: 'bg-blue-50 text-blue-600' });
+    if (profile.bio.length > 10) titles.push({ id: 'explorer', name: language === 'RU' ? 'Первооткрыватель' : 'The Explorer', icon: Compass, color: 'bg-green-50 text-green-600' });
+    return titles;
+  }, [stats.likes, profile.interests, profile.bio, language]);
 
   useEffect(() => {
     try {
@@ -112,8 +123,6 @@ export default function ProfilePage() {
     "Photography": Camera, "Travel": Globe, "Sports": Dumbbell, "Art": Palette, "Movies": Film, "Yoga": Flower2, "Business": Briefcase, "Gaming": Gamepad2, "Dogs": Dog, "Cats": Dog
   };
   
-  const titleMap: Record<string, React.ElementType> = { 'party': Users, 'romantic': Heart, 'king': Crown, 'explorer': Compass };
-
   const getSleepIcon = () => profile.sleepSchedule === 'Сова' ? Moon : profile.sleepSchedule === 'Жаворонок' ? Sun : Bed;
 
   const LifestyleItem = ({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
@@ -143,9 +152,41 @@ export default function ProfilePage() {
               <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">{profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" /></h3>
               <p className="text-muted-foreground text-[10px] font-black flex items-center justify-center gap-1.5 uppercase tracking-widest opacity-80"><MapPin size={12} className="text-primary" /> {profile.city}</p>
             </div>
+            
+            <div className="flex justify-center gap-8 mt-6">
+              <div className="text-center">
+                <p className="text-xl font-black tracking-tight">{stats.likes}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t('profile.likes')}</p>
+              </div>
+              <div className="text-center">
+                <p className="text-xl font-black tracking-tight">{stats.matches}</p>
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t('profile.matches')}</p>
+              </div>
+            </div>
           </div>
           
           <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
+            {/* Achievements Section */}
+            <div>
+              <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Мои звания</h4></div>
+              <div className="flex flex-wrap gap-2">
+                {earnedTitles.length > 0 ? (
+                  earnedTitles.map((title) => {
+                    const Icon = title.icon;
+                    return (
+                      <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-all hover:scale-105", title.color)}>
+                        <Icon size={14} /> {title.name}
+                      </Badge>
+                    );
+                  })
+                ) : (
+                  <p className="text-[10px] text-muted-foreground font-medium italic">Заполняйте профиль и получайте лайки, чтобы открыть звания ✨</p>
+                )}
+              </div>
+            </div>
+
+            <div className="h-px bg-border/50"></div>
+
             <div>
               <div className="flex items-center gap-2 mb-3"><Info size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4></div>
               <p className="text-[14px] text-foreground/80 leading-relaxed font-medium">{profile.bio}</p>
@@ -172,16 +213,6 @@ export default function ProfilePage() {
               <div className="flex items-center gap-2 mb-4"><Star size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.interests')}</h4></div>
               <div className="flex flex-wrap gap-2">{profile.interests.map((interest) => { const Icon = interestMap[interest] || Heart; return <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg transition-all hover:scale-105"><Icon size={14} className="text-primary" /> {interest}</Badge>; })}</div>
             </div>
-            
-            {profile.titles && profile.titles.length > 0 && (
-              <>
-                <div className="h-px bg-border/50"></div>
-                <div>
-                  <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Звания</h4></div>
-                  <div className="flex flex-wrap gap-2">{profile.titles.map((title) => { const Icon = titleMap[title.id] || Trophy; return <Badge key={title.id} variant="secondary" className="bg-yellow-50 text-yellow-700 border border-yellow-200/50 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm"><Icon size={14} /> {title.name}</Badge>; })}</div>
-                </div>
-              </>
-            )}
           </div>
 
           <div className="bg-white rounded-[2.5rem] p-6 app-shadow border border-border/40 mb-12 text-left">

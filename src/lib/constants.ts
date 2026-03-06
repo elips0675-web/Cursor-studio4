@@ -31,8 +31,8 @@ export const SLEEP_SCHEDULE_OPTIONS = ["Жаворонок", "Сова", "Ког
 export const EDUCATION_OPTIONS = ["Среднее", "Среднее специальное", "Неоконченное высшее", "Высшее", "Ученая степень"];
 
 export const ALL_TITLES = [
-  { id: 'party', name: 'Душа компании' },
-  { id: 'romantic', name: 'Начинающий романтик' },
-  { id: 'king', name: 'Король свиданий' },
-  { id: 'explorer', name: 'Первооткрыватель' }
+  { id: 'party', name: 'Душа компании', icon: 'Users', requirement: 'Много интересов' },
+  { id: 'romantic', name: 'Начинающий романтик', icon: 'Heart', requirement: '10+ лайков' },
+  { id: 'king', name: 'Король свиданий', icon: 'Crown', requirement: '100+ лайков' },
+  { id: 'explorer', name: 'Первооткрыватель', icon: 'Compass', requirement: 'Заполнен профиль' }
 ];
