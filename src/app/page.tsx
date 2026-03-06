@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check, Target } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check, Target, Play, CreditCard } from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -41,6 +41,8 @@ export default function Home() {
   const router = useRouter();
   const { t, language } = useLanguage();
   const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+  const [showAutosearchDialog, setShowAutosearchDialog] = useState(false);
+  const [isAutosearchLoading, setIsAutosearchLoading] = useState(false);
   
   // Filter States
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -139,6 +141,22 @@ export default function Home() {
     router.push('/search?mode=autosearch');
   };
 
+  const handleAutosearchAd = () => {
+    setIsAutosearchLoading(true);
+    setTimeout(() => {
+      setIsAutosearchLoading(false);
+      setShowAutosearchDialog(false);
+      setIsFilterDialogOpen(true);
+      toast({ title: t('autosearch.success_ad') });
+    }, 3000);
+  };
+
+  const handleAutosearchPaid = () => {
+    setShowAutosearchDialog(false);
+    setIsFilterDialogOpen(true);
+    toast({ title: t('autosearch.success_paid') });
+  };
+
   const toggleInterest = (interest: string) => {
     setSelectedInterests(prev => 
       prev.includes(interest) ? prev.filter(i => i !== interest) : [...prev, interest]
@@ -179,7 +197,7 @@ export default function Home() {
               </Link>
             </Button>
             <Button 
-              onClick={() => setIsFilterDialogOpen(true)}
+              onClick={() => setShowAutosearchDialog(true)}
               className="h-12 rounded-2xl bg-white border-2 border-primary text-primary font-black text-[10px] shadow-lg shadow-primary/5 hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-widest"
             >
               <Zap size={14} fill={"none"} /> {t('button.autosearch')}
@@ -191,6 +209,36 @@ export default function Home() {
 
         <RecommendationsSection recommendedUsers={recommendedUsers} onLike={handleLikeHomepage} t={t} />
       </main>
+
+      <AnimatePresence>
+        {showAutosearchDialog && (
+          <Dialog open={showAutosearchDialog} onOpenChange={setShowAutosearchDialog}>
+            <DialogContent className="max-w-[340px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
+              <div className="relative h-40 gradient-bg flex flex-col items-center justify-center text-white p-6 overflow-hidden">
+                 <div className="absolute inset-0 bg-black/5"></div>
+                 <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 2, repeat: Infinity }} className="absolute"><Zap size={160} fill="currentColor" /></motion.div>
+                 <Zap className="text-yellow-300 mb-2 drop-shadow-lg relative z-10 animate-pulse" size={48} fill="currentColor" />
+                 <DialogTitle className="text-2xl font-black uppercase tracking-tighter relative z-10">{t('autosearch.title')}</DialogTitle>
+                 <p className="text-[10px] text-white/90 font-bold uppercase tracking-[0.1em] relative z-10 mt-1 text-center px-4 leading-relaxed">{t('autosearch.desc')}</p>
+              </div>
+              <div className="p-6 space-y-4">
+                <Button onClick={handleAutosearchAd} disabled={isAutosearchLoading} variant="outline" className="w-full h-16 rounded-2xl border-2 border-primary/20 bg-primary/5 flex flex-col items-center justify-center gap-1 group hover:bg-primary/10 transition-all border-dashed">
+                  {isAutosearchLoading ? (<div className="flex items-center gap-2"><div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div><span className="text-[10px] font-black uppercase tracking-widest text-primary">{language === 'RU' ? 'Загрузка...' : 'Loading...'}</span></div>) : (<><div className="flex items-center gap-2 text-primary"><Play size={14} fill="currentColor" /><span className="text-[11px] font-black uppercase tracking-widest">{t('autosearch.free')}</span></div><span className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">{language === 'RU' ? '1 поиск за видео' : '1 search for 1 Video'}</span></>)}
+                </Button>
+                <div className="relative py-2"><div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted"></span></div><div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest text-muted-foreground bg-white px-4">или</div></div>
+                <Button onClick={handleAutosearchPaid} className="w-full h-16 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/20 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all border-0">
+                  <div className="flex items-center gap-2">
+                    <CreditCard size={16} />
+                    <span className="text-xs font-black uppercase tracking-widest">{t('autosearch.paid')}</span>
+                  </div>
+                  <span className="text-[10px] text-white/80 font-bold uppercase tracking-tighter">{language === 'RU' ? 'Всего за 49 ₽' : 'Just $0.99'}</span>
+                </Button>
+              </div>
+              <DialogFooter className="p-6 pt-0"><Button variant="ghost" onClick={() => setShowAutosearchDialog(false)} className="w-full text-muted-foreground text-[9px] font-black uppercase tracking-widest h-10">{t('button.not_now')}</Button></DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
 
       <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
         <DialogContent className="max-w-[360px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
