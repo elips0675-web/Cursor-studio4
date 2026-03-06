@@ -11,32 +11,42 @@ import { Button } from "@/components/ui/button";
 import { FeatureFlags } from '@/context/feature-flags-context';
 import { toast } from '@/hooks/use-toast';
 import { Loader2, Save, RotateCcw } from 'lucide-react';
+import { useLanguage } from '@/context/language-context';
 
-const FEATURE_METADATA: { key: keyof FeatureFlags; label: string; description: string }[] = [
+const FEATURE_METADATA: { key: keyof FeatureFlags; label_ru: string; label_en: string; description_ru: string; description_en: string }[] = [
   {
     key: 'videoCallsEnabled',
-    label: 'Видеозвонки',
-    description: 'Разрешить видеозвонки между пользователями в чатах.',
+    label_ru: 'Видеозвонки',
+    label_en: 'Video Calls',
+    description_ru: 'Разрешить видеозвонки между пользователями в чатах.',
+    description_en: 'Allow video calls between users in chats.',
   },
   {
     key: 'aiIcebreakersEnabled',
-    label: 'AI Icebreakers в чате',
-    description: 'Предлагать пользователям фразы для начала диалога, сгенерированные AI.',
+    label_ru: 'AI Icebreakers в чате',
+    label_en: 'AI Icebreakers',
+    description_ru: 'Предлагать пользователям фразы для начала диалога, сгенерированные AI.',
+    description_en: 'Suggest AI-generated opening lines to users.',
   },
   {
     key: 'aiCompatibilityEnabled',
-    label: 'AI Анализ совместимости',
-    description: 'Показывать анализ совместимости при создании нового мэтча.',
+    label_ru: 'AI Анализ совместимости',
+    label_en: 'AI Compatibility',
+    description_ru: 'Показывать анализ совместимости при создании нового мэтча.',
+    description_en: 'Show compatibility analysis for new matches.',
   },
   {
     key: 'groupsPageEnabled',
-    label: 'Страница Групп',
-    description: 'Включить или отключить раздел "Группы" в приложении.',
+    label_ru: 'Страница Групп',
+    label_en: 'Groups Page',
+    description_ru: 'Включить или отключить раздел "Группы" в приложении.',
+    description_en: 'Enable or disable the "Groups" section.',
   },
 ];
 
 export default function FeatureFlagsPage() {
   const firestore = useFirestore();
+  const { t, language } = useLanguage();
   const [flags, setFlags] = useState<Partial<FeatureFlags>>({});
   const [pendingFlags, setPendingFlags] = useState<Partial<FeatureFlags>>({});
   const [loading, setLoading] = useState(true);
@@ -69,7 +79,7 @@ export default function FeatureFlagsPage() {
       setLoading(false);
     }, (error) => {
       console.error("Error fetching feature flags:", error);
-      toast({ variant: 'destructive', title: 'Ошибка загрузки', description: 'Не удалось загрузить настройки функций.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to load feature flags.' });
       setLoading(false);
     });
 
@@ -82,7 +92,7 @@ export default function FeatureFlagsPage() {
 
   const handleReset = () => {
     setPendingFlags(flags);
-    toast({ title: 'Изменения сброшены' });
+    toast({ title: t('admin.reset') });
   };
 
   const handleSave = async () => {
@@ -92,12 +102,12 @@ export default function FeatureFlagsPage() {
     try {
       await setDoc(featureFlagsRef, pendingFlags, { merge: true });
       toast({ 
-        title: 'Настройки сохранены', 
-        description: 'Новые правила управления функциями вступили в силу для всех пользователей.' 
+        title: language === 'RU' ? 'Настройки сохранены' : 'Settings saved', 
+        description: language === 'RU' ? 'Изменения вступили в силу.' : 'Changes are now live.' 
       });
     } catch (error) {
       console.error("Error updating feature flags:", error);
-      toast({ variant: 'destructive', title: 'Ошибка сохранения', description: 'Не удалось обновить настройки.' });
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to save changes.' });
     } finally {
       setIsSaving(false);
     }
@@ -119,15 +129,15 @@ export default function FeatureFlagsPage() {
     <div className="space-y-6">
       <Card className="border-0 shadow-sm">
         <CardHeader>
-          <CardTitle className="text-xl font-black uppercase tracking-tight">Управление функциями</CardTitle>
-          <CardDescription>Включайте или отключайте функции приложения в реальном времени.</CardDescription>
+          <CardTitle className="text-xl font-black uppercase tracking-tight">{t('admin.manage_features')}</CardTitle>
+          <CardDescription>{t('admin.feature_desc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {FEATURE_METADATA.map(({ key, label, description }) => (
+          {FEATURE_METADATA.map(({ key, label_ru, label_en, description_ru, description_en }) => (
             <div key={key} className="flex items-center justify-between space-x-4 p-4 rounded-2xl border bg-background hover:bg-muted/5 transition-colors">
               <div className="space-y-0.5">
-                <Label htmlFor={key} className="text-sm font-bold cursor-pointer">{label}</Label>
-                <p className="text-xs text-muted-foreground">{description}</p>
+                <Label htmlFor={key} className="text-sm font-bold cursor-pointer">{language === 'RU' ? label_ru : label_en}</Label>
+                <p className="text-xs text-muted-foreground">{language === 'RU' ? description_ru : description_en}</p>
               </div>
               <Switch
                 id={key}
@@ -145,7 +155,7 @@ export default function FeatureFlagsPage() {
             className="rounded-full text-[10px] font-black uppercase tracking-widest h-10 px-6"
           >
             <RotateCcw className="mr-2 h-3 w-3" />
-            Сбросить
+            {t('admin.reset')}
           </Button>
           <Button 
             onClick={handleSave} 
@@ -155,23 +165,17 @@ export default function FeatureFlagsPage() {
             {isSaving ? (
               <>
                 <Loader2 className="mr-2 h-3 w-3 animate-spin" />
-                Сохранение...
+                ...
               </>
             ) : (
               <>
                 <Save className="mr-2 h-3 w-3" />
-                Сохранить
+                {t('admin.save')}
               </>
             )}
           </Button>
         </CardFooter>
       </Card>
-
-      {hasChanges && (
-        <div className="bg-primary/10 border border-primary/20 p-4 rounded-2xl flex items-center justify-center animate-in fade-in slide-in-from-top-2">
-          <p className="text-[9px] font-black text-primary uppercase tracking-[0.2em]">У вас есть несохраненные изменения</p>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect, Suspense, useMemo } from "react";
+import { useState, useRef, useEffect, Suspense, useMemo, useCallback } from "react";
 import { 
   Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info
 } from "lucide-react";
@@ -79,10 +79,12 @@ function ChatsContent() {
   const [reportDescription, setReportDescription] = useState('');
   const [isVideoCall, setIsVideoCall] = useState(false);
 
+  // Optimized Search Logic
   const filteredChats = useMemo(() => {
-    if (!searchQuery.trim()) return ALL_DEMO_USERS;
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return ALL_DEMO_USERS;
     return ALL_DEMO_USERS.filter(chat => 
-      chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+      chat.name.toLowerCase().includes(query)
     );
   }, [searchQuery]);
 

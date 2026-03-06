@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -9,21 +10,41 @@ import {
   SidebarContent,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { LayoutDashboard, Users, Flag, Home, Shield, LogOut, ChevronsLeft, ChevronsRight, MessageSquare, SlidersHorizontal } from 'lucide-react';
+import { 
+  LayoutDashboard, 
+  Users, 
+  Flag, 
+  Home, 
+  Shield, 
+  LogOut, 
+  ChevronsLeft, 
+  ChevronsRight, 
+  MessageSquare, 
+  SlidersHorizontal,
+  Languages
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Button } from '../ui/button';
+import { useLanguage } from '@/context/language-context';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function AdminSidebar() {
   const pathname = usePathname();
   const { state, toggleSidebar } = useSidebar();
+  const { t, language, setLanguage } = useLanguage();
 
   const isActive = (path: string) => pathname === path;
 
   return (
     <>
         <SidebarHeader className="border-b flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 font-semibold text-lg">
+            <Link href="/admin" className="flex items-center gap-2 font-semibold text-lg">
                 <Shield className="h-6 w-6 text-primary" />
                 <span className='group-data-[state=collapsed]:hidden'>SwiftMatch</span>
             </Link>
@@ -37,11 +58,11 @@ export function AdminSidebar() {
                     <SidebarMenuButton
                         asChild
                         isActive={isActive('/admin')}
-                        tooltip="Dashboard"
+                        tooltip={t('admin.dashboard')}
                     >
                         <Link href="/admin">
                             <LayoutDashboard />
-                            <span>Dashboard</span>
+                            <span>{t('admin.dashboard')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -49,11 +70,11 @@ export function AdminSidebar() {
                     <SidebarMenuButton
                         asChild
                         isActive={isActive('/admin/users')}
-                        tooltip="Users"
+                        tooltip={t('admin.users')}
                     >
                         <Link href="/admin/users">
                             <Users />
-                            <span>Users</span>
+                            <span>{t('admin.users')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -61,11 +82,11 @@ export function AdminSidebar() {
                     <SidebarMenuButton
                         asChild
                         isActive={isActive('/admin/reports')}
-                        tooltip="Reports"
+                        tooltip={t('admin.reports')}
                     >
                         <Link href="/admin/reports">
                             <Flag />
-                            <span>Reports</span>
+                            <span>{t('admin.reports')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -73,11 +94,11 @@ export function AdminSidebar() {
                     <SidebarMenuButton
                         asChild
                         isActive={isActive('/admin/features')}
-                        tooltip="Features"
+                        tooltip={t('admin.features')}
                     >
                         <Link href="/admin/features">
                             <SlidersHorizontal />
-                            <span>Features</span>
+                            <span>{t('admin.features')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -98,18 +119,32 @@ export function AdminSidebar() {
         <SidebarFooter className="mt-auto border-t p-2">
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Back to App">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <SidebarMenuButton tooltip="Language">
+                                <Languages className="h-4 w-4" />
+                                <span>{language === 'RU' ? 'Русский' : 'English'}</span>
+                            </SidebarMenuButton>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start" side="right" className="rounded-xl">
+                            <DropdownMenuItem onClick={() => setLanguage('RU')}>Русский (RU)</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setLanguage('EN')}>English (EN)</DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip={t('admin.back_to_app')}>
                          <Link href="/">
                             <Home />
-                            <span>Back to App</span>
+                            <span>{t('admin.back_to_app')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Logout">
+                    <SidebarMenuButton asChild tooltip={t('admin.logout')}>
                          <Link href="/login">
                             <LogOut />
-                            <span>Logout</span>
+                            <span>{t('admin.logout')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/card"
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/language-context";
 
 const INITIAL_USERS = [
     { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, email: 'anna@example.com', online: true, city: 'Москва', joined: '2024-05-01' },
@@ -45,14 +46,15 @@ const INITIAL_USERS = [
 
 export default function AdminUsersPage() {
   const router = useRouter();
+  const { t, language } = useLanguage();
   const [users, setUsers] = useState(INITIAL_USERS);
 
   const handleDeleteUser = (userId: number, userName: string) => {
     setUsers(prev => prev.filter(user => user.id !== userId));
     toast({
       variant: "destructive",
-      title: "Пользователь удален",
-      description: `${userName} был удален из системы.`,
+      title: language === 'RU' ? "Пользователь удален" : "User deleted",
+      description: `${userName} ${language === 'RU' ? 'был удален из системы' : 'has been removed'}.`,
     });
   };
 
@@ -61,8 +63,8 @@ export default function AdminUsersPage() {
   return (
     <Card className="border-0 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-black">Users</CardTitle>
-        <CardDescription>Manage all users in the system.</CardDescription>
+        <CardTitle className="text-xl font-black">{t('admin.users')}</CardTitle>
+        <CardDescription>{t('admin.manage_users')}</CardDescription>
       </CardHeader>
       <CardContent className="p-0 sm:p-6">
         <Table>
@@ -71,10 +73,10 @@ export default function AdminUsersPage() {
               <TableHead className="hidden w-[80px] sm:table-cell">Image</TableHead>
               <TableHead>Name</TableHead>
               <TableHead className="hidden md:table-cell">Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="hidden md:table-cell">City</TableHead>
-              <TableHead className="hidden md:table-cell">Joined</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t('admin.status')}</TableHead>
+              <TableHead className="hidden md:table-cell">{t('admin.city')}</TableHead>
+              <TableHead className="hidden md:table-cell">{t('admin.joined')}</TableHead>
+              <TableHead className="text-right">{t('admin.actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -94,7 +96,7 @@ export default function AdminUsersPage() {
                 <TableCell className="font-bold">{user.name}</TableCell>
                 <TableCell className="hidden md:table-cell text-muted-foreground text-xs">{user.email}</TableCell>
                 <TableCell>
-                  <Badge variant={user.online ? "default" : "outline"} className={user.online ? "bg-green-500 hover:bg-green-600 text-white border-transparent text-[10px]" : "text-[10px]"}>
+                  <Badge variant={user.online ? "default" : "outline"} className={user.online ? "bg-[#2ecc71] hover:bg-[#27ae60] text-white border-transparent text-[10px]" : "text-[10px]"}>
                     {user.online ? "Online" : "Offline"}
                   </Badge>
                 </TableCell>
@@ -109,7 +111,7 @@ export default function AdminUsersPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="rounded-xl">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel>{t('admin.actions')}</DropdownMenuLabel>
                       <DropdownMenuItem onClick={() => router.push(`/user?id=${user.id}`)}>View Profile</DropdownMenuItem>
                       <DropdownMenuItem>Edit</DropdownMenuItem>
                       <DropdownMenuItem onClick={() => handleDeleteUser(user.id, user.name)} className="text-destructive focus:text-destructive">Delete</DropdownMenuItem>
