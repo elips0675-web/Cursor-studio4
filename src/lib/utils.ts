@@ -13,27 +13,30 @@ export function cn(...inputs: ClassValue[]) {
 export function getUserTitles(user: any, language: 'RU' | 'EN'): (TitleMetadata & { displayName: string })[] {
   const titles: (TitleMetadata & { displayName: string })[] = [];
   
-  // Requirement: High match or mock high likes
+  if (!user) return [];
+
+  // LEVEL 4: Dating King (High Match / Popularity)
   if (user.match >= 90) {
     const meta = ALL_TITLES.find(t => t.id === 'king')!;
     titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
   }
   
-  // Requirement: Many interests
-  if (user.interests && user.interests.length >= 4) {
+  // LEVEL 3: Life of the Party (Many Interests)
+  if (user.interests && user.interests.length >= 5) {
     const meta = ALL_TITLES.find(t => t.id === 'party')!;
     titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
   }
   
-  // Requirement: Completed bio
+  // LEVEL 2: Budding Romantic (Bio Effort)
   if (user.bio && user.bio.length > 20) {
-    const meta = ALL_TITLES.find(t => t.id === 'explorer')!;
+    const meta = ALL_TITLES.find(t => t.id === 'romantic')!;
     titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
   }
   
-  // Requirement: Entry level engagement
-  if (user.match >= 80 && titles.length === 0) {
-    const meta = ALL_TITLES.find(t => t.id === 'romantic')!;
+  // LEVEL 1: Rookie (Default for active profiles)
+  // If no other titles earned, user is a Rookie.
+  if (titles.length === 0) {
+    const meta = ALL_TITLES.find(t => t.id === 'rookie')!;
     titles.push({ ...meta, displayName: language === 'RU' ? meta.name_ru : meta.name_en });
   }
 

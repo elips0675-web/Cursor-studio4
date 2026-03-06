@@ -41,6 +41,6 @@ export interface TitleMetadata {
 export const ALL_TITLES: TitleMetadata[] = [
   { id: 'king', name_ru: 'Король свиданий', name_en: 'Dating King', color: 'bg-amber-50 text-amber-600', priority: 4 },
   { id: 'party', name_ru: 'Душа компании', name_en: 'Life of the Party', color: 'bg-blue-50 text-blue-600', priority: 3 },
-  { id: 'explorer', name_ru: 'Первооткрыватель', name_en: 'The Explorer', color: 'bg-green-50 text-green-600', priority: 2 },
-  { id: 'romantic', name_ru: 'Начинающий романтик', name_en: 'Budding Romantic', color: 'bg-pink-50 text-pink-600', priority: 1 }
+  { id: 'romantic', name_ru: 'Начинающий романтик', name_en: 'Budding Romantic', color: 'bg-pink-50 text-pink-600', priority: 2 },
+  { id: 'rookie', name_ru: 'Салага', name_en: 'Rookie', color: 'bg-slate-100 text-slate-600', priority: 1 }
 ];
