@@ -229,7 +229,7 @@ export default function OnboardingPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2">
               <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step3.title')}</h2>
-              <p className="text-muted-foreground text-sm">{t('onboarding.step3.desc')}</p>
+              <p className="text-muted-foreground text-sm">{t('onboarding.step2.desc')}</p>
             </div>
             <div className="space-y-6">
               <div className="space-y-2">
@@ -270,7 +270,7 @@ export default function OnboardingPage() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {INTEREST_OPTIONS.map(interest => (
-                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-xl transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>
+                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>
                   {t(interest)}
                 </Badge>
               ))}
