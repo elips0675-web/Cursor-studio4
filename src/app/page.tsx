@@ -324,114 +324,71 @@ export default function Home() {
     <>
       <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
-        {/* Hero Section / Landing */}
-        <section className="px-6 pt-12 pb-16 text-center relative overflow-hidden bg-white">
+        {/* Banner Section */}
+        <section className="px-6 py-10 text-center relative overflow-hidden bg-white border-b border-border/40">
           <div className="absolute top-[-10%] left-[-20%] w-[100%] h-[50%] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
           <div className="absolute bottom-[-10%] right-[-20%] w-[100%] h-[50%] bg-[#ff8e53]/5 rounded-full blur-[120px] -z-10"></div>
           
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
           >
             <Badge variant="secondary" className="mb-4 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
               <Sparkles size={12} fill="currentColor" /> {t('home.popular')}
             </Badge>
-            <h1 className="text-4xl font-black font-headline mb-4 leading-[1.1] tracking-tighter text-foreground max-w-[320px] mx-auto">
-              {t('landing.headline')}
+            <h1 className="text-3xl font-black font-headline mb-2 leading-tight tracking-tighter text-foreground">
+              {t('home.headline')}
             </h1>
-            <p className="text-muted-foreground text-sm font-medium mb-10 max-w-[300px] mx-auto leading-relaxed">
-              {t('landing.subheadline')}
+            <p className="text-muted-foreground text-xs font-medium mb-8 max-w-[280px] mx-auto">
+              {t('home.subheadline')}
             </p>
           </motion.div>
 
-          {/* Top of the Week - MOVED HERE */}
-          <div className="text-left mb-10 px-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
-                <Trophy size={16} />
-              </div>
-              <h2 className="font-black text-lg font-headline tracking-tight">{t('home.top_week')}</h2>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {topUsers.map((u, i) => (
-                <FeaturedCard key={u.id} user={u} language={language} onLike={() => handleLikeUser(u)} priority={i < 2} />
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3 max-w-[360px] mx-auto mb-12">
+          <div className="grid grid-cols-2 gap-3 max-w-[360px] mx-auto">
             <Button 
               asChild
-              className="h-14 rounded-2xl gradient-bg text-white font-black text-xs shadow-2xl shadow-primary/30 hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-widest"
+              className="h-12 rounded-2xl gradient-bg text-white font-black text-[10px] shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-widest"
             >
               <Link href="/search">
-                <Search size={16} className="stroke-[3px]" /> {ALL_DEMO_USERS.length} {t('swipes.nearby')}
+                <Search size={14} className="stroke-[3px]" /> {ALL_DEMO_USERS.length} {t('swipes.nearby')}
               </Link>
             </Button>
             <Button 
               onClick={() => setIsFilterDialogOpen(true)}
-              className="h-14 rounded-2xl bg-white border-2 border-primary text-primary font-black text-xs shadow-xl shadow-primary/10 hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-widest"
+              className="h-12 rounded-2xl bg-white border-2 border-primary text-primary font-black text-[10px] shadow-lg shadow-primary/5 hover:scale-[1.02] hover:bg-primary/5 active:scale-95 transition-all uppercase tracking-widest"
             >
-              <Zap size={16} fill={isAutoSearching ? "currentColor" : "none"} className={cn("", isAutoSearching && "animate-pulse")} /> {t('button.autosearch')}
+              <Zap size={14} fill={isAutoSearching ? "currentColor" : "none"} className={cn("", isAutoSearching && "animate-pulse")} /> {t('button.autosearch')}
             </Button>
           </div>
+        </section>
 
-          {/* Recommendations - MOVED HERE */}
-          <div className="text-left mb-12 px-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-sm">
-                <Sparkles size={16} fill="currentColor" />
-              </div>
-              <h2 className="font-black text-lg font-headline tracking-tight">{t('home.recommend')}</h2>
+        {/* Top of the Week */}
+        <section className="px-5 pt-8">
+          <div className="flex items-center gap-2 mb-4 px-1">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+              <Trophy size={16} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {recommendedUsers.map((u) => (
-                <ProfilePreviewCard key={u.id} user={u} showActions language={language} onLike={() => handleLikeUser(u)} />
-              ))}
-            </div>
+            <h2 className="font-black text-lg font-headline tracking-tight">{t('home.top_week')}</h2>
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            {topUsers.map((u, i) => (
+              <FeaturedCard key={u.id} user={u} language={language} onLike={() => handleLikeUser(u)} priority={i < 2} />
+            ))}
+          </div>
+        </section>
 
-          {/* Stats Bar */}
-          <div className="grid grid-cols-3 gap-3 max-w-sm mx-auto">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="flex flex-col items-center p-3 rounded-2xl bg-muted/30 border border-border/50 shadow-sm"
-            >
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <Users size={16} />
-              </div>
-              <span className="text-sm font-black gradient-text tracking-tighter">{t('landing.stats.users.num')}</span>
-              <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{t('landing.stats.users.label')}</span>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-              className="flex flex-col items-center p-3 rounded-2xl bg-muted/30 border border-border/50 shadow-sm"
-            >
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <Heart size={16} fill="currentColor" />
-              </div>
-              <span className="text-sm font-black gradient-text tracking-tighter">{t('landing.stats.matches.num')}</span>
-              <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{t('landing.stats.matches.label')}</span>
-            </motion.div>
-            
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              className="flex flex-col items-center p-3 rounded-2xl bg-muted/30 border border-border/50 shadow-sm"
-            >
-              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <Globe size={16} />
-              </div>
-              <span className="text-sm font-black gradient-text tracking-tighter">{t('landing.stats.countries.num')}</span>
-              <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest mt-0.5">{t('landing.stats.countries.label')}</span>
-            </motion.div>
+        {/* Recommendations */}
+        <section className="px-5 pt-10">
+          <div className="flex items-center gap-2 mb-4 px-1">
+            <div className="w-8 h-8 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-sm">
+              <Sparkles size={16} fill="currentColor" />
+            </div>
+            <h2 className="font-black text-lg font-headline tracking-tight">{t('home.recommend')}</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {recommendedUsers.map((u) => (
+              <ProfilePreviewCard key={u.id} user={u} showActions language={language} onLike={() => handleLikeUser(u)} />
+            ))}
           </div>
         </section>
 
@@ -503,7 +460,6 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Match Dialog & Filters Dialog omitted for brevity but remain identical logic-wise */}
       <AnimatePresence>
         {matchUser && (
           <Dialog open={!!matchUser} onOpenChange={(open) => !open && setMatchUser(null)}>
