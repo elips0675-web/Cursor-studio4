@@ -54,6 +54,7 @@ const translations = {
     'button.report': 'Пожаловаться',
     'button.browse_profiles': 'Люди рядом',
     'button.join': 'Вступить',
+    'button.leave_group': 'Выйти из группы',
     // Profile
     'profile.edit': 'Изменить',
     'profile.about': 'О себе',
@@ -308,6 +309,7 @@ const translations = {
     'incognito.banner.description': 'Ваши посещения профилей других пользователей не будут отображаться в их активности.',
     'incognito.toast.title': 'Режим Инкогнито',
     'incognito.toast.description': 'Ваш визит на эту страницу останется анонимным.',
+    'toast.left_group': 'Вы вышли из группы',
     'groups.ad.title': 'Разблокировать премиум группу!',
     'groups.ad.description': 'Посмотрите короткую рекламу и получите доступ.',
     'groups.ad.toast.title': 'Демонстрация рекламы',
@@ -352,6 +354,7 @@ const translations = {
     'button.report': 'Report',
     'button.browse_profiles': 'Browse Profiles',
     'button.join': 'Join',
+    'button.leave_group': 'Leave Group',
     // Profile
     'profile.edit': 'Edit',
     'profile.about': 'About Me',
@@ -606,6 +609,7 @@ const translations = {
     'incognito.banner.description': 'Your visits to other profiles will not be shown in their activity.',
     'incognito.toast.title': 'Incognito Mode',
     'incognito.toast.description': 'Your visit to this page will remain anonymous.',
+    'toast.left_group': 'You have left the group',
     'groups.ad.title': 'Unlock a Premium Group!',
     'groups.ad.description': 'Watch a short ad to get access.',
     'groups.ad.toast.title': 'Ad Demonstration',

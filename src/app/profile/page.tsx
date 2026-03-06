@@ -34,6 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { GROUP_CATEGORIES } from "@/lib/demo-data";
 
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
@@ -86,6 +87,15 @@ export default function ProfilePage() {
 
   const stats = { likes: 124, matches: 15 };
   const earnedTitles = useMemo(() => getUserTitles(profile, language), [profile, language]);
+  const groupNameToIdMap = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const category of GROUP_CATEGORIES) {
+      for (const subgroup of category.subgroups) {
+        map.set(subgroup.name, subgroup.id);
+      }
+    }
+    return map;
+  }, []);
 
   useEffect(() => {
     try {
@@ -268,11 +278,18 @@ export default function ProfilePage() {
                 <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.groups')}</h4>
               </div>
               <div className="flex flex-wrap gap-2">
-                {profile.joinedGroups && (profile.joinedGroups as string[]).map((groupName: string) => (
-                  <Badge key={groupName} variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:scale-105 shadow-sm">
-                    <Users size={14} /> {groupName}
-                  </Badge>
-                ))}
+                {profile.joinedGroups && (profile.joinedGroups as string[]).map((groupName: string) => {
+                  const groupId = groupNameToIdMap.get(groupName);
+                  const linkHref = groupId ? `/chats?groupId=${groupId}` : '#';
+                  
+                  return (
+                    <Link href={linkHref} key={groupName}>
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:scale-105 shadow-sm cursor-pointer">
+                        <Users size={14} /> {groupName}
+                      </Badge>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>

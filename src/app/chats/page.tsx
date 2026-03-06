@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { 
-  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users
+  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, LogOut
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -210,6 +210,12 @@ function ChatsContent() {
     }
   };
 
+  const handleLeaveGroup = () => {
+    if (!selectedChat) return;
+    toast({ title: `${t('toast.left_group')} "${selectedChat.name}"` });
+    setSelectedChat(null);
+  };
+
   const openChat = (chat: any) => { 
     setSelectedChat(chat);
     if(chat.type === 'group') {
@@ -232,7 +238,28 @@ function ChatsContent() {
           <Button variant="ghost" size="icon" onClick={() => setSelectedChat(null)} className="rounded-full hover:bg-muted/50"><ChevronLeft size={24} /></Button>
           <div className="relative"><div className="w-10 h-10 rounded-full overflow-hidden relative border-2 border-white shadow-sm"><Image src={selectedChat.img} alt={selectedChat.name} fill sizes="40px" className="object-cover" /></div>{selectedChat.online && !isGroupChat && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-sm"></span>}</div>
           <div className="flex-1 min-w-0"><h3 className="font-black text-sm leading-tight tracking-tight text-foreground">{selectedChat.name}</h3><p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">{isGroupChat ? `${selectedChat.members} ${t('chats.members')}, ${selectedChat.online} ${t('chats.online')}` : (selectedChat.online ? `• ${t('chats.online')}` : t('chats.offline'))}</p></div>
-          <div className="flex items-center">{!isGroupChat && videoCallsEnabled && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVideoCall(true)}><Video size={18} /></Button>}{!isGroupChat && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVoiceCall(true)}><Phone size={18} /></Button>}<DropdownMenu modal={false}><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50"><MoreVertical size={18} /></Button></DropdownMenuTrigger><DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white"><DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsReportDialogOpen(true); }} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"><Flag size={14} className="mr-2" />{t('button.report')}</DropdownMenuItem></DropdownMenuContent></DropdownMenu></div>
+          <div className="flex items-center">
+            {!isGroupChat && videoCallsEnabled && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVideoCall(true)}><Video size={18} /></Button>}
+            {!isGroupChat && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVoiceCall(true)}><Phone size={18} /></Button>}
+            <DropdownMenu modal={false}>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50"><MoreVertical size={18} /></Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[160px] bg-white">
+                    {isGroupChat ? (
+                        <DropdownMenuItem onSelect={handleLeaveGroup} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10">
+                            <LogOut size={14} className="mr-2" />
+                            {t('button.leave_group')}
+                        </DropdownMenuItem>
+                    ) : (
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setIsReportDialogOpen(true); }} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10">
+                            <Flag size={14} className="mr-2" />
+                            {t('button.report')}
+                        </DropdownMenuItem>
+                    )}
+                </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </header>
         <main className="flex-1 overflow-y-auto p-4 space-y-2"><div className="text-center my-2"><Badge variant="secondary" className="bg-white/50 text-[9px] text-muted-foreground border-0 font-black uppercase tracking-widest px-2.5 py-0.5">{t('chats.today')}</Badge></div><AnimatePresence>{messages.map((msg: any) => (<motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} key={msg.id} className={cn("flex flex-col max-w-[80%]", msg.sender === "me" ? "ml-auto items-end" : "items-start")}><div className={cn("px-3 py-2 rounded-lg text-sm shadow-sm font-medium leading-snug", msg.sender === "me" ? "gradient-bg text-white rounded-br-none shadow-primary/10" : "bg-white text-foreground rounded-bl-none border border-border/40")}>{isGroupChat && msg.sender === 'other' && msg.senderName && (<p className="text-xs font-black text-primary/80 mb-1">{msg.senderName}</p>)}{msg.text}</div><span className="text-[9px] text-muted-foreground mt-1.5 px-1 font-bold uppercase tracking-tighter opacity-60">{msg.time}</span></motion.div>))}</AnimatePresence>{isTyping && (<motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-1.5 text-muted-foreground"><div className="flex gap-1 bg-white px-3 py-2.5 rounded-lg border border-border/40 shadow-sm rounded-bl-none"><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span></div><span className="text-[9px] font-bold uppercase tracking-widest">{t('chats.typing')}</span></motion.div>)}<div ref={messagesEndRef} /></main>
         <div className="p-4 bg-white border-t border-border shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.1)] relative z-10">
