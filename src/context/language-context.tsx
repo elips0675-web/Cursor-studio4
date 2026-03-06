@@ -56,6 +56,14 @@ const translations = {
     'profile.height': 'Рост',
     'profile.pro': 'PRO 💎',
     'profile.someone': 'Кто-то',
+    // Lifestyle Labels
+    'profile.label.zodiac': 'Зодиак',
+    'profile.label.height': 'Рост',
+    'profile.label.goal': 'Ищу',
+    'profile.label.education': 'Образование',
+    'profile.label.job': 'Работа',
+    'profile.label.pets': 'Питомцы',
+    'profile.label.sleep': 'Режим сна',
     // Activity
     'activity.title': 'События',
     'activity.likes': 'Лайки',
@@ -262,6 +270,14 @@ const translations = {
     'profile.height': 'Height',
     'profile.pro': 'PRO 💎',
     'profile.someone': 'Someone',
+    // Lifestyle Labels
+    'profile.label.zodiac': 'Zodiac',
+    'profile.label.height': 'Height',
+    'profile.label.goal': 'Looking for',
+    'profile.label.education': 'Education',
+    'profile.label.job': 'Job',
+    'profile.label.pets': 'Pets',
+    'profile.label.sleep': 'Sleep',
     // Activity
     'activity.title': 'Activity',
     'activity.likes': 'Likes',

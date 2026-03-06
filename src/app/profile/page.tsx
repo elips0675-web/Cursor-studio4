@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
+import { cn } from "@/lib/utils";
 import {
   Carousel,
   CarouselContent,
@@ -115,6 +116,16 @@ export default function ProfilePage() {
 
   const getSleepIcon = () => profile.sleepSchedule === 'Сова' ? Moon : profile.sleepSchedule === 'Жаворонок' ? Sun : Bed;
 
+  const LifestyleItem = ({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
+    <div className={cn("flex flex-col gap-1", className)}>
+      <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{label}</span>
+      <Badge variant="secondary" className="bg-muted/40 text-foreground border-0 gap-1.5 py-2 px-3 font-bold text-[10px] rounded-lg shadow-sm justify-start w-full transition-all hover:bg-muted/60">
+        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={12} className="text-primary/70" />)}
+        <span className="truncate">{value}</span>
+      </Badge>
+    </div>
+  );
+
   return (
     <>
       <AppHeader />
@@ -133,31 +144,46 @@ export default function ProfilePage() {
               <p className="text-muted-foreground text-[10px] font-black flex items-center justify-center gap-1.5 uppercase tracking-widest opacity-80"><MapPin size={12} className="text-primary" /> {profile.city}</p>
             </div>
           </div>
-          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
+          
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
             <div>
               <div className="flex items-center gap-2 mb-3"><Info size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4></div>
               <p className="text-[14px] text-foreground/80 leading-relaxed font-medium">{profile.bio}</p>
             </div>
+            
             <div className="h-px bg-border/50"></div>
+            
             <div>
               <div className="flex items-center gap-2 mb-4"><User size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.lifestyle')}</h4></div>
-              <div className="grid grid-cols-2 gap-2">
-                <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start"><ZodiacIcon sign={profile.zodiac} /> {profile.zodiac}</Badge>
-                {profile.height && <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start"><Ruler size={12} /> {profile.height} см</Badge>}
-                <Badge variant="secondary" className="bg-primary/5 text-primary border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start col-span-2"><Target size={12} /> {profile.datingGoal}</Badge>
-                {profile.education && <Badge variant="secondary" className="bg-purple-50 text-purple-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start"><GraduationCap size={12} /> {profile.education}</Badge>}
-                {profile.work && <Badge variant="secondary" className="bg-green-50 text-green-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start"><Briefcase size={12} /> {profile.work}</Badge>}
-                {profile.pets && <Badge variant="secondary" className="bg-amber-50 text-amber-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start"><Dog size={12} /> {profile.pets}</Badge>}
-                {profile.sleepSchedule && (() => { const SleepIcon = getSleepIcon(); return <Badge variant="secondary" className="bg-gray-100 text-gray-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start"><SleepIcon size={12} /> {profile.sleepSchedule}</Badge>; })()}
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+                <LifestyleItem label={t('profile.label.zodiac')} value={profile.zodiac} icon={profile.zodiac} />
+                {profile.height && <LifestyleItem label={t('profile.label.height')} value={`${profile.height} см`} icon={Ruler} />}
+                <LifestyleItem label={t('profile.label.goal')} value={profile.datingGoal} icon={Target} className="col-span-2" />
+                {profile.education && <LifestyleItem label={t('profile.label.education')} value={profile.education} icon={GraduationCap} />}
+                {profile.work && <LifestyleItem label={t('profile.label.job')} value={profile.work} icon={Briefcase} />}
+                {profile.pets && <LifestyleItem label={t('profile.label.pets')} value={profile.pets} icon={Dog} />}
+                {profile.sleepSchedule && <LifestyleItem label={t('profile.label.sleep')} value={profile.sleepSchedule} icon={getSleepIcon()} />}
               </div>
             </div>
+            
             <div className="h-px bg-border/50"></div>
+            
             <div>
               <div className="flex items-center gap-2 mb-4"><Star size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.interests')}</h4></div>
-              <div className="flex flex-wrap gap-2">{profile.interests.map((interest) => { const Icon = interestMap[interest] || Heart; return <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg"><Icon size={14} className="text-primary" /> {interest}</Badge>; })}</div>
+              <div className="flex flex-wrap gap-2">{profile.interests.map((interest) => { const Icon = interestMap[interest] || Heart; return <Badge key={interest} variant="secondary" className="bg-muted/40 text-foreground/80 border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg transition-all hover:scale-105"><Icon size={14} className="text-primary" /> {interest}</Badge>; })}</div>
             </div>
-            {profile.titles && profile.titles.length > 0 && (<><div className="h-px bg-border/50"></div><div><div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Звания</h4></div><div className="flex flex-wrap gap-2">{profile.titles.map((title) => { const Icon = titleMap[title.id] || Trophy; return <Badge key={title.id} variant="secondary" className="bg-yellow-50 text-yellow-700 border border-yellow-200/50 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm"><Icon size={14} /> {title.name}</Badge>; })}</div></div></>)}
+            
+            {profile.titles && profile.titles.length > 0 && (
+              <>
+                <div className="h-px bg-border/50"></div>
+                <div>
+                  <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Звания</h4></div>
+                  <div className="flex flex-wrap gap-2">{profile.titles.map((title) => { const Icon = titleMap[title.id] || Trophy; return <Badge key={title.id} variant="secondary" className="bg-yellow-50 text-yellow-700 border border-yellow-200/50 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm"><Icon size={14} /> {title.name}</Badge>; })}</div>
+                </div>
+              </>
+            )}
           </div>
+
           <div className="bg-white rounded-[2.5rem] p-6 app-shadow border border-border/40 mb-12 text-left">
             <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2"><Camera size={18} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4></div><input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" /></div>
             <div className="grid grid-cols-2 gap-3">{photos.map((url, idx) => (<div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-square rounded-xl overflow-hidden bg-muted group shadow-sm border border-border/10 cursor-pointer"><Image src={url} alt={`Photo ${idx}`} fill className="object-cover" /><div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><Maximize2 size={24} className="text-white/80 drop-shadow-md" /></div><button onClick={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }} className="absolute top-2 right-2 p-2 bg-white/80 text-destructive rounded-full opacity-0 group-hover:opacity-100 transition-all hover:bg-destructive hover:text-white hover:scale-110 z-10 shadow-md backdrop-blur-sm"><Trash2 size={12} strokeWidth={2.5} /></button></div>))}{photos.length < 10 && (<div onClick={handleTriggerFileInput} className="relative aspect-square rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-primary cursor-pointer transition-colors group"><div className="p-4 bg-muted/60 rounded-full group-hover:bg-primary/10 transition-colors"><Upload size={24} /></div><span className="mt-3 text-[9px] font-black uppercase tracking-widest">{t('profile.add')}</span></div>)}</div>

@@ -55,6 +55,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
+import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { useFeatureFlags } from "@/context/feature-flags-context";
@@ -192,6 +193,16 @@ function UserProfileContent() {
     }
   };
 
+  const LifestyleItem = ({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
+    <div className={cn("flex flex-col gap-1", className)}>
+      <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{label}</span>
+      <Badge variant="secondary" className="bg-muted/40 text-foreground border-0 gap-1.5 py-2 px-3 font-bold text-[10px] rounded-lg shadow-sm justify-start w-full">
+        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={12} className="text-primary/70" />)}
+        <span className="truncate">{value}</span>
+      </Badge>
+    </div>
+  );
+
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <header className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 p-4 flex items-center justify-between">
@@ -240,7 +251,7 @@ function UserProfileContent() {
         </div>
 
         <div className="px-5 space-y-6 -mt-2 relative z-10">
-          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6">
+          <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
             {/* О себе */}
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -260,22 +271,12 @@ function UserProfileContent() {
                  <User size={16} className="text-primary" />
                  <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.lifestyle')}</h4>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <Badge variant="secondary" className="bg-orange-50 text-orange-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start">
-                  <ZodiacIcon sign={user.zodiac} /> {user.zodiac}
-                </Badge>
-                <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start">
-                  <Ruler size={14} /> {user.height} {language === 'RU' ? 'см' : 'cm'}
-                </Badge>
-                <Badge variant="secondary" className="bg-primary/5 text-primary border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start col-span-2">
-                  <Target size={14} /> {language === 'RU' ? user.goal : 'Serious relations'}
-                </Badge>
-                <Badge variant="secondary" className="bg-purple-50 text-purple-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start">
-                  <GraduationCap size={14} /> {language === 'RU' ? 'Высшее' : 'Higher'}
-                </Badge>
-                <Badge variant="secondary" className="bg-green-50 text-green-600 border-0 gap-1.5 py-2.5 px-3.5 font-bold text-[10px] rounded-lg shadow-sm justify-start">
-                  <Briefcase size={14} /> {language === 'RU' ? 'Дизайнер' : 'Designer'}
-                </Badge>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+                <LifestyleItem label={t('profile.label.zodiac')} value={user.zodiac} icon={user.zodiac} />
+                <LifestyleItem label={t('profile.label.height')} value={`${user.height} ${language === 'RU' ? 'см' : 'cm'}`} icon={Ruler} />
+                <LifestyleItem label={t('profile.label.goal')} value={language === 'RU' ? user.goal : 'Serious relations'} icon={Target} className="col-span-2" />
+                <LifestyleItem label={t('profile.label.education')} value={language === 'RU' ? 'Высшее' : 'Higher'} icon={GraduationCap} />
+                <LifestyleItem label={t('profile.label.job')} value={language === 'RU' ? 'Дизайнер' : 'Designer'} icon={Briefcase} />
               </div>
             </div>
 
@@ -291,7 +292,7 @@ function UserProfileContent() {
                 {user.interests.map((interest) => {
                   const Icon = interestIcons[interest] || Heart;
                   return (
-                    <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg">
+                    <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70">
                       <Icon size={14} className="text-primary" /> {interest}
                     </Badge>
                   );
@@ -307,7 +308,7 @@ function UserProfileContent() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               {photos.map((url, idx) => (
-                <div key={idx} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group">
+                <div key={idx} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm border border-border/10">
                   <Image src={url} alt={`Photo ${idx}`} fill sizes="(max-width: 480px) 50vw, 240px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                     <Maximize2 size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -319,13 +320,13 @@ function UserProfileContent() {
         </div>
 
         <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 flex gap-4 bg-white/80 backdrop-blur-md z-40 safe-pb">
-          <Button onClick={() => router.back()} variant="outline" className="w-16 h-16 rounded-full border-2 border-muted hover:bg-muted text-muted-foreground flex items-center justify-center transition-all active:scale-90">
+          <Button onClick={() => router.back()} variant="outline" className="w-16 h-16 rounded-full border-2 border-muted hover:bg-muted text-muted-foreground flex items-center justify-center transition-all active:scale-90 shadow-lg bg-white">
             <X size={28} />
           </Button>
           <Button onClick={handleLike} className="flex-1 h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] text-[11px] shadow-xl shadow-primary/30 flex items-center justify-center gap-2 active:scale-95 transition-all">
             {t('button.like')} <Heart size={20} fill="currentColor" />
           </Button>
-          <Button asChild variant="outline" className="w-16 h-16 rounded-full border-2 border-primary/20 text-primary hover:bg-primary/5 flex items-center justify-center transition-all active:scale-90">
+          <Button asChild variant="outline" className="w-16 h-16 rounded-full border-2 border-primary/20 text-primary hover:bg-primary/5 flex items-center justify-center transition-all active:scale-90 shadow-lg bg-white">
             <Link href={`/chats?matchId=${user.id}`}>
               <MessageCircle size={28} />
             </Link>
