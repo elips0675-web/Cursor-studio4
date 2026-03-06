@@ -235,7 +235,7 @@ export default function SearchPage() {
                      </Badge>
                      <DropdownMenu modal={false}>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/20 hover:bg-white/40">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/40 backdrop-blur-md text-foreground border border-white/40 hover:bg-white/60 shadow-sm">
                                 <MoreVertical size={16} />
                             </Button>
                         </DropdownMenuTrigger>

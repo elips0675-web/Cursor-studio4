@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
@@ -163,7 +164,30 @@ export default function ProfilePage() {
           </div>
         </div>
       </main>
-      <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}><DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center"><DialogTitle className="sr-only">Viewer</DialogTitle><button onClick={() => setIsViewerOpen(false)} className="absolute top-8 right-8 z-50 p-2 bg-black/50 text-white rounded-full"><X size={24} /></button><Carousel className="w-full h-full" opts={{ startIndex: activePhotoIndex }}><CarouselContent className="h-full ml-0">{photos.map((url, idx) => (<CarouselItem key={idx} className="h-[80vh] flex items-center justify-center p-4 pl-4"><div className="relative w-full h-full rounded-2xl overflow-hidden app-shadow"><Image src={url} alt={`Gallery view ${idx}`} fill className="object-cover" /></div></CarouselItem>))}</CarouselContent><CarouselPrevious className="left-4 bg-black/50 border-0 text-white hover:bg-black/70" /><CarouselNext className="right-4 bg-black/50 border-0 text-white hover:bg-black/70" /></Carousel></DialogContent></Dialog>
+      <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
+        <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center">
+          <DialogTitle className="sr-only">Viewer</DialogTitle>
+          <button 
+            onClick={() => setIsViewerOpen(false)} 
+            className="absolute top-8 right-8 z-[100] p-2 bg-black/50 text-white rounded-full hover:bg-black/70 transition-colors shadow-lg border border-white/20"
+          >
+            <X size={24} />
+          </button>
+          <Carousel className="w-full h-full" opts={{ startIndex: activePhotoIndex }}>
+            <CarouselContent className="h-full ml-0">
+              {photos.map((url, idx) => (
+                <CarouselItem key={idx} className="h-[80vh] flex items-center justify-center p-4 pl-4">
+                  <div className="relative w-full h-full rounded-2xl overflow-hidden app-shadow">
+                    <Image src={url} alt={`Gallery view ${idx}`} fill sizes="(max-width: 480px) 100vw, 440px" className="object-cover" />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4 bg-black/50 border-0 text-white hover:bg-black/70 z-50" />
+            <CarouselNext className="right-4 bg-black/50 border-0 text-white hover:bg-black/70 z-50" />
+          </Carousel>
+        </DialogContent>
+      </Dialog>
       <BottomNav />
     </>
   );
