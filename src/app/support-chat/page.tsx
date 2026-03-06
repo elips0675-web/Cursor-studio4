@@ -100,7 +100,7 @@ export default function SupportChatPage() {
             >
               <div 
                 className={cn(
-                  "px-3 py-2 rounded-lg text-sm shadow-sm font-medium leading-snug transition-all",
+                  "px-3 py-2 rounded-md text-sm shadow-sm font-medium leading-snug transition-all",
                   msg.sender === "me" 
                     ? "gradient-bg text-white rounded-br-none shadow-primary/10" 
                     : "bg-white text-foreground rounded-bl-none border border-border/40"
@@ -121,7 +121,7 @@ export default function SupportChatPage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-1.5 text-muted-foreground"
           >
-            <div className="flex gap-1 bg-white px-3 py-2.5 rounded-xl border border-border/40 shadow-sm rounded-bl-none">
+            <div className="flex gap-1 bg-white px-3 py-2.5 rounded-md border border-border/40 shadow-sm rounded-bl-none">
               <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span>
               <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span>
               <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span>
