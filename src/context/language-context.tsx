@@ -272,6 +272,14 @@ const translations = {
     'admin.monetization.ad_unit_id': 'ID рекламного блока',
     'admin.monetization.save_success_title': 'Настройки монетизации сохранены',
     'admin.monetization.save_success_desc': 'Изменения будут применены в приложении.',
+    'admin.content.title': 'Контент',
+    'admin.content.description': 'Управляйте списками, используемыми в приложении.',
+    'admin.content.interests.title': 'Интересы',
+    'admin.content.dating_goals.title': 'Цели знакомства',
+    'admin.content.education.title': 'Образование',
+    'admin.content.interests.save_toast': 'Список интересов обновлен',
+    'admin.content.goals.save_toast': 'Список целей обновлен',
+    'admin.content.education.save_toast': 'Список образования обновлен',
     'dialog.delete_photo.title': 'Удалить фото?',
     'dialog.delete_photo.description': 'Это действие необратимо. Вы уверены, что хотите удалить эту фотографию?',
     'dialog.delete_photo.confirm': 'Удалить',
@@ -542,6 +550,14 @@ const translations = {
     'admin.monetization.ad_unit_id': 'Ad Unit ID',
     'admin.monetization.save_success_title': 'Monetization settings saved',
     'admin.monetization.save_success_desc': 'Changes will be applied in the app.',
+    'admin.content.title': 'Content',
+    'admin.content.description': 'Manage lists used in the application, such as interests and dating goals.',
+    'admin.content.interests.title': 'Interests',
+    'admin.content.dating_goals.title': 'Dating Goals',
+    'admin.content.education.title': 'Education',
+    'admin.content.interests.save_toast': 'Interests list updated',
+    'admin.content.goals.save_toast': 'Goals list updated',
+    'admin.content.education.save_toast': 'Education list updated',
     'dialog.delete_photo.title': 'Delete Photo?',
     'dialog.delete_photo.description': 'This action cannot be undone. Are you sure you want to delete this photo?',
     'dialog.delete_photo.confirm': 'Delete',
@@ -606,5 +622,3 @@ export const useLanguage = () => {
   if (!context) throw new Error('useLanguage must be used within LanguageProvider');
   return context;
 };
-
-    
