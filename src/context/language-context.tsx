@@ -184,6 +184,8 @@ const translations = {
     'faq.q4.answer': 'Вы можете пожаловаться на пользователя прямо из его профиля или из окна чата, нажав на меню с тремя точками и выбрав "Пожаловаться".',
     'faq.q5.question': 'Как работает "Автопоиск"?',
     'faq.q5.answer': '"Автопоиск" использует ваши предпочтения (возраст, интересы), чтобы найти для вас наиболее подходящих людей. Вы можете настроить фильтры, чтобы уточнить поиск.',
+    'faq.q6.question': 'Почему тормозит приложение?',
+    'faq.q6.answer': 'Это может быть связано с: \n1. Нестабильной связью с интернетом или большой нагрузкой на сеть (3G, 4G).\n2. Большим количеством открытых приложений или вкладок в браузере (рекомендуем закрыть лишние).\n3. Работой лишних приложений в автозапуске или фоновом режиме.',
   },
   EN: {
     // Bottom Nav
@@ -354,6 +356,8 @@ const translations = {
     'faq.q4.answer': 'You can report a user directly from their profile or from the chat window by clicking on the three-dots menu and selecting "Report".',
     'faq.q5.question': 'How does "Auto-search" work?',
     'faq.q5.answer': '"Auto-search" uses your preferences (age, interests) to find the most suitable people for you. You can adjust the filters to refine your search.',
+    'faq.q6.question': 'Why is the app slow?',
+    'faq.q6.answer': 'This could be due to: \n1. Unstable internet connection or high network load (3G, 4G).\n2. Many open apps or browser tabs (we recommend closing unused ones).\n3. Unnecessary background apps or startup items running on your device.',
   }
 };
 

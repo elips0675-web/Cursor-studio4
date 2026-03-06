@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppHeader } from "@/components/layout/app-header";
@@ -11,6 +12,7 @@ const FAQ_ITEMS = [
   { id: 'q3', question: 'faq.q3.question', answer: 'faq.q3.answer' },
   { id: 'q4', question: 'faq.q4.question', answer: 'faq.q4.answer' },
   { id: 'q5', question: 'faq.q5.question', answer: 'faq.q5.answer' },
+  { id: 'q6', question: 'faq.q6.question', answer: 'faq.q6.answer' },
 ];
 
 export default function FaqPage() {
@@ -38,7 +40,7 @@ export default function FaqPage() {
               <AccordionTrigger className="text-left font-bold text-sm hover:no-underline py-4">
                 {t(item.question)}
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground text-sm leading-relaxed pb-5 pt-0">
+              <AccordionContent className="text-muted-foreground text-sm whitespace-pre-line leading-relaxed pb-5 pt-0">
                 {t(item.answer)}
               </AccordionContent>
             </AccordionItem>

@@ -38,6 +38,7 @@ export function AppHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const [unreadCount, setUnreadCount] = useState(4);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
   const isHomePage = pathname === "/";
   const isLoginPage = pathname === "/login";
@@ -99,7 +100,10 @@ export function AppHeader() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Popover onOpenChange={(open) => open && setUnreadCount(0)}>
+        <Popover onOpenChange={(open) => {
+          setIsNotificationsOpen(open);
+          if (open) setUnreadCount(0);
+        }}>
           <PopoverTrigger asChild>
             <button className="w-9 h-9 rounded-full bg-muted/50 flex items-center justify-center text-foreground hover:bg-muted transition-all active:scale-95 relative">
               <Zap size={16} />
@@ -111,58 +115,57 @@ export function AppHeader() {
             </button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-[320px] p-0 rounded-3xl border-0 shadow-2xl bg-white overflow-hidden">
-            <div className="p-4 border-b border-border bg-muted/20 flex justify-between items-center">
-              <h4 className="font-black text-xs uppercase tracking-widest text-foreground">
-                {language === "RU" ? "Уведомления" : "Notifications"}
-              </h4>
-              {unreadCount > 0 && (
-                <span className="text-[9px] font-bold text-primary animate-pulse">
-                  {unreadCount} {language === "RU" ? "новых" : "new"}
-                </span>
-              )}
-            </div>
-            <ScrollArea className="h-[300px]">
-              <div className="flex flex-col">
-                {NOTIFICATIONS.length > 0 ? (
-                  NOTIFICATIONS.map((note) => {
-                    const Icon = note.icon;
-                    return (
-                      <div 
-                        key={note.id} 
-                        className="p-4 border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer group"
-                      >
-                        <div className="flex gap-3">
-                          <div className={cn("mt-0.5 p-2 rounded-xl bg-white shadow-sm border border-border/10", note.color)}>
-                            <Icon size={14} fill={note.type === 'like' ? 'currentColor' : 'none'} />
+            {isNotificationsOpen && (
+              <>
+                <div className="p-4 border-b border-border bg-muted/20 flex justify-between items-center">
+                  <h4 className="font-black text-xs uppercase tracking-widest text-foreground">
+                    {language === "RU" ? "Уведомления" : "Notifications"}
+                  </h4>
+                </div>
+                <ScrollArea className="h-[300px]">
+                  <div className="flex flex-col">
+                    {NOTIFICATIONS.length > 0 ? (
+                      NOTIFICATIONS.map((note) => {
+                        const Icon = note.icon;
+                        return (
+                          <div 
+                            key={note.id} 
+                            className="p-4 border-b border-border/50 last:border-0 hover:bg-muted/30 transition-colors cursor-pointer group"
+                          >
+                            <div className="flex gap-3">
+                              <div className={cn("mt-0.5 p-2 rounded-xl bg-white shadow-sm border border-border/10", note.color)}>
+                                <Icon size={14} fill={note.type === 'like' ? 'currentColor' : 'none'} />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-[12px] font-bold leading-tight group-hover:text-primary transition-colors">
+                                  {note.text}
+                                </p>
+                                <p className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter">
+                                  {note.time}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <div className="flex-1">
-                            <p className="text-[12px] font-bold leading-tight group-hover:text-primary transition-colors">
-                              {note.text}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground font-medium mt-1 uppercase tracking-tighter">
-                              {note.time}
-                            </p>
-                          </div>
-                        </div>
+                        );
+                      })
+                    ) : (
+                      <div className="p-10 text-center">
+                        <p className="text-xs text-muted-foreground font-medium">Нет новых уведомлений</p>
                       </div>
-                    );
-                  })
-                ) : (
-                  <div className="p-10 text-center">
-                    <p className="text-xs text-muted-foreground font-medium">Нет новых уведомлений</p>
+                    )}
                   </div>
-                )}
-              </div>
-            </ScrollArea>
-            <div className="p-3 bg-muted/10 text-center border-t border-border">
-              <Button 
-                variant="ghost" 
-                onClick={() => router.push('/activity')}
-                className="h-8 text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 w-full rounded-xl"
-              >
-                {language === "RU" ? "Показать все" : "View all"}
-              </Button>
-            </div>
+                </ScrollArea>
+                <div className="p-3 bg-muted/10 text-center border-t border-border">
+                  <Button 
+                    variant="ghost" 
+                    onClick={() => router.push('/activity')}
+                    className="h-8 text-[9px] font-black uppercase tracking-widest text-primary hover:bg-primary/5 w-full rounded-xl"
+                  >
+                    {language === "RU" ? "Показать все" : "View all"}
+                  </Button>
+                </div>
+              </>
+            )}
           </PopoverContent>
         </Popover>
 
