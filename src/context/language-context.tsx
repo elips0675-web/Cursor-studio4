@@ -258,6 +258,12 @@ const translations = {
     'admin.block_user': 'Заблокировать',
     'admin.delete_user': 'Удалить пользователя',
     'admin.no_reports': 'Жалоб пока нет',
+    'dialog.delete_photo.title': 'Удалить фото?',
+    'dialog.delete_photo.description': 'Это действие необратимо. Вы уверены, что хотите удалить эту фотографию?',
+    'dialog.delete_photo.confirm': 'Удалить',
+    'dialog.delete_photo.cancel': 'Отмена',
+    'delete_photo_error.title': 'Нельзя удалить',
+    'delete_photo_error.description': 'Вы не можете удалить последнее фото в галерее.',
   },
   EN: {
     // Landing / SEO
@@ -502,6 +508,12 @@ const translations = {
     'admin.block_user': 'Block',
     'admin.delete_user': 'Delete User',
     'admin.no_reports': 'No reports yet',
+    'dialog.delete_photo.title': 'Delete Photo?',
+    'dialog.delete_photo.description': 'This action cannot be undone. Are you sure you want to delete this photo?',
+    'dialog.delete_photo.confirm': 'Delete',
+    'dialog.delete_photo.cancel': 'Cancel',
+    'delete_photo_error.title': 'Cannot Delete',
+    'delete_photo_error.description': 'You cannot delete the last photo in your gallery.',
   }
 };
 

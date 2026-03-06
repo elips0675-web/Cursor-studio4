@@ -32,10 +32,15 @@ const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => m
 const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
 const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
-const DropdownMenu = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenu), { ssr: false });
-const DropdownMenuContent = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuContent), { ssr: false });
-const DropdownMenuItem = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuItem), { ssr: false });
-const DropdownMenuTrigger = dynamic(() => import("@/components/ui/dropdown-menu").then(mod => mod.DropdownMenuTrigger), { ssr: false });
+
+const AlertDialog = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialog), { ssr: false });
+const AlertDialogAction = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogAction), { ssr: false });
+const AlertDialogCancel = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogCancel), { ssr: false });
+const AlertDialogContent = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogContent), { ssr: false });
+const AlertDialogDescription = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogDescription), { ssr: false });
+const AlertDialogFooter = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogFooter), { ssr: false });
+const AlertDialogHeader = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogHeader), { ssr: false });
+const AlertDialogTitle = dynamic(() => import("@/components/ui/alert-dialog").then(mod => mod.AlertDialogTitle), { ssr: false });
 
 
 export default function ProfilePage() {
@@ -72,6 +77,9 @@ export default function ProfilePage() {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showBoostDialog, setShowBoostDialog] = useState(false);
   const [isBoostLoading, setIsBoostLoading] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [photoToDeleteIndex, setPhotoToDeleteIndex] = useState<number | null>(null);
 
   const stats = { likes: 124, matches: 15 };
   const earnedTitles = useMemo(() => getUserTitles(profile, language), [profile, language]);
@@ -110,15 +118,32 @@ export default function ProfilePage() {
     }
   };
 
-  const handleDeletePhoto = (index: number) => {
+  const requestDeletePhoto = (index: number) => {
+    setPhotoToDeleteIndex(index);
+    setShowDeleteConfirm(true);
+  };
+
+  const executeDeletePhoto = () => {
+    if (photoToDeleteIndex === null) return;
+
     if (photos.length <= 1) {
-      toast({ variant: "destructive", title: language === 'RU' ? "Ошибка" : "Error" });
-      return;
+        toast({
+            variant: "destructive",
+            title: t('delete_photo_error.title'),
+            description: t('delete_photo_error.description'),
+        });
+        setShowDeleteConfirm(false);
+        setPhotoToDeleteIndex(null);
+        return;
     }
-    const newPhotos = photos.filter((_, i) => i !== index);
+
+    const newPhotos = photos.filter((_, i) => i !== photoToDeleteIndex);
     setPhotos(newPhotos);
     localStorage.setItem('userProfileGallery', JSON.stringify(newPhotos));
     toast({ title: language === 'RU' ? "Фото удалено" : "Photo deleted" });
+    
+    setShowDeleteConfirm(false);
+    setPhotoToDeleteIndex(null);
   };
 
   const handleBoostAd = () => {
@@ -237,22 +262,14 @@ export default function ProfilePage() {
             <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2"><Camera size={18} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4></div><input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" /></div>
             <div className="grid grid-cols-2 gap-3">{photos.map((url, idx) => (<div key={idx} onClick={() => openPhotoViewer(idx)} className="relative aspect-square rounded-xl overflow-hidden bg-muted group shadow-sm border border-border/10 cursor-pointer"><Image src={url} alt={`Photo ${idx}`} fill className="object-cover" /><div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><Maximize2 size={24} className="text-white/80 drop-shadow-md" /></div>
               <div className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <DropdownMenu modal={false}>
-                      <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white/40 backdrop-blur-md text-foreground hover:bg-white/60 border border-white/40 shadow-sm">
-                              <MoreVertical size={16} />
-                          </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="rounded-xl border-0 app-shadow p-1.5 min-w-[140px] bg-white">
-                          <DropdownMenuItem 
-                              onSelect={(e) => { e.stopPropagation(); handleDeletePhoto(idx); }} 
-                              className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
-                          >
-                              <Trash2 size={14} className="mr-2" />
-                              {language === 'RU' ? 'Удалить' : 'Delete'}
-                          </DropdownMenuItem>
-                      </DropdownMenuContent>
-                  </DropdownMenu>
+                <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={(e) => { e.stopPropagation(); requestDeletePhoto(idx); }}
+                    className="h-8 w-8 rounded-full bg-destructive/80 text-destructive-foreground hover:bg-destructive backdrop-blur-sm border-white/20"
+                >
+                    <Trash2 size={16} />
+                </Button>
               </div>
             </div>))}{photos.length < 10 && (<div onClick={handleTriggerFileInput} className="relative aspect-square rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-primary cursor-pointer transition-colors group"><div className="p-4 bg-muted/60 rounded-full group-hover:bg-primary/10 transition-colors"><Upload size={24} /></div><span className="mt-3 text-[9px] font-black uppercase tracking-widest">{t('profile.add')}</span></div>)}</div>
           </div>
@@ -310,6 +327,24 @@ export default function ProfilePage() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent className="rounded-3xl">
+            <AlertDialogHeader>
+            <AlertDialogTitle>{t('dialog.delete_photo.title')}</AlertDialogTitle>
+            <AlertDialogDescription>
+                {t('dialog.delete_photo.description')}
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPhotoToDeleteIndex(null)}>{t('dialog.delete_photo.cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={executeDeletePhoto} className="bg-destructive hover:bg-destructive/90">
+                {t('dialog.delete_photo.confirm')}
+            </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <BottomNav />
     </>
   );
