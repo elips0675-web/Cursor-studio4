@@ -128,6 +128,8 @@ const translations = {
     // Filter
     'filter.who_to_see': 'Кого вы ищете?',
     'filter.distance': 'Расстояние',
+    'filter.goal': 'Цель знакомства',
+    'filter.goal.all': 'Любая цель',
     'filter.gender.all': 'Все',
     'filter.gender.male': 'Мужчины',
     'filter.gender.female': 'Женщины',
@@ -370,6 +372,8 @@ const translations = {
     // Filter
     'filter.who_to_see': 'Who are you looking for?',
     'filter.distance': 'Distance',
+    'filter.goal': 'Dating Goal',
+    'filter.goal.all': 'Any goal',
     'filter.gender.all': 'All',
     'filter.gender.male': 'Men',
     'filter.gender.female': 'Women',

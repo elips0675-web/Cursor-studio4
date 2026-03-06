@@ -241,7 +241,7 @@ export default function OnboardingPage() {
                     <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-0 shadow-2xl">
-                    {DATING_GOALS.map(goal => <SelectItem key={goal} value={goal} className="font-bold py-3">{t(goal)}</SelectItem>)}
+                    {DATING_GOALS.map(goal => <SelectItem key={goal} value={goal} className="font-bold py-3">{goal}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>

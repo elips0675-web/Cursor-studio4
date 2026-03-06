@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check, Target } from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -27,7 +27,7 @@ import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibi
 import { useLanguage } from "@/context/language-context";
 import { useFeatureFlags } from "@/context/feature-flags-context";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
-import { INTEREST_OPTIONS, CAPITALS } from "@/lib/constants";
+import { INTEREST_OPTIONS, CAPITALS, DATING_GOALS } from "@/lib/constants";
 
 // Динамические импорты для тяжелых компонентов
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
@@ -120,6 +120,7 @@ export default function Home() {
   const [selectedCity, setSelectedCity] = useState("Все");
   const [distance, setDistance] = useState([50]);
   const [genderPref, setGenderPreference] = useState("all");
+  const [selectedDatingGoal, setSelectedDatingGoal] = useState("all");
 
   const resultsRef = useRef<HTMLDivElement>(null);
 
@@ -179,6 +180,13 @@ export default function Home() {
         setGenderPreference('female');
       } else {
         setGenderPreference('all');
+      }
+
+      const datingGoal = currentUser.datingGoal || currentUser.goal;
+      if (datingGoal && DATING_GOALS.includes(datingGoal)) {
+        setSelectedDatingGoal(datingGoal);
+      } else {
+        setSelectedDatingGoal("all");
       }
     }
   }, [isFilterDialogOpen, currentUser]);
@@ -247,8 +255,9 @@ export default function Home() {
         const matchesCity = selectedCity === "Все" || user.city === selectedCity;
         const matchesGender = genderPref === "all" || user.gender === genderPref;
         const matchesDistance = user.distance <= distance[0];
+        const matchesDatingGoal = selectedDatingGoal === "all" || user.goal === selectedDatingGoal;
         
-        return matchesAge && matchesInterests && matchesCity && matchesGender && matchesDistance;
+        return matchesAge && matchesInterests && matchesCity && matchesGender && matchesDistance && matchesDatingGoal;
       });
 
       setSearchResults(filtered);
@@ -470,6 +479,16 @@ export default function Home() {
                 <SelectContent className="rounded-xl border-0 shadow-2xl">
                   <SelectItem value="Все" className="font-bold text-sm">Все города</SelectItem>
                   {CAPITALS.map(city => (<SelectItem key={city} value={city} className="font-bold text-sm">{city}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2"><Target size={12} className="text-primary" /> {t('filter.goal')}</label>
+              <Select value={selectedDatingGoal} onValueChange={setSelectedDatingGoal}>
+                <SelectTrigger className="h-11 rounded-xl bg-muted/30 border-0 font-bold px-4 focus:ring-primary/20"><SelectValue placeholder={t('filter.goal.all')} /></SelectTrigger>
+                <SelectContent className="rounded-xl border-0 shadow-2xl">
+                  <SelectItem value="all" className="font-bold text-sm">{t('filter.goal.all')}</SelectItem>
+                  {DATING_GOALS.map(goal => (<SelectItem key={goal} value={goal} className="font-bold text-sm">{goal}</SelectItem>))}
                 </SelectContent>
               </Select>
             </div>
