@@ -13,7 +13,7 @@ const poppins = Poppins({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-poppins',
-  weight: ['400', '600', '700', '800']
+  weight: ['800']
 });
 
 const quicksand = Quicksand({
