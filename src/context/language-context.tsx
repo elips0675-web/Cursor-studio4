@@ -53,6 +53,7 @@ const translations = {
     'button.not_now': 'Не сейчас',
     'button.report': 'Пожаловаться',
     'button.browse_profiles': 'Люди рядом',
+    'button.join': 'Вступить',
     // Profile
     'profile.edit': 'Изменить',
     'profile.about': 'О себе',
@@ -340,6 +341,7 @@ const translations = {
     'button.not_now': 'Not now',
     'button.report': 'Report',
     'button.browse_profiles': 'Browse Profiles',
+    'button.join': 'Join',
     // Profile
     'profile.edit': 'Edit',
     'profile.about': 'About Me',

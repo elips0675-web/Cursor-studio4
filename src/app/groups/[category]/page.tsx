@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from "next/image";
-import { ChevronLeft, Users } from 'lucide-react';
+import { ChevronLeft, Users, Plus } from 'lucide-react';
 import { GROUP_CATEGORIES } from '@/lib/demo-data';
 import { AppHeader } from '@/components/layout/app-header';
 import { BottomNav } from '@/components/navigation/bottom-nav';
@@ -64,7 +64,10 @@ function SubGroupsContent() {
                                     </div>
                                 </div>
                             </div>
-                            <ChevronLeft size={16} className="text-muted-foreground/40 transform rotate-180 group-hover:text-primary transition-colors" />
+                            <Button variant="ghost" size="sm" className="rounded-full h-9 px-5 text-xs font-black uppercase tracking-widest bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary ml-auto group-hover:scale-105 transition-transform shrink-0">
+                                <Plus size={14} className="mr-1.5" />
+                                {t('button.join') || 'Вступить'}
+                            </Button>
                         </Link>
                     ))}
                 </div>
