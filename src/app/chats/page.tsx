@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, Suspense, useMemo } from "react";
 import { 
-  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck
+  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
@@ -67,6 +67,7 @@ function ChatsContent() {
   const [selectedChat, setSelectedChat] = useState<any>(null);
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
   const [inputValue, setInputValue] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [icebreakers, setIcebreakers] = useState<string[]>([]);
   const [loadingIcebreakers, setLoadingIcebreakers] = useState(false);
@@ -77,6 +78,13 @@ function ChatsContent() {
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
   const [isVideoCall, setIsVideoCall] = useState(false);
+
+  const filteredChats = useMemo(() => {
+    if (!searchQuery.trim()) return ALL_DEMO_USERS;
+    return ALL_DEMO_USERS.filter(chat => 
+      chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
 
   const handleReportSubmit = () => {
     if (!reportReason) { toast({ variant: 'destructive', title: t('report.toast.no_reason_title'), description: t('report.toast.no_reason_desc') }); return; }
@@ -149,51 +157,65 @@ function ChatsContent() {
         </div>
         <div className="relative mb-8 px-1">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground/60" size={16} />
-          <Input className="pl-12 h-12 bg-white border-0 rounded-2xl app-shadow text-sm font-medium" placeholder={t('chats.search')} />
+          <Input 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-12 h-12 bg-white border-0 rounded-2xl app-shadow text-sm font-medium" 
+            placeholder={t('chats.search')} 
+          />
         </div>
         <div className="space-y-1 px-1">
-          {ALL_DEMO_USERS.map((chat, idx) => {
-            const hasUnread = chat.id % 3 === 0;
-            const messageTime = chat.id % 2 === 0 ? "10:30" : "Вчера";
-            const lastMsg = language === 'RU' ? 'Привет!' : 'Hi!';
-            
-            return (
-              <div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
-                <div className="relative flex-shrink-0">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105">
-                    <Image src={chat.img} alt={chat.name} fill sizes="48px" className="object-cover" />
-                  </div>
-                  {chat.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-md"></span>}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-0.5">
-                    <span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">{chat.name}</span>
-                    <span className="text-[10px] text-muted-foreground font-bold opacity-60">{messageTime}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-1.5 min-w-0">
-                      {idx % 4 === 0 ? (
-                        <CheckCheck size={12} className="text-primary flex-shrink-0" />
-                      ) : (
-                        <Check size={12} className="text-muted-foreground/40 flex-shrink-0" />
-                      )}
-                      <p className={cn(
-                        "text-xs truncate pr-2 font-medium leading-snug",
-                        hasUnread ? "text-foreground font-bold" : "text-muted-foreground opacity-80"
-                      )}>
-                        {lastMsg}
-                      </p>
+          {filteredChats.length > 0 ? (
+            filteredChats.map((chat, idx) => {
+              const hasUnread = chat.id % 3 === 0;
+              const messageTime = chat.id % 2 === 0 ? "10:30" : "Вчера";
+              const lastMsg = language === 'RU' ? 'Привет!' : 'Hi!';
+              
+              return (
+                <div key={chat.id} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
+                  <div className="relative flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105">
+                      <Image src={chat.img} alt={chat.name} fill sizes="48px" className="object-cover" />
                     </div>
-                    {hasUnread && (
-                      <Badge className="h-5 min-w-[20px] px-1.5 gradient-bg text-white border-0 text-[9px] font-black flex items-center justify-center rounded-full scale-90 shadow-sm">
-                        2
-                      </Badge>
-                    )}
+                    {chat.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-md"></span>}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">{chat.name}</span>
+                      <span className="text-[10px] text-muted-foreground font-bold opacity-60">{messageTime}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        {idx % 4 === 0 ? (
+                          <CheckCheck size={12} className="text-primary flex-shrink-0" />
+                        ) : (
+                          <Check size={12} className="text-muted-foreground/40 flex-shrink-0" />
+                        )}
+                        <p className={cn(
+                          "text-xs truncate pr-2 font-medium leading-snug",
+                          hasUnread ? "text-foreground font-bold" : "text-muted-foreground opacity-80"
+                        )}>
+                          {lastMsg}
+                        </p>
+                      </div>
+                      {hasUnread && (
+                        <Badge className="h-5 min-w-[20px] px-1.5 gradient-bg text-white border-0 text-[9px] font-black flex items-center justify-center rounded-full scale-90 shadow-sm">
+                          2
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                 </div>
+              );
+            })
+          ) : (
+            <div className="text-center py-20 opacity-30 flex flex-col items-center gap-4">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                <Info size={24} />
               </div>
-            );
-          })}
+              <p className="text-[10px] font-black uppercase tracking-widest">{t('activity.empty')}</p>
+            </div>
+          )}
         </div>
       </main>
       <BottomNav />
