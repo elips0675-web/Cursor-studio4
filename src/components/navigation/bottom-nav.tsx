@@ -13,7 +13,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: "/", label: t('nav.home'), icon: Home },
-    { href: "/search", label: t('nav.swipes'), icon: Search },
+    { href: "/search", label: t('nav.search'), icon: Search },
     { href: "/activity", label: t('nav.activity'), icon: Zap, badge: 5 },
     { href: "/chats", label: t('nav.chats'), icon: MessageCircle, badge: 2 },
     { href: "/profile", label: t('nav.profile'), icon: User },

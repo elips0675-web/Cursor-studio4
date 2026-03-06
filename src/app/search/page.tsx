@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useMemo, memo, useCallback, useEffect } from "react";
-import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Cpu, MoreVertical, Flag, Sparkles, Zap } from "lucide-react";
+import { useState, useMemo, memo, useCallback, useEffect, Suspense } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, MoreVertical, Flag, Sparkles, Zap, Search as SearchIcon, Cpu } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
-import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
 const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
@@ -56,12 +57,49 @@ const variants = {
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
-export default function SearchPage() {
+function performAutosearch(filters: any, allUsers: any[], currentUser: any) {
+    if (!filters) return [];
+    const { ageRange, selectedCity, distance, genderPref, selectedDatingGoal, selectedInterests } = filters;
+
+    const processedUsers = allUsers
+        .filter(user => {
+          if (user.id === (currentUser?.id || 1)) return false;
+          const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
+          const matchesCity = selectedCity === "Все" || user.city === selectedCity;
+          const matchesGender = genderPref === "all" || user.gender === genderPref;
+          const matchesDistance = user.distance <= distance[0];
+          return matchesAge && matchesCity && matchesGender && matchesDistance;
+        })
+        .map(user => {
+          let score = 0;
+          const commonInterests = selectedInterests && selectedInterests.length > 0 
+              ? user.interests.filter((i: string) => selectedInterests.includes(i))
+              : [];
+          const goalMatches = selectedDatingGoal === "all" || user.goal === selectedDatingGoal;
+          if (goalMatches) score += 1000;
+          score += commonInterests.length * 100;
+          const isCandidate = goalMatches || commonInterests.length > 0;
+          return { ...user, score, isCandidate };
+        })
+        .filter(user => user.isCandidate)
+        .sort((a, b) => b.score - a.score);
+    
+    return processedUsers;
+}
+
+
+function SearchContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { t, language } = useLanguage();
+
+  const [userList, setUserList] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [pageTitle, setPageTitle] = useState(t('nav.search'));
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
+
   const [matchUser, setMatchUser] = useState<any>(null);
   const [compatibility, setCompatibility] = useState("");
   const [loadingAi, setLoadingAi] = useState(false);
@@ -70,7 +108,6 @@ export default function SearchPage() {
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
 
-  // Authorized user logic
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   useEffect(() => {
@@ -82,29 +119,44 @@ export default function SearchPage() {
         if (profile.gender === 'female' || profile.gender === 'женский') profile.gender = 'female';
         setCurrentUser(profile);
       } catch (e) {
-        setCurrentUser(ALL_DEMO_USERS.find(u => u.name === "Анна"));
+        setCurrentUser(ALL_DEMO_USERS.find(u => u.id === 1));
       }
     } else {
-      setCurrentUser(ALL_DEMO_USERS.find(u => u.name === "Анна"));
+      setCurrentUser(ALL_DEMO_USERS.find(u => u.id === 1));
     }
   }, []);
 
-  // Gender-based filtering for Swipes
-  const filteredUsers = useMemo(() => {
-    if (!currentUser) return ALL_DEMO_USERS.filter(u => u.name !== "Анна");
+  useEffect(() => {
+    if (!searchParams || !currentUser) return;
 
-    const targetGender = currentUser.lookingFor === 'all' ? undefined : currentUser.lookingFor;
-    
-    if (!targetGender) {
-        return ALL_DEMO_USERS.filter(user => user.name !== currentUser.name);
+    const mode = searchParams.get('mode');
+    let initialUsers: any[] = [];
+    setIsLoading(true);
+
+    if (mode === 'autosearch') {
+        setPageTitle(t('button.autosearch'));
+        const filtersString = sessionStorage.getItem('autosearchFilters');
+        if (filtersString) {
+            const filters = JSON.parse(filtersString);
+            initialUsers = performAutosearch(filters, ALL_DEMO_USERS, currentUser);
+        } else {
+            initialUsers = ALL_DEMO_USERS.filter(u => u.id !== currentUser.id).slice(0, 10);
+        }
+    } else { // 'nearby' or default
+        setPageTitle(t('home.nearby'));
+        initialUsers = ALL_DEMO_USERS.filter(u => u.id !== currentUser.id).slice(0, 10);
     }
-    
-    return ALL_DEMO_USERS.filter(user => 
-      user.gender === targetGender && user.name !== currentUser.name
-    );
-  }, [currentUser]);
+
+    setUserList(initialUsers);
+    setCurrentIndex(0);
+    setIsLoading(false);
+
+  }, [searchParams, currentUser, t]);
   
-  const user = currentIndex < filteredUsers.length ? filteredUsers[currentIndex] : null;
+  const user = useMemo(() => {
+    if (userList.length === 0) return null;
+    return currentIndex < userList.length ? userList[currentIndex] : null;
+  }, [currentIndex, userList]);
 
   const handleNext = useCallback(() => {
     setDirection(1);
@@ -161,6 +213,27 @@ export default function SearchPage() {
     setReportDescription('');
   };
 
+  if (isLoading) {
+    return (
+        <>
+            <AppHeader />
+            <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center relative bg-[#f8f9fb]">
+                <Skeleton className="h-8 w-32 mb-4" />
+                <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
+                    <Skeleton className="w-full h-full rounded-[2.5rem]" />
+                </div>
+                <div className="flex justify-center items-center gap-3 sm:gap-4 w-full px-2">
+                    <Skeleton className="w-16 h-16 rounded-full" />
+                    <Skeleton className="w-20 h-20 rounded-full" />
+                    <Skeleton className="w-16 h-16 rounded-full" />
+                    <Skeleton className="w-12 h-12 rounded-full" />
+                </div>
+            </main>
+            <BottomNav />
+        </>
+    );
+  }
+
   if (!user) {
     return (
         <>
@@ -175,9 +248,9 @@ export default function SearchPage() {
                         <Sparkles size={40} className="text-muted-foreground opacity-40" />
                     </div>
                     <h4 className="text-xl font-black uppercase tracking-tight text-foreground">{language === 'RU' ? 'Анкеты закончились' : 'No more profiles'}</h4>
-                    <p className="text-sm text-muted-foreground mt-2 max-w-[200px] font-medium leading-relaxed">{language === 'RU' ? 'Вы просмотрели всех людей поблизости. Заходите позже!' : 'You have seen everyone nearby. Come back later!'}</p>
-                    <Button variant="outline" onClick={() => setCurrentIndex(0)} className="mt-8 rounded-full border-2 px-8 font-black uppercase text-[10px] tracking-widest h-12 shadow-lg">
-                        {language === 'RU' ? 'Начать заново' : 'Start over'}
+                    <p className="text-sm text-muted-foreground mt-2 max-w-[200px] font-medium leading-relaxed">{language === 'RU' ? 'Вы просмотрели всех людей. Заходите позже!' : 'You have seen everyone. Come back later!'}</p>
+                    <Button variant="outline" onClick={() => router.push('/')} className="mt-8 rounded-full border-2 px-8 font-black uppercase text-[10px] tracking-widest h-12 shadow-lg">
+                        {language === 'RU' ? 'На главную' : 'Back to Home'}
                     </Button>
                 </motion.div>
             </main>
@@ -192,12 +265,14 @@ export default function SearchPage() {
       <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center relative bg-[#f8f9fb]">
         <div className="text-center mb-4 flex items-center justify-center gap-2">
             <Badge variant="outline" className="text-[8px] font-bold text-muted-foreground border-muted px-2 py-0.5 rounded-full uppercase tracking-tighter bg-white shadow-sm">
-                {currentIndex + 1} / {filteredUsers.length}
+                {currentIndex + 1} / {userList.length}
+            </Badge>
+            <Badge variant="secondary" className="text-[8px] font-bold text-primary border-primary/20 bg-primary/5 px-2 py-0.5 rounded-full uppercase tracking-tighter shadow-sm">
+                {pageTitle}
             </Badge>
         </div>
         
         <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
-          {/* Navigation Arrows */}
           <div className="absolute inset-y-0 -left-4 z-20 flex items-center">
             <Button 
               variant="ghost" 
@@ -253,7 +328,7 @@ export default function SearchPage() {
                     <h3 className="text-3xl font-black font-headline mb-1 drop-shadow-md">{user.name}, {user.age}</h3>
                     <p className="text-white/90 text-xs flex items-center gap-1 font-bold mb-3"><MapPin size={14} /> {user.distance} {language === 'RU' ? 'км' : 'km'}</p>
                     <div className="flex flex-wrap gap-1.5 mb-2">
-                      {user.interests.slice(0, 3).map(i => (<span key={i} className="px-2 py-0.5 bg-white/20 backdrop-blur-md text-white text-[8px] rounded-full font-black uppercase tracking-widest border border-white/10">{i}</span>))}
+                      {user.interests.slice(0, 3).map((i: string) => (<span key={i} className="px-2 py-0.5 bg-white/20 backdrop-blur-md text-white text-[8px] rounded-full font-black uppercase tracking-widest border border-white/10">{i}</span>))}
                     </div>
                     <p className="text-white/80 text-[10px] leading-tight italic line-clamp-2">"{user.bio}"</p>
                   </div>
@@ -340,4 +415,30 @@ export default function SearchPage() {
       <BottomNav />
     </>
   );
+}
+
+
+export default function SearchPage() {
+    return (
+        <Suspense fallback={
+            <>
+                <AppHeader />
+                <main className="flex-1 overflow-hidden px-4 pt-4 pb-24 flex flex-col items-center relative bg-[#f8f9fb]">
+                    <Skeleton className="h-8 w-32 mb-4" />
+                    <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
+                        <Skeleton className="w-full h-full rounded-[2.5rem]" />
+                    </div>
+                    <div className="flex justify-center items-center gap-3 sm:gap-4 w-full px-2">
+                        <Skeleton className="w-16 h-16 rounded-full" />
+                        <Skeleton className="w-20 h-20 rounded-full" />
+                        <Skeleton className="w-16 h-16 rounded-full" />
+                        <Skeleton className="w-12 h-12 rounded-full" />
+                    </div>
+                </main>
+                <BottomNav />
+            </>
+        }>
+            <SearchContent />
+        </Suspense>
+    );
 }

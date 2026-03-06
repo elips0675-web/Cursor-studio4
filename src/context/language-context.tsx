@@ -28,7 +28,7 @@ const translations = {
     
     // Bottom Nav
     'nav.home': 'Главная',
-    'nav.swipes': 'Свайпы',
+    'nav.search': 'Поиск',
     'nav.activity': 'Активность',
     'nav.chats': 'Чаты',
     'nav.profile': 'Профиль',
@@ -51,6 +51,7 @@ const translations = {
     'button.watch': 'Смотреть',
     'button.not_now': 'Не сейчас',
     'button.report': 'Пожаловаться',
+    'button.browse_profiles': 'Смотреть анкеты',
     // Profile
     'profile.edit': 'Изменить',
     'profile.about': 'О себе',
@@ -278,7 +279,7 @@ const translations = {
 
     // Bottom Nav
     'nav.home': 'Home',
-    'nav.swipes': 'Swipes',
+    'nav.search': 'Search',
     'nav.activity': 'Activity',
     'nav.chats': 'Chats',
     'nav.profile': 'Profile',
@@ -301,6 +302,7 @@ const translations = {
     'button.watch': 'Watch',
     'button.not_now': 'Not now',
     'button.report': 'Report',
+    'button.browse_profiles': 'Browse Profiles',
     // Profile
     'profile.edit': 'Edit',
     'profile.about': 'About Me',
