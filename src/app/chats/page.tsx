@@ -27,7 +27,7 @@ import { toast } from "@/hooks/use-toast";
 import { VideoCallDialog } from "@/components/video-call";
 import { VoiceCallDialog } from "@/components/voice-call";
 import { useFeatureFlags } from "@/context/feature-flags-context";
-import { ALL_DEMO_USERS, ALL_DEMO_GROUPS } from "@/lib/demo-data";
+import { ALL_DEMO_USERS, GROUP_CATEGORIES } from "@/lib/demo-data";
 
 const CHAT_THEMES = [
   { id: 'romantic', label_ru: 'Романтика', label_en: 'Romantic', icon: Heart, color: 'text-pink-500', mood: 'Romantic, sweet and poetic' },
@@ -124,9 +124,21 @@ function ChatsContent() {
       if (chat) { setSelectedChat(chat); setMessages([{ id: Date.now(), text: language === 'RU' ? "Привет! Это совпадение, рад(а) знакомству! 😊" : "Hi! It's a match, glad to meet you! 😊", sender: "me", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]); loadIcebreakers(chat); }
     } else if (groupId) {
         const id = parseInt(groupId);
-        const group = ALL_DEMO_GROUPS.find(g => g.id === id);
-        if (group) {
-            const chatData = { ...group, online: group.online > 0 };
+        let groupData: any = null;
+        for (const category of GROUP_CATEGORIES) {
+            const foundSubgroup = category.subgroups.find(sg => sg.id === id);
+            if (foundSubgroup) {
+                groupData = { 
+                    ...foundSubgroup, 
+                    img: category.img, 
+                    hint: category.hint,
+                };
+                break;
+            }
+        }
+
+        if (groupData) {
+            const chatData = { ...groupData, online: groupData.online > 0 };
             setSelectedChat(chatData);
             setMessages(INITIAL_GROUP_MESSAGES);
             setIcebreakers([]);
