@@ -33,12 +33,17 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'SwiftMatch - Найти свою идеальную пару',
   description: 'Современный опыт знакомств с искусственным интеллектом. Найди свою любовь в SwiftMatch.',
-  keywords: 'знакомства, ИИ, мэтчи, любовь, общение',
+  keywords: 'знакомства, ИИ, мэтчи, любовь, общение, dating, AI',
+  authors: [{ name: 'SwiftMatch Team' }],
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'SwiftMatch',
+  },
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -50,9 +55,10 @@ export default function RootLayout({
   return (
     <html lang="ru">
       <head>
-        {/* Preconnect для CDN ресурсов */}
+        {/* Preconnect для CDN ресурсов для ускорения загрузки фото */}
         <link rel="preconnect" href="https://picsum.photos" />
         <link rel="dns-prefetch" href="https://picsum.photos" />
+        <link rel="preconnect" href="https://images.unsplash.com" />
       </head>
       <body className={`${quicksand.variable} ${poppins.variable} font-body antialiased selection:bg-primary/20`}>
         <LanguageProvider>

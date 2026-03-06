@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 3600, // Кэширование оптимизированных фото на 1 час
+    minimumCacheTTL: 86400, // Кэширование фото на 24 часа
     remotePatterns: [
       {
         protocol: 'https',
@@ -35,7 +35,7 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  // Оптимизация для мобильных устройств и PageSpeed
+  // Оптимизация импортов для снижения веса бандла и ускорения мобильной версии
   experimental: {
     optimizePackageImports: [
       'lucide-react', 
@@ -56,11 +56,12 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-slider',
       '@radix-ui/react-switch',
       '@radix-ui/react-tooltip',
+      '@radix-ui/react-label',
+      '@radix-ui/react-slot',
       'embla-carousel-react'
     ],
   },
   compiler: {
-    // Удаление консоли в продакшене для уменьшения веса бандла
     removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
   },
   reactStrictMode: true,

@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { generateIcebreakerSuggestions } from "@/ai/flows/ai-chat-icebreaker-suggestions";
 import { motion, AnimatePresence } from "framer-motion";
@@ -200,9 +201,23 @@ function ChatsContent() {
   );
 }
 
+function LoadingSkeleton() {
+  return (
+    <div className="p-6 space-y-4">
+      <Skeleton className="h-12 w-full rounded-2xl" />
+      <Skeleton className="h-24 w-full rounded-2xl" />
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function ChatsPage() {
   return (
-    <Suspense fallback={null}>
+    <Suspense fallback={<LoadingSkeleton />}>
       <ChatsContent />
     </Suspense>
   );
