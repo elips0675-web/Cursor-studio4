@@ -174,6 +174,29 @@ export default function SearchPage() {
         </div>
         
         <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
+          {/* Navigation Arrows */}
+          <div className="absolute inset-y-0 left-[-15px] z-20 flex items-center">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handlePrev} 
+              disabled={currentIndex === 0}
+              className="w-10 h-10 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/50 text-foreground hover:bg-white disabled:opacity-0 transition-all active:scale-90"
+            >
+              <ChevronLeft size={24} />
+            </Button>
+          </div>
+          <div className="absolute inset-y-0 right-[-15px] z-20 flex items-center">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleNext}
+              className="w-10 h-10 rounded-full bg-white/80 backdrop-blur-md shadow-lg border border-white/50 text-foreground hover:bg-white transition-all active:scale-90"
+            >
+              <ChevronRight size={24} />
+            </Button>
+          </div>
+
           <AnimatePresence initial={false} custom={direction} mode="popLayout">
             <motion.div
               key={user.id}
