@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
@@ -211,7 +212,24 @@ function ChatsContent() {
   };
 
   const handleLeaveGroup = () => {
-    if (!selectedChat) return;
+    if (!selectedChat || selectedChat.type !== 'group') return;
+
+    // Remove group from profile in localStorage
+    try {
+      const savedProfile = localStorage.getItem('userProfile');
+      if (savedProfile) {
+        const profile = JSON.parse(savedProfile);
+        if (profile.joinedGroups && Array.isArray(profile.joinedGroups)) {
+          profile.joinedGroups = profile.joinedGroups.filter(
+            (groupName: string) => groupName !== selectedChat.name
+          );
+          localStorage.setItem('userProfile', JSON.stringify(profile));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to update profile after leaving group:", e);
+    }
+    
     toast({ title: `${t('toast.left_group')} "${selectedChat.name}"` });
     setSelectedChat(null);
   };
