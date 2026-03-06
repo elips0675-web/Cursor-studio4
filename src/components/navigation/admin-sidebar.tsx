@@ -23,7 +23,8 @@ import {
   SlidersHorizontal,
   Languages,
   DollarSign,
-  Package
+  Package,
+  Mail
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -125,6 +126,18 @@ export function AdminSidebar() {
                         <Link href="/admin/content">
                             <Package />
                             <span>{t('admin.content.title')}</span>
+                        </Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={isActive('/admin/messaging')}
+                        tooltip={t('admin.messaging.title')}
+                    >
+                        <Link href="/admin/messaging">
+                            <Mail />
+                            <span>{t('admin.messaging.title')}</span>
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

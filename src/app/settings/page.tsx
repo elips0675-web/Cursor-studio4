@@ -14,7 +14,8 @@ import {
   MapPin,
   MessageSquare,
   ChevronRight,
-  HelpCircle
+  HelpCircle,
+  Mail
 } from "lucide-react";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -28,7 +29,8 @@ export default function SettingsPage() {
   const { t } = useLanguage();
   const auth = useAuth();
   const [settings, setSettings] = useState({
-    notifications: true,
+    pushNotifications: true,
+    emailNewsletter: false,
     discovery: true,
     incognito: false,
     smartPhotos: true,
@@ -80,12 +82,24 @@ export default function SettingsPage() {
                     <Bell size={18} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold">{t('settings.notifications') || 'Уведомления'}</p>
+                    <p className="text-sm font-bold">{t('settings.push_notifications') || 'Push-уведомления'}</p>
                   </div>
                 </div>
-                <Switch checked={settings.notifications} onCheckedChange={(val) => setSettings({...settings, notifications: val})} />
+                <Switch checked={settings.pushNotifications} onCheckedChange={(val) => setSettings({...settings, pushNotifications: val})} />
               </div>
-              
+
+              <div className="flex items-center justify-between py-3 border-b border-border/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <Mail size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{t('settings.email_newsletter') || 'Email-рассылка'}</p>
+                  </div>
+                </div>
+                <Switch checked={settings.emailNewsletter} onCheckedChange={(val) => setSettings({...settings, emailNewsletter: val})} />
+              </div>
+
               <div className="flex items-center justify-between py-3 border-b border-border/50">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
