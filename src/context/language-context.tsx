@@ -194,6 +194,8 @@ const translations = {
     'faq.q5.answer': '"Автопоиск" использует ваши предпочтения (возраст, интересы), чтобы найти для вас наиболее подходящих людей. Вы можете настроить фильтры, чтобы уточнить поиск.',
     'faq.q6.question': 'Почему тормозит приложение?',
     'faq.q6.answer': 'Это может быть связано с: \n1. Нестабильной связью с интернетом или большой нагрузкой на сеть (3G, 4G).\n2. Большим количеством открытых приложений или вкладок в браузере (рекомендуем закрыть лишние).\n3. Работой лишних приложений в автозапуске или фоновом режиме.',
+    'faq.q7.question': 'Что означают звания в моем профиле?',
+    'faq.q7.answer': 'Звания — это система достижений SwiftMatch. Одно лучшее звание присваивается автоматически: \n1. Король свиданий — для самых популярных пользователей (мэтч 90%+).\n2. Душа компании — если у вас много интересов (5+).\n3. Обаяшка — если вы заполнили поле "О себе".\n4. Романтик — базовый статус для всех остальных.',
     // Admin
     'admin.dashboard': 'Дашборд',
     'admin.users': 'Пользователи',
@@ -408,6 +410,8 @@ const translations = {
     'faq.q5.answer': '"Auto-search" uses your preferences (age, interests) to find the most suitable people for you. You can adjust the filters to refine your search.',
     'faq.q6.question': 'Why is the app slow?',
     'faq.q6.answer': 'This could be due to: \n1. Unstable internet connection or high network load (3G, 4G).\n2. Many open apps or browser tabs (we recommend closing unused ones).\n3. Unnecessary background apps or startup items running on your device.',
+    'faq.q7.question': 'What do the titles in my profile mean?',
+    'faq.q7.answer': 'Titles are SwiftMatch\'s achievement system. One best title is assigned automatically: \n1. Dating King — for the most popular users (90%+ match).\n2. Life of the Party — if you have many interests (5+).\n3. Charming — if you filled out your bio.\n4. Romantic — the base status for everyone else.',
     // Admin
     'admin.dashboard': 'Dashboard',
     'admin.users': 'Users',
