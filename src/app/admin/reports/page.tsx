@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, memo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -64,16 +64,70 @@ const INITIAL_REPORTS = [
     }
 ];
 
+const ReportRow = memo(({ report, onUpdate, onViewProfile, t }: { 
+  report: any; 
+  onUpdate: (id: number, status: string, toastMsg: any) => void;
+  onViewProfile: (id: number) => void;
+  t: (key: string) => string;
+}) => (
+  <TableRow className="group">
+    <TableCell>
+      <div className="flex items-center gap-3">
+          <div className="relative w-8 h-8 rounded-full overflow-hidden border border-border">
+            <Image
+                alt={report.reportedUser.name}
+                fill
+                sizes="32px"
+                src={report.reportedUser.img}
+                className="object-cover"
+            />
+          </div>
+          <span className="font-bold text-sm">{report.reportedUser.name}</span>
+      </div>
+    </TableCell>
+    <TableCell className="hidden sm:table-cell text-sm">{report.reporter.name}</TableCell>
+    <TableCell className="text-xs font-medium">{report.reason}</TableCell>
+    <TableCell className="hidden md:table-cell text-xs opacity-60">{report.date}</TableCell>
+    <TableCell>
+      <Badge variant={report.status === 'new' ? 'destructive' : 'outline'} className={report.status !== 'new' ? "bg-green-100 text-green-800 border-green-200 text-[9px]" : "text-[9px]"}>
+        {report.status === 'new' ? t('admin.report_new') : t('admin.report_resolved')}
+      </Badge>
+    </TableCell>
+    <TableCell className="text-right">
+      <DropdownMenu modal={false}>
+        <DropdownMenuTrigger asChild>
+          <button className="h-8 w-8 inline-flex items-center justify-center rounded-md hover:bg-muted transition-colors">
+            <MoreHorizontal className="h-4 w-4" />
+            <span className="sr-only">Toggle menu</span>
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="rounded-xl">
+          <DropdownMenuLabel>{t('admin.actions')}</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => onViewProfile(report.reportedUser.id)}>{t('admin.view_profile')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onUpdate(report.id, 'resolved', { title: t('admin.report_resolved'), description: 'Status updated.' })}>{t('admin.mark_resolved')}</DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => onUpdate(report.id, 'blocked', { title: t('admin.block_user'), description: `${report.reportedUser.name} blocked.` })}>{t('admin.block_user')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onUpdate(report.id, 'deleted', { title: t('admin.delete_user'), description: `${report.reportedUser.name} deleted.` })} className="text-destructive focus:text-destructive">{t('admin.delete_user')}</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </TableCell>
+  </TableRow>
+));
+ReportRow.displayName = "ReportRow";
 
 export default function AdminReportsPage() {
   const router = useRouter();
   const { t } = useLanguage();
   const [reports, setReports] = useState(INITIAL_REPORTS);
 
-  const handleUpdateReport = (reportId: number, toastMessage: { title: string; description: string }) => {
-    setReports(prev => prev.map(r => r.id === reportId ? { ...r, status: 'resolved' } : r));
+  const handleUpdateReport = useCallback((reportId: number, status: string, toastMessage: { title: string; description: string }) => {
+    setReports(prev => prev.map(r => r.id === reportId ? { ...r, status: status === 'resolved' ? 'resolved' : r.status } : r));
     toast(toastMessage);
-  };
+  }, []);
+
+  const handleViewProfile = useCallback((id: number) => {
+    router.push(`/user?id=${id}`);
+  }, [router]);
 
   const reportsList = useMemo(() => reports, [reports]);
 
@@ -98,48 +152,13 @@ export default function AdminReportsPage() {
             </TableHeader>
             <TableBody>
               {reportsList.map((report) => (
-                <TableRow key={report.id} className="group">
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                        <div className="relative w-8 h-8 rounded-full overflow-hidden border border-border">
-                          <Image
-                              alt={report.reportedUser.name}
-                              fill
-                              sizes="32px"
-                              src={report.reportedUser.img}
-                              className="object-cover"
-                          />
-                        </div>
-                        <span className="font-bold text-sm">{report.reportedUser.name}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell text-sm">{report.reporter.name}</TableCell>
-                  <TableCell className="text-xs font-medium">{report.reason}</TableCell>
-                  <TableCell className="hidden md:table-cell text-xs opacity-60">{report.date}</TableCell>
-                  <TableCell>
-                    <Badge variant={report.status === 'new' ? 'destructive' : 'outline'} className={report.status !== 'new' ? "bg-green-100 text-green-800 border-green-200 text-[9px]" : "text-[9px]"}>
-                      {report.status === 'new' ? t('admin.report_new') : t('admin.report_resolved')}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <DropdownMenu modal={false}>
-                      <DropdownMenuTrigger asChild>
-                        <Button aria-haspopup="true" size="icon" variant="ghost" className="h-8 w-8">
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="rounded-xl">
-                        <DropdownMenuLabel>{t('admin.actions')}</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => router.push(`/user?id=${report.reportedUser.id}`)}>{t('admin.view_profile')}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateReport(report.id, { title: t('admin.report_resolved'), description: 'Status updated.' })}>{t('admin.mark_resolved')}</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleUpdateReport(report.id, { title: t('admin.block_user'), description: `${report.reportedUser.name} blocked.` })}>{t('admin.block_user')}</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleUpdateReport(report.id, { title: t('admin.delete_user'), description: `${report.reportedUser.name} deleted.` })} className="text-destructive focus:text-destructive">{t('admin.delete_user')}</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
+                <ReportRow 
+                  key={report.id} 
+                  report={report} 
+                  onUpdate={handleUpdateReport} 
+                  onViewProfile={handleViewProfile}
+                  t={t} 
+                />
               ))}
             </TableBody>
           </Table>
