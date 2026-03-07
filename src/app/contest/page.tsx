@@ -2,10 +2,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { useLanguage } from "@/context/language-context";
-import { Trophy, Heart, Timer, Star, Info, ChevronRight, Crown, Sparkles } from "lucide-react";
+import { Trophy, Heart, Timer, Star, Info, ChevronRight, Crown, Sparkles, Maximize2, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -13,6 +14,11 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
+
+// Динамические импорты для тяжелых компонентов
+const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
+const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
+const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
 
 const DEMO_ENTRIES = [
   { id: '1', userId: 'u1', userName: 'Алина', photo: PlaceHolderImages[6].imageUrl, votes: 1240, rank: 1 },
@@ -27,6 +33,7 @@ export default function ContestPage() {
   const { t, language } = useLanguage();
   const [timeLeft, setTimeLeft] = useState("");
   const [votedEntries, setVotedEntries] = useState<string[]>([]);
+  const [viewerPhoto, setViewerPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -56,7 +63,6 @@ export default function ContestPage() {
   };
 
   const topThree = DEMO_ENTRIES.slice(0, 3);
-  const others = DEMO_ENTRIES.slice(3);
 
   return (
     <>
@@ -99,9 +105,12 @@ export default function ContestPage() {
           <div className="flex justify-center items-end gap-2 sm:gap-4 relative z-10">
             {/* 2nd Place */}
             <div className="flex flex-col items-center flex-1 max-w-[100px]">
-              <div className="relative mb-3">
+              <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[1].photo)}>
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] border-4 border-slate-300 shadow-lg overflow-hidden bg-muted">
-                  <Image src={topThree[1].photo} alt={topThree[1].userName} fill className="object-cover" />
+                  <Image src={topThree[1].photo} alt={topThree[1].userName} fill className="object-cover transition-transform group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="text-white" size={16} />
+                  </div>
                 </div>
                 <div className="absolute -top-2 -right-2 w-7 h-7 bg-slate-300 rounded-full flex items-center justify-center text-white font-black text-xs shadow-md border-2 border-white">2</div>
               </div>
@@ -111,7 +120,7 @@ export default function ContestPage() {
 
             {/* 1st Place */}
             <div className="flex flex-col items-center flex-1 max-w-[120px] -mt-8">
-              <div className="relative mb-3">
+              <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[0].photo)}>
                 <motion.div
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
@@ -120,7 +129,10 @@ export default function ContestPage() {
                   <Crown size={32} fill="currentColor" />
                 </motion.div>
                 <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] border-4 border-amber-400 shadow-2xl overflow-hidden bg-muted ring-4 ring-amber-400/20">
-                  <Image src={topThree[0].photo} alt={topThree[0].userName} fill className="object-cover" />
+                  <Image src={topThree[0].photo} alt={topThree[0].userName} fill className="object-cover transition-transform group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="text-white" size={24} />
+                  </div>
                 </div>
                 <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md border-2 border-white">1</div>
               </div>
@@ -130,9 +142,12 @@ export default function ContestPage() {
 
             {/* 3rd Place */}
             <div className="flex flex-col items-center flex-1 max-w-[100px]">
-              <div className="relative mb-3">
+              <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[2].photo)}>
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] border-4 border-amber-700/40 shadow-lg overflow-hidden bg-muted">
-                  <Image src={topThree[2].photo} alt={topThree[2].userName} fill className="object-cover" />
+                  <Image src={topThree[2].photo} alt={topThree[2].userName} fill className="object-cover transition-transform group-hover:scale-110" />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="text-white" size={16} />
+                  </div>
                 </div>
                 <div className="absolute -top-2 -right-2 w-7 h-7 bg-amber-700/60 rounded-full flex items-center justify-center text-white font-black text-xs shadow-md border-2 border-white">3</div>
               </div>
@@ -157,8 +172,11 @@ export default function ContestPage() {
                 key={entry.id} 
                 className="bg-white rounded-3xl overflow-hidden border border-border/40 app-shadow group"
               >
-                <div className="relative aspect-[4/5] bg-muted">
+                <div className="relative aspect-[4/5] bg-muted cursor-pointer" onClick={() => setViewerPhoto(entry.photo)}>
                   <Image src={entry.photo} alt={entry.userName} fill className="object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <Maximize2 className="text-white" size={24} />
+                  </div>
                   <div className="absolute top-3 left-3">
                     <Badge className="bg-black/40 backdrop-blur-md text-white border-0 font-bold text-[9px]">#{entry.rank}</Badge>
                   </div>
@@ -203,6 +221,29 @@ export default function ContestPage() {
           </p>
         </div>
       </main>
+
+      {/* Просмотрщик фото */}
+      <Dialog open={!!viewerPhoto} onOpenChange={(open) => !open && setViewerPhoto(null)}>
+        <DialogContent className="max-w-[440px] w-[95vw] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center [&>button]:hidden">
+          <DialogTitle className="sr-only">Photo Viewer</DialogTitle>
+          <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden app-shadow">
+            {viewerPhoto && (
+              <Image src={viewerPhoto} alt="Contest entry" fill className="object-cover" />
+            )}
+          </div>
+          <div className="absolute top-4 right-4 z-50">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              onClick={() => setViewerPhoto(null)} 
+              className="w-10 h-10 rounded-full bg-black/20 backdrop-blur-md border-white/20 text-white hover:bg-black/40 transition-all active:scale-90 shadow-lg"
+            >
+              <X size={20} />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <BottomNav />
     </>
   );
