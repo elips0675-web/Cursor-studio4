@@ -66,18 +66,19 @@ export default function GroupsPage() {
             <h2 className="text-2xl font-black font-headline tracking-tight text-foreground">{t('nav.groups')}</h2>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {GROUP_CATEGORIES.map((category) => {
             const Icon = iconMap[category.icon] || Users;
+            const totalMembers = category.subgroups.reduce((acc, sub) => acc + sub.members, 0);
             return (
             <Link href={`/groups/${category.id}`} key={category.id} className="bg-white rounded-2xl overflow-hidden app-shadow group block border border-transparent hover:border-primary/20 transition-all">
-              <div className={cn("relative h-20 w-full bg-muted flex items-center justify-center", `bg-gradient-to-br from-${category.id}-100 to-${category.id}-200`)}>
-                <Icon size={24} className="text-muted-foreground/60 group-hover:text-primary transition-colors duration-300" />
+              <div className={cn("relative h-24 w-full bg-muted flex items-center justify-center", `bg-gradient-to-br from-${category.id}-100 to-${category.id}-200`)}>
+                <Icon size={28} className="text-muted-foreground/60 group-hover:text-primary transition-colors duration-300" />
               </div>
-              <div className="p-2 text-center">
-                <h6 className="font-semibold text-xs leading-tight truncate group-hover:text-primary">{language === 'RU' ? category.name_ru : category.name_en}</h6>
-                <div className="flex items-center justify-center text-muted-foreground text-[9px] mt-1 gap-1 font-semibold">
-                  <Users size={10} /> {category.subgroups.length} {language === 'RU' ? 'тем' : 'topics'}
+              <div className="p-3 text-center">
+                <h6 className="font-bold text-sm leading-tight truncate group-hover:text-primary">{language === 'RU' ? category.name_ru : category.name_en}</h6>
+                <div className="flex items-center justify-center text-muted-foreground text-[10px] mt-1.5 gap-1.5 font-bold">
+                  <Users size={12} /> {totalMembers.toLocaleString('ru-RU')} {language === 'RU' ? 'участников' : 'members'}
                 </div>
               </div>
             </Link>

@@ -94,7 +94,7 @@ function SubGroupsContent() {
                                     </div>
                                 </div>
                             </div>
-                            <Button variant="secondary" size="sm" className="w-full rounded-lg h-9 text-xs font-black uppercase tracking-widest bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary group-hover:scale-105 transition-transform">
+                            <Button variant="secondary" size="sm" className="self-center px-10 rounded-lg h-9 text-xs font-black uppercase tracking-widest bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary group-hover:scale-105 transition-transform">
                                 <Plus size={14} className="mr-1.5" />
                                 {t('button.join') || 'Вступить'}
                             </Button>
