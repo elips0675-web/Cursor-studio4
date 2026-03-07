@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -240,6 +241,8 @@ const translations = {
     'settings.support': 'Команда SwiftMatch',
     'settings.support.chat_title': 'Написать Команде',
     'settings.support.chat_desc': 'Чат с разработчиками приложения',
+    'settings.about_app': 'О приложении',
+    'settings.about_app_desc': 'Технологический стек и информация',
     'logout.title': 'Вы вышли из системы',
     'logout.button': 'Выйти',
     'delete_profile.button': 'Удалить профиль',
@@ -270,6 +273,18 @@ const translations = {
     'faq.q7.answer': 'Звания — это система достижений SwiftMatch. Одно лучшее звание присваивается автоматически: \n1. Король свиданий — для самых популярных пользователей (мэтч 90%+).\n2. Душа компании — если у вас много интересов (5+).\n3. Обаяшка — если вы заполнили поле "О себе".\n4. Романтик — базовый статус для всех остальных.',
     'faq.q8.question': 'Почему мое сообщение не отправляется?',
     'faq.q8.answer': 'Для обеспечения безопасности и комфортного общения в приложении работает фильтр сообщений. Ваше сообщение может быть заблокировано, если оно содержит: \n- Нецензурную лексику \n- Спам или ссылки на сторонние ресурсы \n- Оскорбления или дискриминацию \n- Призывы к насилию \n- Обсуждение политических тем \n- Упоминание запрещенных товаров или мошеннических схем. \nПожалуйста, убедитесь, что ваше сообщение соответствует правилам сообщества.',
+    // About App
+    'about.title': 'О проекте SwiftMatch',
+    'about.description': 'SwiftMatch — это современный полнофункциональный прототип приложения для знакомств (MVP), построенный на передовых веб-технологиях.',
+    'about.stack.title': 'Технологический стек',
+    'about.frontend.title': 'Фронтенд',
+    'about.frontend.desc': 'Next.js 15, React 19, TypeScript, Tailwind CSS, ShadCN UI.',
+    'about.backend.title': 'Бэкенд & База данных',
+    'about.backend.desc': 'Firebase (Auth, Firestore) — обеспечивает работу в реальном времени и надежное хранение данных.',
+    'about.ai.title': 'Искусственный интеллект',
+    'about.ai.desc': 'Genkit (Google AI) — используется для анализа совместимости, генерации био и фраз для начала разговора.',
+    'about.performance.title': 'Производительность',
+    'about.performance.desc': 'Серверные компоненты (RSC), оптимизация изображений и бандла для мгновенной загрузки на мобильных.',
     // Admin
     'admin.dashboard': 'Дашборд',
     'admin.users': 'Пользователи',
@@ -576,6 +591,8 @@ const translations = {
     'settings.support': 'SwiftMatch Team',
     'settings.support.chat_title': 'Message the Team',
     'settings.support.chat_desc': 'Chat with app developers',
+    'settings.about_app': 'About the App',
+    'settings.about_app_desc': 'Tech stack and info',
     'logout.title': 'You have been logged out',
     'logout.button': 'Logout',
     'delete_profile.button': 'Delete Profile',
@@ -606,6 +623,18 @@ const translations = {
     'faq.q7.answer': 'Titles are SwiftMatch\'s achievement system. One best title is assigned automatically: \n1. Dating King — for the most popular users (90%+ match).\n2. Life of the Party — if you have many interests (5+).\n3. Charming — if you filled out your bio.\n4. Romantic — the base status for everyone else.',
     'faq.q8.question': 'Why is my message not being sent?',
     'faq.q8.answer': 'To ensure a safe and comfortable environment, the application has a message filter. Your message may be blocked if it contains: \n- Profanity \n- Spam or links to external resources \n- Insults or discrimination \n- Calls to violence \n- Discussion of political topics \n- Mention of prohibited goods or fraudulent schemes. \nPlease ensure your message complies with the community guidelines.',
+    // About App
+    'about.title': 'About SwiftMatch Project',
+    'about.description': 'SwiftMatch is a modern, full-featured dating app prototype (MVP) built with cutting-edge web technologies.',
+    'about.stack.title': 'Technical Stack',
+    'about.frontend.title': 'Frontend',
+    'about.frontend.desc': 'Next.js 15, React 19, TypeScript, Tailwind CSS, ShadCN UI.',
+    'about.backend.title': 'Backend & Database',
+    'about.backend.desc': 'Firebase (Auth, Firestore) — provides real-time updates and secure data storage.',
+    'about.ai.title': 'Artificial Intelligence',
+    'about.ai.desc': 'Genkit (Google AI) — used for compatibility analysis, bio generation, and icebreaker suggestions.',
+    'about.performance.title': 'Performance',
+    'about.performance.desc': 'Server Components (RSC), image optimization, and bundle optimization for instant loading on mobile.',
     // Admin
     'admin.dashboard': 'Dashboard',
     'admin.users': 'Users',
