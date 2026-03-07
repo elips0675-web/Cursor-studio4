@@ -16,7 +16,7 @@ const ProfilePreviewCard = memo(({ user, showActions = false, onLike }: { user: 
             src={user.img} 
             alt={user.name} 
             fill 
-            sizes="(max-width: 480px) 50vw, 240px"
+            sizes="(max-width: 480px) 45vw, 240px"
             data-ai-hint={user.hint}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />

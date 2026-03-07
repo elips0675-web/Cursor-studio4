@@ -16,7 +16,7 @@ const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLi
             src={user.img} 
             alt={user.name} 
             fill 
-            sizes="(max-width: 480px) 50vw, 240px"
+            sizes="(max-width: 480px) 45vw, 240px"
             data-ai-hint={user.hint}
             priority={priority}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
