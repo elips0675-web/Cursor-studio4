@@ -224,7 +224,7 @@ export function AppHeader() {
           asChild
           variant="ghost" 
           size="sm" 
-          className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-primary transition-all h-9 px-3 ml-0.5 rounded-full"
+          className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-foreground transition-all h-9 px-3 ml-0.5 rounded-full"
         >
           <Link href="/login" prefetch={false}>
             <LogIn size={16} />
