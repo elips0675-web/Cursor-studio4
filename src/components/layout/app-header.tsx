@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Bell, Languages, LogIn, ChevronLeft, Sparkles, Heart, MessageCircle, User, Zap, X } from "lucide-react";
@@ -15,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-// Динамическая загрузка для исправления hydration error
+// Динамическая загрузка для исправления hydration error и снижения TBT
 const DropdownMenu = dynamic(() => import("@/components/ui/dropdown-menu").then((mod) => mod.DropdownMenu), { ssr: false });
 const DropdownMenuContent = dynamic(() => import("@/components/ui/dropdown-menu").then((mod) => mod.DropdownMenuContent), { ssr: false });
 const DropdownMenuItem = dynamic(() => import("@/components/ui/dropdown-menu").then((mod) => mod.DropdownMenuItem), { ssr: false });

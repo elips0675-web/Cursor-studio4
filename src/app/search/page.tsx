@@ -29,6 +29,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
+// Ленивая загрузка тяжелых визуальных эффектов
 const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div), { ssr: false });
 const AnimatePresence = dynamic(() => import('framer-motion').then(mod => mod.AnimatePresence), { ssr: false });
@@ -241,7 +242,7 @@ function SearchContent() {
       <Dialog open={!!matchUser} onOpenChange={(open) => !open && setMatchUser(null)}>
         <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 overflow-hidden bg-white app-shadow">
           <div className="relative">
-            <HeartConfetti />
+            {matchUser && <HeartConfetti />}
             <div className="relative h-56 flex items-center justify-center p-6 gradient-bg">
                 <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                 <div className="flex items-center justify-center gap-0 relative">

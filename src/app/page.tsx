@@ -34,8 +34,6 @@ const RecommendationsSection = dynamic(() => import('@/components/sections/recom
   loading: () => <div className="px-5 pt-10 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[16/10] rounded-2xl" /><Skeleton className="aspect-[16/10] rounded-2xl" /></div></div>
 });
 
-const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div), { ssr: false });
-
 export default function Home() {
   const router = useRouter();
   const { t, language } = useLanguage();
@@ -118,7 +116,7 @@ export default function Home() {
           </div>
         </section>
 
-        <Suspense fallback={<Skeleton className="h-64 mx-5 mt-8 rounded-3xl" />}>
+        <Suspense fallback={<div className="px-5 pt-8 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[4/3] rounded-2xl" /><Skeleton className="aspect-[4/3] rounded-2xl" /></div></div>}>
           <TopOfWeekSection topUsers={topUsers} onLike={handleLikeHomepage} t={t} />
         </Suspense>
 
@@ -137,7 +135,7 @@ export default function Home() {
           </Link>
         </section>
 
-        <Suspense fallback={<Skeleton className="h-64 mx-5 mt-10 rounded-3xl" />}>
+        <Suspense fallback={<div className="px-5 pt-10 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[16/10] rounded-2xl" /><Skeleton className="aspect-[16/10] rounded-2xl" /></div></div>}>
           <RecommendationsSection recommendedUsers={recommendedUsers} onLike={handleLikeHomepage} t={t} />
         </Suspense>
       </main>
