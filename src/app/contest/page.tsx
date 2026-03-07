@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -19,7 +20,10 @@ import {
   Zap, 
   ShieldCheck,
   Award,
-  CheckCircle2
+  CheckCircle2,
+  Camera,
+  History,
+  Medal
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -50,6 +54,12 @@ const MALE_ENTRIES = [
   { id: 'm3', userId: 'u4', userName: 'Дмитрий', photo: PlaceHolderImages[3].imageUrl, votes: 700, rank: 3, gender: 'male' },
   { id: 'm4', userId: 'u6', userName: 'Артем', photo: PlaceHolderImages[5].imageUrl, votes: 300, rank: 4, gender: 'male' },
   { id: 'm5', userId: 'u10', userName: 'Никита', photo: PlaceHolderImages[9].imageUrl, votes: 250, rank: 5, gender: 'male' },
+];
+
+const PAST_WINNERS = [
+  { id: 'pw1', name: 'Мария', photo: PlaceHolderImages[6].imageUrl, month: 'Апрель' },
+  { id: 'pw2', name: 'Александр', photo: PlaceHolderImages[1].imageUrl, month: 'Апрель' },
+  { id: 'pw3', name: 'Елена', photo: PlaceHolderImages[2].imageUrl, month: 'Март' },
 ];
 
 export default function ContestPage() {
@@ -84,7 +94,6 @@ export default function ContestPage() {
     const newVoted = [...votedEntries, entryId];
     setVotedEntries(newVoted);
     
-    // Progress quest logic
     if (votingProgress < 5) {
       const newProgress = votingProgress + 1;
       setVotingProgress(newProgress);
@@ -187,6 +196,7 @@ export default function ContestPage() {
               </Button>
             </div>
 
+            {/* Pedestal Section */}
             <section className="mb-10 pt-10 relative">
               <AnimatePresence mode="wait">
                 <motion.div 
@@ -333,6 +343,30 @@ export default function ContestPage() {
             </section>
           </TabsContent>
         </Tabs>
+
+        {/* Hall of Fame - Retention Feature */}
+        <section className="mb-10">
+          <div className="flex items-center gap-2 mb-4 px-1">
+            <History className="text-blue-500" size={18} />
+            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Победители прошлых месяцев</h4>
+          </div>
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-1">
+            {PAST_WINNERS.map((winner) => (
+              <div key={winner.id} className="flex-shrink-0 w-32">
+                <div className="relative aspect-square rounded-2xl overflow-hidden mb-2 border-2 border-white shadow-sm">
+                  <Image src={winner.photo} alt={winner.name} fill sizes="128px" className="object-cover grayscale hover:grayscale-0 transition-all" />
+                  <div className="absolute top-1 right-1">
+                    <div className="bg-amber-400 text-white p-1 rounded-full shadow-lg">
+                      <Medal size={12} />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-[10px] font-black text-center truncate">{winner.name}</p>
+                <p className="text-[8px] text-muted-foreground text-center uppercase font-bold">{winner.month}</p>
+              </div>
+            ))}
+          </div>
+        </section>
 
         {/* Participation Section */}
         <section className="mt-8 mb-8">

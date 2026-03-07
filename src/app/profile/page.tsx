@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
-  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog, ChevronRight, Heart
+  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog, ChevronRight, Heart, Clock, Flame, Check, Gift
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -43,8 +43,21 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Progress } from "@/components/ui/progress";
 
 const defaultJoinedGroups = ["Хип-хоп", "Бег", "UI/UX Дизайн"];
+
+const DAILY_QUESTS = [
+  { id: 1, title_ru: 'Поставить 5 лайков', title_en: 'Give 5 likes', progress: 3, total: 5, icon: Heart, color: 'text-pink-500' },
+  { id: 2, title_ru: 'Посмотреть 3 анкеты', title_en: 'View 3 profiles', progress: 3, total: 3, icon: User, color: 'text-blue-500' },
+  { id: 3, title_ru: 'Написать сообщение', title_en: 'Send a message', progress: 0, total: 1, icon: Zap, color: 'text-amber-500' },
+];
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
@@ -216,6 +229,12 @@ export default function ProfilePage() {
     </div>
   );
 
+  const totalQuestProgress = useMemo(() => {
+    const total = DAILY_QUESTS.reduce((acc, q) => acc + q.total, 0);
+    const progress = DAILY_QUESTS.reduce((acc, q) => acc + q.progress, 0);
+    return Math.round((progress / total) * 100);
+  }, []);
+
   return (
     <>
       <AppHeader />
@@ -269,6 +288,90 @@ export default function ProfilePage() {
               </div>
             </div>
             <ChevronRight className="text-muted-foreground/40" size={18} />
+          </div>
+
+          {/* Gamification Tasks Accordion - Retention Feature */}
+          <div className="mb-6">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="tasks" className="border-0">
+                <AccordionTrigger className="bg-slate-900 text-white rounded-[1.5rem] px-6 py-4 hover:no-underline hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 [&[data-state=open]]:rounded-b-none">
+                  <div className="flex items-center gap-3 w-full text-left">
+                    <div className="w-8 h-8 rounded-full bg-amber-500 flex items-center justify-center text-slate-900 shadow-lg">
+                      <Trophy size={16} fill="currentColor" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-black uppercase tracking-tight">Задания</h4>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex-1 h-1 bg-white/10 rounded-full overflow-hidden max-w-[60px]">
+                          <div className="h-full bg-amber-500" style={{ width: `${totalQuestProgress}%` }}></div>
+                        </div>
+                        <span className="text-[9px] font-black text-amber-500">{totalQuestProgress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="bg-slate-900 text-white rounded-b-[1.5rem] px-6 pb-6 pt-2 border-t border-white/5 space-y-6">
+                  {/* Daily Rewards */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} className="text-blue-400" />
+                        <h5 className="text-[10px] font-black uppercase tracking-widest text-blue-400">Ежедневная награда</h5>
+                      </div>
+                      <Badge className="bg-blue-500/20 text-blue-400 border-0 text-[8px] font-black uppercase px-2">День 3</Badge>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1.5">
+                      {Array.from({ length: 7 }).map((_, i) => (
+                        <div key={i} className={cn(
+                          "aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border transition-all",
+                          i < 2 ? "bg-green-500/20 border-green-500/30 text-green-500" : 
+                          i === 2 ? "bg-amber-500 border-amber-500 text-slate-900 scale-110 shadow-lg shadow-amber-500/20" : 
+                          "bg-white/5 border-white/10 text-white/30"
+                        )}>
+                          {i < 2 ? <Check size={12} strokeWidth={4} /> : <Gift size={12} />}
+                          <span className="text-[7px] font-black">{i + 1}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button className="w-full h-10 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black uppercase text-[10px] tracking-widest shadow-lg shadow-amber-500/20 border-0">
+                      Забрать бонус
+                    </Button>
+                  </div>
+
+                  <div className="h-px bg-white/10"></div>
+
+                  {/* Daily Quests */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Flame size={14} className="text-orange-500" />
+                      <h5 className="text-[10px] font-black uppercase tracking-widest text-orange-500">Квесты дня</h5>
+                    </div>
+                    <div className="space-y-3">
+                      {DAILY_QUESTS.map((quest) => {
+                        const Icon = quest.icon;
+                        const isDone = quest.progress >= quest.total;
+                        return (
+                          <div key={quest.id} className="bg-white/5 rounded-2xl p-3 border border-white/10">
+                            <div className="flex items-center gap-3 mb-2.5">
+                              <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center bg-white/5", quest.color)}>
+                                <Icon size={16} fill={isDone ? "currentColor" : "none"} />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex justify-between items-center mb-1">
+                                  <p className="text-[11px] font-bold leading-none">{language === 'RU' ? quest.title_ru : quest.title_en}</p>
+                                  <span className="text-[9px] font-black text-white/40">{quest.progress}/{quest.total}</span>
+                                </div>
+                                <Progress value={(quest.progress / quest.total) * 100} className="h-1.5 bg-white/5" />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
           
           <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
