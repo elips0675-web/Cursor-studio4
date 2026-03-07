@@ -156,14 +156,15 @@ function SearchContent() {
               initial="enter"
               animate="center"
               exit="exit"
-              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow border-4 border-white"
+              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow border-4 border-white cursor-pointer"
+              onClick={() => router.push(`/user?id=${user.id}`)}
             >
               <Image 
                 src={user.img} 
                 alt={user.name} 
                 fill 
                 sizes="(max-width: 480px) 100vw, 420px" 
-                priority // КРИТИЧНО ДЛЯ LCP
+                priority
                 loading="eager"
                 className="object-cover" 
               />
@@ -177,10 +178,19 @@ function SearchContent() {
           </Suspense>
         </div>
 
-        <div className="flex justify-center items-center gap-4 w-full">
-          <Button variant="outline" size="icon" className="w-16 h-16 rounded-full bg-white shadow-lg" onClick={handleNext}><X size={28} /></Button>
-          <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-xl" onClick={handleLike}><Heart size={36} fill="currentColor" /></Button>
-          <Button asChild variant="outline" size="icon" className="w-16 h-16 rounded-full bg-white shadow-lg"><Link href={`/chats?matchId=${user.id}`}><MessageCircle size={28} /></Link></Button>
+        <div className="flex justify-center items-center gap-3 w-full">
+          <Button variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-lg border-muted" onClick={handleNext}><X size={24} /></Button>
+          <Button size="icon" className="w-18 h-18 rounded-full gradient-bg text-white shadow-xl" onClick={handleLike}><Heart size={32} fill="currentColor" /></Button>
+          <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-lg border-muted">
+            <Link href={`/user?id=${user.id}`}>
+              <User size={24} />
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-lg border-muted">
+            <Link href={`/chats?matchId=${user.id}`}>
+              <MessageCircle size={24} />
+            </Link>
+          </Button>
         </div>
       </main>
       
