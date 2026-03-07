@@ -3,8 +3,34 @@
 import { Suspense, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from "next/image";
-import { ChevronLeft, Users, Plus, Gift, Play, CreditCard } from 'lucide-react';
+import { 
+    ChevronLeft, 
+    Users, 
+    Plus, 
+    Gift, 
+    Play, 
+    CreditCard,
+    Music,
+    Dumbbell,
+    Palette,
+    Gamepad2,
+    Film,
+    Globe,
+    ChefHat,
+    Cpu,
+    BookOpen,
+    Sparkles,
+    Shirt,
+    HeartPulse,
+    Dog,
+    FlaskConical,
+    Briefcase,
+    Home,
+    Car,
+    Laugh,
+    Star,
+    Scroll
+} from 'lucide-react';
 import { GROUP_CATEGORIES } from '@/lib/demo-data';
 import { AppHeader } from '@/components/layout/app-header';
 import { BottomNav } from '@/components/navigation/bottom-nav';
@@ -15,6 +41,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const iconMap: Record<string, React.ElementType> = {
+  Music, Dumbbell, Palette, Gamepad2, Film, Globe, ChefHat, Cpu, BookOpen, Sparkles, Shirt, HeartPulse, Dog, FlaskConical, Briefcase, Home, Car, Laugh, Star, Scroll
+};
 
 function SubGroupsContent() {
     const params = useParams();
@@ -47,6 +77,8 @@ function SubGroupsContent() {
         );
     }
 
+    const Icon = iconMap[category.icon] || Users;
+
     return (
         <div className="flex flex-col h-svh bg-[#f8f9fb]">
             <header className="flex items-center gap-2 px-3 py-2 border-b border-border sticky top-0 bg-white/90 backdrop-blur-lg z-50 h-16">
@@ -77,9 +109,8 @@ function SubGroupsContent() {
                     {category.subgroups.map(subgroup => (
                         <Link href={`/chats?groupId=${subgroup.id}`} key={subgroup.id} className="flex flex-col gap-3 p-3 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
                             <div className="flex items-center gap-4 min-w-0">
-                                <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-muted flex-shrink-0 border-2 border-white shadow-sm">
-                                    <Image src={category.img} alt={language === 'RU' ? subgroup.name_ru : subgroup.name_en} fill sizes="56px" data-ai-hint={category.hint} className="object-cover opacity-80 group-hover:opacity-100 transition-opacity"/>
-                                    <div className="absolute inset-0 bg-black/10"></div>
+                                <div className="w-14 h-14 rounded-xl bg-muted/40 flex-shrink-0 border border-border/50 flex items-center justify-center shadow-sm">
+                                    <Icon size={28} className="text-muted-foreground/70 group-hover:text-primary transition-colors" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{language === 'RU' ? subgroup.name_ru : subgroup.name_en}</h4>
@@ -94,7 +125,7 @@ function SubGroupsContent() {
                                     </div>
                                 </div>
                             </div>
-                            <Button variant="secondary" size="sm" className="self-center px-10 rounded-lg h-9 text-xs font-black uppercase tracking-widest bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary group-hover:scale-105 transition-transform">
+                            <Button variant="secondary" size="sm" className="self-center px-6 rounded-lg h-9 text-xs font-black uppercase tracking-widest bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary group-hover:scale-105 transition-transform">
                                 <Plus size={14} className="mr-1.5" />
                                 {t('button.join') || 'Вступить'}
                             </Button>
