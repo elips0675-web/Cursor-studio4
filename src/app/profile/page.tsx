@@ -38,11 +38,11 @@ import {
 import { GROUP_CATEGORIES } from "@/lib/demo-data";
 
 const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => mod.Dialog));
-const DialogContent = import("@/components/ui/dialog").then(mod => mod.DialogContent);
-const DialogTitle = import("@/components/ui/dialog").then(mod => mod.DialogTitle);
-const DialogDescription = import("@/components/ui/dialog").then(mod => mod.DialogDescription);
-const DialogHeader = import("@/components/ui/dialog").then(mod => mod.DialogHeader);
-const DialogFooter = import("@/components/ui/dialog").then(mod => mod.DialogFooter);
+const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogContent));
+const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogTitle));
+const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogDescription));
+const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
+const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
 
 // Canonical group names (using Russian names as identifiers)
 const defaultJoinedGroups = ["Хип-хоп", "Бег", "UI/UX Дизайн"];
