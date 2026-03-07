@@ -1,14 +1,30 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { useLanguage } from "@/context/language-context";
-import { Trophy, Heart, Timer, Star, Info, ChevronRight, Crown, Sparkles, Maximize2, X } from "lucide-react";
+import { 
+  Trophy, 
+  Heart, 
+  Timer, 
+  Star, 
+  Info, 
+  ChevronRight, 
+  Crown, 
+  Sparkles, 
+  Maximize2, 
+  X, 
+  Gift, 
+  Zap, 
+  ShieldCheck,
+  Award,
+  CheckCircle2
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -42,6 +58,7 @@ export default function ContestPage() {
   const [votedEntries, setVotedEntries] = useState<string[]>([]);
   const [viewerPhoto, setViewerPhoto] = useState<string | null>(null);
   const [activeGender, setActiveGender] = useState<string>("female");
+  const [votingProgress, setVotingProgress] = useState(0);
 
   useEffect(() => {
     const updateTimer = () => {
@@ -63,7 +80,23 @@ export default function ContestPage() {
 
   const handleVote = (entryId: string) => {
     if (votedEntries.includes(entryId)) return;
-    setVotedEntries([...votedEntries, entryId]);
+    
+    const newVoted = [...votedEntries, entryId];
+    setVotedEntries(newVoted);
+    
+    // Progress quest logic
+    if (votingProgress < 5) {
+      const newProgress = votingProgress + 1;
+      setVotingProgress(newProgress);
+      
+      if (newProgress === 5) {
+        toast({
+          title: language === 'RU' ? "Задание выполнено! 🎉" : "Quest completed! 🎉",
+          description: t('contest.quest.reward'),
+        });
+      }
+    }
+
     toast({
       title: language === 'RU' ? "Голос учтен!" : "Vote counted!",
       description: language === 'RU' ? "Вы проголосовали за участника." : "You have voted for the participant.",
@@ -76,11 +109,17 @@ export default function ContestPage() {
 
   const topThree = currentEntries.slice(0, 3);
 
+  const prizes = [
+    { id: 'p1', icon: <ShieldCheck className="text-blue-500" />, title: t('contest.prizes.pro.title'), desc: t('contest.prizes.pro.desc') },
+    { id: 'p2', icon: <Zap className="text-amber-500" />, title: t('contest.prizes.boost.title'), desc: t('contest.prizes.boost.desc') },
+    { id: 'p3', icon: <Award className="text-purple-500" />, title: t('contest.prizes.badge.title'), desc: t('contest.prizes.badge.desc') },
+  ];
+
   return (
     <>
       <AppHeader />
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
-        <header className="mb-6 text-center">
+        <header className="mb-8 text-center">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -96,8 +135,34 @@ export default function ContestPage() {
           </p>
         </header>
 
+        {/* Daily Quest Section */}
+        <section className="mb-8">
+          <div className="bg-white rounded-[2rem] p-5 border border-primary/10 app-shadow relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform">
+              <Gift size={64} />
+            </div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <Star size={20} fill="currentColor" />
+              </div>
+              <div>
+                <h4 className="text-sm font-black uppercase tracking-tight">{t('contest.quest.title')}</h4>
+                <p className="text-[10px] text-muted-foreground font-bold">{t('contest.quest.desc')}</p>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-primary">
+                <span>{votingProgress}/5</span>
+                <span>{Math.round((votingProgress / 5) * 100)}%</span>
+              </div>
+              <Progress value={(votingProgress / 5) * 100} className="h-2.5 bg-primary/10" />
+              <p className="text-[9px] text-primary/60 font-bold italic text-center pt-1">{t('contest.quest.reward')}</p>
+            </div>
+          </div>
+        </section>
+
         <Tabs defaultValue="female" className="w-full mb-8" onValueChange={setActiveGender}>
-          <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-2xl h-12">
+          <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-2xl h-12 mb-6">
             <TabsTrigger value="female" className="rounded-xl font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">
               {t('contest.tab.women')}
             </TabsTrigger>
@@ -109,7 +174,7 @@ export default function ContestPage() {
           <TabsContent value={activeGender} className="mt-0 outline-none">
             <div className="bg-white rounded-3xl p-5 border border-border/40 app-shadow mb-8 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary">
+                <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
                   <Timer size={20} />
                 </div>
                 <div>
@@ -132,6 +197,7 @@ export default function ContestPage() {
                   transition={{ duration: 0.3 }}
                   className="flex justify-center items-end gap-2 sm:gap-4 relative z-10"
                 >
+                  {/* Rank 2 */}
                   <div className="flex flex-col items-center flex-1 max-w-[100px]">
                     <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[1].photo)}>
                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] border-4 border-slate-300 shadow-lg overflow-hidden bg-muted">
@@ -146,6 +212,7 @@ export default function ContestPage() {
                     <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-600 text-[8px] font-black">{topThree[1].votes}</Badge>
                   </div>
 
+                  {/* Rank 1 */}
                   <div className="flex flex-col items-center flex-1 max-w-[120px] -mt-8">
                     <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[0].photo)}>
                       <motion.div
@@ -167,6 +234,7 @@ export default function ContestPage() {
                     <Badge className="mt-1 gradient-bg text-white text-[9px] font-black border-0 shadow-lg shadow-primary/20">{topThree[0].votes}</Badge>
                   </div>
 
+                  {/* Rank 3 */}
                   <div className="flex flex-col items-center flex-1 max-w-[100px]">
                     <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[2].photo)}>
                       <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] border-4 border-amber-700/40 shadow-lg overflow-hidden bg-muted">
@@ -183,6 +251,30 @@ export default function ContestPage() {
                 </motion.div>
               </AnimatePresence>
               <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-muted/30 to-transparent -z-0 rounded-b-[3rem]"></div>
+            </section>
+
+            {/* Prizes List */}
+            <section className="mb-10">
+              <div className="flex items-center gap-2 mb-4 px-1">
+                <Award className="text-primary" size={18} />
+                <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">{t('contest.prizes.title')}</h4>
+              </div>
+              <div className="grid grid-cols-1 gap-2.5">
+                {prizes.map((prize) => (
+                  <div key={prize.id} className="flex items-center gap-4 bg-white p-3.5 rounded-2xl border border-border/40 app-shadow">
+                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                      {prize.icon}
+                    </div>
+                    <div className="flex-1">
+                      <h5 className="text-xs font-black leading-none">{prize.title}</h5>
+                      <p className="text-[10px] text-muted-foreground mt-1 font-medium">{prize.desc}</p>
+                    </div>
+                    <div className="text-primary/20">
+                      <CheckCircle2 size={16} />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </section>
 
             <section className="space-y-3">
@@ -241,6 +333,20 @@ export default function ContestPage() {
             </section>
           </TabsContent>
         </Tabs>
+
+        {/* Participation Section */}
+        <section className="mt-8 mb-8">
+          <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-[2rem] p-6 text-white relative overflow-hidden app-shadow">
+            <div className="absolute -right-4 -bottom-4 opacity-10">
+              <Camera size={120} />
+            </div>
+            <h4 className="text-lg font-black tracking-tight mb-2">{t('contest.participate_banner')}</h4>
+            <p className="text-xs text-white/60 mb-6 leading-relaxed">{t('contest.rules_desc')}</p>
+            <Button className="w-full h-12 rounded-full bg-white text-slate-900 font-black uppercase text-[10px] tracking-widest border-0 hover:bg-slate-100 transition-colors">
+              {t('button.participate')}
+            </Button>
+          </div>
+        </section>
 
         <div className="mt-6 p-6 bg-primary/5 rounded-[2rem] border border-primary/10 border-dashed mb-8">
           <div className="flex items-center gap-3 mb-2">
