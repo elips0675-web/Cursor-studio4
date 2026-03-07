@@ -13,7 +13,9 @@ const FORBIDDEN_WORD_ROOTS = [
 
   // Политика (Politics)
   'политик', 'президент', 'правительств', 'выбор', 'митинг', 'оппозици', 'война',
-  'politic', 'president', 'government', 'election', 'rally', 'opposition', 'war', 'навальн',
+  'politic', 'president', 'government', 'election', 'rally', 'opposition', 'war', 
+  'навальн', 'путин', 'лукашенк', 'пересидент', 'зеленск', 'байден', 'трамп', 
+  'сво', 'спецопераци', 'кремль', 'госдума', 'майдан',
 
   // Спам и Реклама (Spam & Ads)
   'http:', 'https:', 'www.', '.com', '.ru', '.net', '.org', 't.me', 'vk.com',
