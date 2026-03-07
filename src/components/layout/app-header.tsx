@@ -85,7 +85,7 @@ export function AppHeader() {
   if (isLoginPage) return null;
 
   return (
-    <header className="sticky top-0 w-full bg-white/90 backdrop-blur-xl border-b border-border/50 px-4 py-3 flex items-center justify-between z-50 h-16">
+    <header className="sticky top-0 w-full bg-white/95 backdrop-blur-xl border-b border-border/50 px-4 py-3 flex items-center justify-between z-50 h-16">
       <div className="flex items-center min-w-[40px]">
         {!isHomePage && (
           <Button 
@@ -224,7 +224,7 @@ export function AppHeader() {
           asChild
           variant="ghost" 
           size="sm" 
-          className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-foreground transition-all h-9 px-3 ml-0.5 rounded-full"
+          className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-all h-9 px-3 ml-0.5 rounded-full"
         >
           <Link href="/login" prefetch={false}>
             <LogIn size={16} />
