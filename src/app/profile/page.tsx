@@ -274,6 +274,90 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Gamification Tasks Accordion - Moved here above Contest Banner */}
+          <div className="mb-6">
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="tasks" className="border-0">
+                <AccordionTrigger className="bg-white text-foreground rounded-[1.5rem] px-6 py-4 hover:no-underline hover:bg-muted/30 transition-all app-shadow border border-border/40 [&[data-state=open]]:rounded-b-none [&[data-state=open]]:shadow-none">
+                  <div className="flex items-center gap-3 w-full text-left">
+                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm border border-amber-200">
+                      <Trophy size={16} fill="currentColor" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-black uppercase tracking-tight">Задания</h4>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-[60px]">
+                          <div className="h-full gradient-bg" style={{ width: `${totalQuestProgress}%` }}></div>
+                        </div>
+                        <span className="text-[9px] font-black text-primary">{totalQuestProgress}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="bg-white text-foreground rounded-b-[1.5rem] px-6 pb-6 pt-2 border-x border-b border-border/40 app-shadow space-y-6">
+                  {/* Daily Rewards */}
+                  <div className="space-y-4 pt-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Clock size={14} className="text-blue-500" />
+                        <h5 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ежедневная награда</h5>
+                      </div>
+                      <Badge className="bg-blue-50 text-blue-600 border border-blue-100 text-[8px] font-black uppercase px-2">День 3</Badge>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1.5">
+                      {Array.from({ length: 7 }).map((_, i) => (
+                        <div key={i} className={cn(
+                          "aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border transition-all",
+                          i < 2 ? "bg-green-50 border-green-200 text-green-600" : 
+                          i === 2 ? "gradient-bg border-0 text-white scale-110 shadow-lg shadow-primary/20" : 
+                          "bg-muted/30 border-transparent text-muted-foreground/40"
+                        )}>
+                          {i < 2 ? <Check size={12} strokeWidth={4} /> : <Gift size={12} />}
+                          <span className="text-[7px] font-black">{i + 1}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <Button className="w-full h-10 rounded-xl gradient-bg hover:opacity-90 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 border-0">
+                      Забрать бонус
+                    </Button>
+                  </div>
+
+                  <div className="h-px bg-border/50"></div>
+
+                  {/* Daily Quests */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2">
+                      <Flame size={14} className="text-orange-500" />
+                      <h5 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Квесты дня</h5>
+                    </div>
+                    <div className="space-y-3">
+                      {DAILY_QUESTS.map((quest) => {
+                        const Icon = quest.icon;
+                        const isDone = quest.progress >= quest.total;
+                        return (
+                          <div key={quest.id} className="bg-muted/30 rounded-2xl p-3 border border-transparent">
+                            <div className="flex items-center gap-3 mb-2.5">
+                              <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center bg-white shadow-sm", quest.color)}>
+                                <Icon size={16} fill={isDone ? "currentColor" : "none"} />
+                              </div>
+                              <div className="flex-1">
+                                <div className="flex justify-between items-center mb-1">
+                                  <p className="text-[11px] font-bold leading-none text-foreground">{language === 'RU' ? quest.title_ru : quest.title_en}</p>
+                                  <span className="text-[9px] font-black text-muted-foreground">{quest.progress}/{quest.total}</span>
+                                </div>
+                                <Progress value={(quest.progress / quest.total) * 100} className="h-1.5 bg-white" />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+
           <div 
             onClick={handleOpenContestDialog}
             className="bg-white rounded-[1.5rem] p-4 border border-amber-500/20 app-shadow mb-6 flex items-center justify-between cursor-pointer hover:bg-amber-50/30 transition-colors"
@@ -358,7 +442,7 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-6 text-left">
+          <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-12 text-left">
             <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2"><Camera size={18} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4></div><input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" /></div>
             <div className="grid grid-cols-2 gap-3">
               {photos.map((url, idx) => (
@@ -393,90 +477,6 @@ export default function ProfilePage() {
                 </div>
               )}
             </div>
-          </div>
-
-          {/* Gamification Tasks Accordion - Light Theme */}
-          <div className="mb-12">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="tasks" className="border-0">
-                <AccordionTrigger className="bg-white text-foreground rounded-[1.5rem] px-6 py-4 hover:no-underline hover:bg-muted/30 transition-all app-shadow border border-border/40 [&[data-state=open]]:rounded-b-none [&[data-state=open]]:shadow-none">
-                  <div className="flex items-center gap-3 w-full text-left">
-                    <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm border border-amber-200">
-                      <Trophy size={16} fill="currentColor" />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="text-sm font-black uppercase tracking-tight">Задания</h4>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden max-w-[60px]">
-                          <div className="h-full gradient-bg" style={{ width: `${totalQuestProgress}%` }}></div>
-                        </div>
-                        <span className="text-[9px] font-black text-primary">{totalQuestProgress}%</span>
-                      </div>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="bg-white text-foreground rounded-b-[1.5rem] px-6 pb-6 pt-2 border-x border-b border-border/40 app-shadow space-y-6">
-                  {/* Daily Rewards */}
-                  <div className="space-y-4 pt-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Clock size={14} className="text-blue-500" />
-                        <h5 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Ежедневная награда</h5>
-                      </div>
-                      <Badge className="bg-blue-50 text-blue-600 border border-blue-100 text-[8px] font-black uppercase px-2">День 3</Badge>
-                    </div>
-                    <div className="grid grid-cols-7 gap-1.5">
-                      {Array.from({ length: 7 }).map((_, i) => (
-                        <div key={i} className={cn(
-                          "aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border transition-all",
-                          i < 2 ? "bg-green-50 border-green-200 text-green-600" : 
-                          i === 2 ? "gradient-bg border-0 text-white scale-110 shadow-lg shadow-primary/20" : 
-                          "bg-muted/30 border-transparent text-muted-foreground/40"
-                        )}>
-                          {i < 2 ? <Check size={12} strokeWidth={4} /> : <Gift size={12} />}
-                          <span className="text-[7px] font-black">{i + 1}</span>
-                        </div>
-                      ))}
-                    </div>
-                    <Button className="w-full h-10 rounded-xl gradient-bg hover:opacity-90 text-white font-black uppercase text-[10px] tracking-widest shadow-lg shadow-primary/20 border-0">
-                      Забрать бонус
-                    </Button>
-                  </div>
-
-                  <div className="h-px bg-border/50"></div>
-
-                  {/* Daily Quests */}
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Flame size={14} className="text-orange-500" />
-                      <h5 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Квесты дня</h5>
-                    </div>
-                    <div className="space-y-3">
-                      {DAILY_QUESTS.map((quest) => {
-                        const Icon = quest.icon;
-                        const isDone = quest.progress >= quest.total;
-                        return (
-                          <div key={quest.id} className="bg-muted/30 rounded-2xl p-3 border border-transparent">
-                            <div className="flex items-center gap-3 mb-2.5">
-                              <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center bg-white shadow-sm", quest.color)}>
-                                <Icon size={16} fill={isDone ? "currentColor" : "none"} />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center mb-1">
-                                  <p className="text-[11px] font-bold leading-none text-foreground">{language === 'RU' ? quest.title_ru : quest.title_en}</p>
-                                  <span className="text-[9px] font-black text-muted-foreground">{quest.progress}/{quest.total}</span>
-                                </div>
-                                <Progress value={(quest.progress / quest.total) * 100} className="h-1.5 bg-white" />
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
           </div>
         </div>
       </main>
