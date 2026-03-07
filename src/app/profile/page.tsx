@@ -82,6 +82,7 @@ export default function ProfilePage() {
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showBoostDialog, setShowBoostDialog] = useState(false);
   const [isBoostLoading, setIsBoostLoading] = useState(false);
+  const [showContestDialog, setShowContestDialog] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [photoToDeleteIndex, setPhotoToDeleteIndex] = useState<number | null>(null);
@@ -188,6 +189,13 @@ export default function ProfilePage() {
     toast({ title: t('boost.success_paid') });
   };
 
+  const handleSubmitToContest = (photoUrl: string) => {
+    setShowContestDialog(false);
+    toast({
+      title: t('contest.submit_success'),
+    });
+  };
+
   const openPhotoViewer = (index: number) => { setActivePhotoIndex(index); setIsViewerOpen(true); };
 
   const interestIconsMap: Record<string, any> = {
@@ -240,6 +248,23 @@ export default function ProfilePage() {
                 <p className="text-[8px] font-black uppercase tracking-widest mt-1">Boost</p>
               </button>
             </div>
+          </div>
+
+          {/* Contest Banner in Profile */}
+          <div 
+            onClick={() => setShowContestDialog(true)}
+            className="bg-white rounded-[1.5rem] p-4 border border-amber-500/20 app-shadow mb-6 flex items-center justify-between cursor-pointer hover:bg-amber-50/30 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                <Trophy size={20} />
+              </div>
+              <div>
+                <h4 className="text-xs font-black uppercase tracking-tight">{t('contest.title')}</h4>
+                <p className="text-[9px] text-muted-foreground font-bold">{t('contest.participate_banner')}</p>
+              </div>
+            </div>
+            <ChevronRight className="text-muted-foreground/40" size={18} />
           </div>
           
           <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
@@ -379,6 +404,41 @@ export default function ProfilePage() {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {showContestDialog && (
+          <Dialog open={showContestDialog} onOpenChange={setShowContestDialog}>
+            <DialogContent className="max-w-[360px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
+              <div className="relative h-32 bg-gradient-to-r from-amber-500 to-orange-600 flex flex-col items-center justify-center text-white p-6">
+                 <Trophy className="text-white/40 absolute -right-4 -bottom-4" size={100} />
+                 <DialogTitle className="text-xl font-black uppercase tracking-tighter relative z-10">{t('contest.select_photo')}</DialogTitle>
+              </div>
+              <div className="p-5">
+                <div className="grid grid-cols-3 gap-2">
+                  {photos.map((url, idx) => (
+                    <div 
+                      key={idx} 
+                      onClick={() => handleSubmitToContest(url)}
+                      className="relative aspect-square rounded-xl overflow-hidden cursor-pointer hover:ring-4 ring-primary/20 transition-all bg-muted"
+                    >
+                      <Image src={url} alt={`Gallery photo ${idx}`} fill className="object-cover" />
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-6 p-4 bg-muted/30 rounded-2xl">
+                  <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-1">{t('contest.rules')}</p>
+                  <p className="text-[10px] text-muted-foreground leading-snug">{t('contest.rules_desc')}</p>
+                </div>
+              </div>
+              <DialogFooter className="p-5 pt-0">
+                <Button variant="ghost" onClick={() => setShowContestDialog(false)} className="w-full text-muted-foreground text-[10px] font-black uppercase tracking-widest">
+                  {t('button.not_now')}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        )}
+      </AnimatePresence>
+
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center [&>button]:hidden">
           <DialogTitle className="sr-only">Viewer</DialogTitle>
@@ -403,6 +463,7 @@ export default function ProfilePage() {
       
       <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
         <AlertDialogContent className="rounded-3xl">
+            <AlertDialogHeader>
             <AlertDialogHeader>
             <AlertDialogTitle>{t('dialog.delete_photo.title')}</AlertDialogTitle>
             <AlertDialogDescription>

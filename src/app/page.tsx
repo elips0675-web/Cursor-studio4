@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check, Target, Play, CreditCard } from "lucide-react";
+import { Flame, Search, Heart, MapPin, Zap, Sparkles, ChevronDown, Cpu, User, Trophy, Star, Navigation, Globe, Users, Check, Target, Play, CreditCard, Camera } from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -174,6 +174,27 @@ export default function Home() {
               </Link>
             </Button>
           </div>
+        </section>
+
+        {/* Contest Entry Banner */}
+        <section className="px-5 pt-8">
+          <Link href="/contest" className="block relative h-28 rounded-[2rem] overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500 to-orange-600"></div>
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+            <div className="absolute top-0 right-0 p-2 opacity-20 group-hover:scale-110 transition-transform duration-700">
+              <Trophy size={80} />
+            </div>
+            <div className="relative h-full flex items-center p-6 text-white">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center mr-4">
+                <Camera size={24} />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-black text-lg tracking-tight leading-tight">{t('contest.title')}</h4>
+                <p className="text-[10px] font-bold opacity-80 uppercase tracking-wider">{t('contest.participate_banner')}</p>
+              </div>
+              <ChevronDown className="-rotate-90 opacity-60" size={24} />
+            </div>
+          </Link>
         </section>
 
         <TopOfWeekSection topUsers={topUsers} onLike={handleLikeHomepage} t={t} />

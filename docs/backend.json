@@ -36,6 +36,19 @@
         "senderId": { "type": "string" }
       },
       "required": ["text", "target", "channel", "createdAt"]
+    },
+    "ContestEntry": {
+      "title": "Заявка на конкурс",
+      "description": "Фотография пользователя, участвующая в ежемесячном конкурсе.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "votes": { "type": "number" },
+        "month": { "type": "string", "description": "Формат ГГГГ-ММ" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
     }
   },
   "auth": {
@@ -49,6 +62,10 @@
     "/broadcasts/{broadcastId}": {
       "schema": "SystemBroadcast",
       "description": "История системных рассылок"
+    },
+    "/contests/{month}/entries/{userId}": {
+      "schema": "ContestEntry",
+      "description": "Участники конкурса за конкретный месяц"
     }
   }
 }
