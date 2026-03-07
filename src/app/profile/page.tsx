@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
-  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog
+  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog, ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
