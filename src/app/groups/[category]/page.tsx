@@ -97,7 +97,7 @@ function SubGroupsContent() {
                                     </div>
                                 </div>
                             </div>
-                            <Button variant="secondary" size="sm" className="ml-4 shrink-0 px-6 rounded-lg h-9 text-xs font-black uppercase tracking-widest bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 group-hover:scale-105 transition-transform">
+                            <Button className="ml-4 shrink-0 px-4 h-9 rounded-full gradient-bg text-white font-black uppercase text-[9px] tracking-widest shadow-md shadow-primary/20 border-0 group-hover:scale-105 transition-transform">
                                 <Plus size={14} className="mr-1.5" />
                                 {t('button.join') || 'Вступить'}
                             </Button>
