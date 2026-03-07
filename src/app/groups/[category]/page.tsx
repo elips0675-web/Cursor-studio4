@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
@@ -10,7 +10,27 @@ import {
     Plus, 
     Gift, 
     Play, 
-    CreditCard
+    CreditCard,
+    Music,
+    Dumbbell,
+    Palette,
+    Gamepad2,
+    Film,
+    Globe,
+    ChefHat,
+    Cpu,
+    BookOpen,
+    Sparkles,
+    Shirt,
+    HeartPulse,
+    Dog,
+    FlaskConical,
+    Briefcase,
+    Home,
+    Car,
+    Laugh,
+    Star,
+    Scroll
 } from 'lucide-react';
 import { GROUP_CATEGORIES } from '@/lib/demo-data';
 import { AppHeader } from '@/components/layout/app-header';
@@ -22,6 +42,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
+
+const iconMap: Record<string, React.ElementType> = {
+    Music, Dumbbell, Palette, Gamepad2, Film, Globe, ChefHat, Cpu, BookOpen, Sparkles, Shirt, HeartPulse, Dog, FlaskConical, Briefcase, Home, Car, Laugh, Star, Scroll
+};
+
 
 function SubGroupsContent() {
     const params = useParams();
@@ -53,6 +78,8 @@ function SubGroupsContent() {
           </div>
         );
     }
+    
+    const CategoryIcon = iconMap[category.icon] || Users;
 
     return (
         <div className="flex flex-col h-svh bg-[#f8f9fb]">
@@ -60,8 +87,11 @@ function SubGroupsContent() {
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-muted/50">
                   <ChevronLeft size={24} className="text-foreground" />
                 </Button>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-black text-lg leading-tight tracking-tight text-foreground">
+                <div className="flex-1 min-w-0 flex items-center gap-3">
+                  <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
+                    <CategoryIcon size={18} className="text-orange-500" />
+                  </div>
+                  <h3 className="font-black text-lg leading-tight tracking-tight text-foreground truncate">
                     {language === 'RU' ? category.name_ru : category.name_en}
                   </h3>
                 </div>
@@ -86,7 +116,7 @@ function SubGroupsContent() {
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div className="flex-1 min-w-0">
                                     <h4 className="font-bold text-sm text-foreground truncate group-hover:text-primary transition-colors">{language === 'RU' ? subgroup.name_ru : subgroup.name_en}</h4>
-                                    <div className="flex items-center text-muted-foreground text-xs mt-1 gap-3">
+                                    <div className="flex items-center text-muted-foreground text-xs mt-1.5 gap-3">
                                         <div className="flex items-center gap-1.5 font-semibold">
                                             <Users size={12} /> {subgroup.members}
                                         </div>
@@ -97,7 +127,7 @@ function SubGroupsContent() {
                                     </div>
                                 </div>
                             </div>
-                            <Button className="ml-4 shrink-0 px-4 h-9 rounded-full gradient-bg text-white font-black uppercase text-[9px] tracking-widest shadow-md shadow-primary/20 border-0 group-hover:scale-105 transition-transform">
+                            <Button variant="outline" className="ml-4 shrink-0 px-4 h-9 rounded-full border-primary/20 text-primary hover:bg-primary/5 hover:text-primary font-black uppercase text-[9px] tracking-widest shadow-sm group-hover:scale-105 transition-transform">
                                 <Plus size={14} className="mr-1.5" />
                                 {t('button.join') || 'Вступить'}
                             </Button>
