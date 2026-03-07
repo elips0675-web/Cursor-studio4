@@ -10,14 +10,14 @@ import { FeatureFlagsProvider } from '@/context/feature-flags-context';
 import { CookieConsent } from '@/components/shared/cookie-consent';
 
 const poppins = Poppins({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-poppins',
   weight: ['800']
 });
 
 const quicksand = Quicksand({
-  subsets: ['latin', 'cyrillic'],
+  subsets: ['latin'],
   display: 'swap',
   variable: '--font-quicksand',
   weight: ['500', '600', '700']
