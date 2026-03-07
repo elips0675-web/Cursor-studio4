@@ -1,4 +1,3 @@
-
 "use client";
 
 import { memo } from "react";
@@ -42,7 +41,7 @@ const ProfilePreviewCard = memo(({ user, showActions = false, onLike }: { user: 
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="h-8 rounded-lg border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm"
+                className="h-8 rounded-lg border-muted text-primary hover:bg-muted active:scale-95 transition-all group/heart shadow-sm"
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); onLike(); }}
               >
                 <Heart size={14} className="group-hover/heart:fill-current" />

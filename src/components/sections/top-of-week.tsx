@@ -1,4 +1,3 @@
-
 "use client";
 
 import { memo } from "react";
@@ -18,7 +17,7 @@ const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLi
             fill 
             sizes="(max-width: 480px) 45vw, 240px"
             data-ai-hint={user.hint}
-            priority={priority} // Важно для LCP
+            priority={priority}
             loading={priority ? "eager" : "lazy"}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
@@ -39,7 +38,7 @@ const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLi
             <Button 
               variant="outline" 
               size="sm" 
-              className="h-8 rounded-lg border-primary/20 text-primary hover:bg-primary/5 active:scale-95 transition-all group/heart shadow-sm"
+              className="h-8 rounded-lg border-muted text-primary hover:bg-muted active:scale-95 transition-all group/heart shadow-sm"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onLike(); }}
             >
               <Heart size={14} className="group-hover/heart:fill-current" />
