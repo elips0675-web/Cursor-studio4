@@ -289,9 +289,114 @@ export default function ProfilePage() {
             </div>
             <ChevronRight className="text-muted-foreground/40" size={18} />
           </div>
+          
+          <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
+            {earnedTitles.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Мое звание</h4></div>
+                <div className="flex flex-wrap gap-2">
+                  {earnedTitles.map((title) => (
+                    <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-all hover:scale-105", title.color)}>
+                      <Star size={14} fill="currentColor" className="opacity-70" /> {title.displayName}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
-          {/* Gamification Tasks Accordion - Retention Feature */}
-          <div className="mb-6">
+            <div className="h-px bg-border/50"></div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-3"><Info size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4></div>
+              <p className="text-[14px] text-foreground/80 leading-relaxed font-medium">{profile.bio}</p>
+            </div>
+            
+            <div className="h-px bg-border/50"></div>
+            
+            <div>
+              <div className="flex items-center gap-2 mb-4"><User size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.lifestyle')}</h4></div>
+              <div className="grid grid-cols-2 gap-x-3 gap-y-4">
+                <LifestyleItem label={t('profile.label.gender')} value={profile.gender === 'male' ? 'Мужчина' : 'Женщина'} icon={User} />
+                <LifestyleItem label={t('profile.label.looking_for')} value={profile.lookingFor === 'male' ? 'Мужчину' : profile.lookingFor === 'female' ? 'Женщину' : 'Всех'} icon={Target} />
+                <LifestyleItem label={t('profile.label.zodiac')} value={profile.zodiac} icon={profile.zodiac} />
+                {profile.height && <LifestyleItem label={t('profile.label.height')} value={`${profile.height} см`} icon={Ruler} />}
+                <LifestyleItem label={t('profile.label.goal')} value={profile.datingGoal} icon={Heart} className="col-span-2" />
+              </div>
+            </div>
+            
+            <div className="h-px bg-border/50"></div>
+            
+            <div>
+              <div className="flex items-center gap-2 mb-4"><Star size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.interests')}</h4></div>
+              <div className="flex flex-wrap gap-2">{profile.interests.map((interest: string) => { const Icon = interestIconsMap[interest] || Heart; return <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70"><Icon size={14} className="text-primary" /> {interest}</Badge>; })}</div>
+            </div>
+
+            <div className="h-px bg-border/50"></div>
+
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Users size={16} className="text-primary" />
+                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.groups')}</h4>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {profile.joinedGroups && (profile.joinedGroups as string[]).map((groupName: string) => {
+                  const groupInfo = groupDataMap.get(groupName);
+                  if (!groupInfo) return null;
+
+                  const displayName = language === 'RU' ? groupInfo.ru : groupInfo.en;
+                  const linkHref = groupInfo.id ? `/chats?groupId=${groupInfo.id}` : '#';
+                  
+                  return (
+                    <Link href={linkHref} key={groupName}>
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:scale-105 shadow-sm cursor-pointer">
+                        <Users size={14} /> {displayName}
+                      </Badge>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-6 text-left">
+            <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2"><Camera size={18} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4></div><input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              {photos.map((url, idx) => (
+                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-muted group shadow-sm border border-border/10">
+                  <Image src={url} alt={`Photo ${idx}`} fill sizes="(max-width: 480px) 50vw, 240px" className="object-cover" />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button
+                          variant="outline"
+                          size="icon"
+                          aria-label="Expand photo"
+                          onClick={() => openPhotoViewer(idx)}
+                          className="h-12 w-12 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border-white/30 transition-transform active:scale-90"
+                      >
+                          <Maximize2 size={24} />
+                      </Button>
+                      <Button
+                          variant="destructive"
+                          size="icon"
+                          aria-label="Delete photo"
+                          onClick={(e) => { e.stopPropagation(); requestDeletePhoto(idx); }}
+                          className="absolute top-2 right-2 h-9 w-9 rounded-full bg-destructive/80 text-destructive-foreground hover:bg-destructive backdrop-blur-sm border-white/20 shadow-lg"
+                      >
+                          <Trash2 size={16} />
+                      </Button>
+                  </div>
+                </div>
+              ))}
+              {photos.length < 10 && (
+                <div onClick={handleTriggerFileInput} className="relative aspect-square rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-primary cursor-pointer transition-colors group">
+                  <div className="p-4 bg-muted/60 rounded-full group-hover:bg-primary/10 transition-colors"><Upload size={24} /></div>
+                  <span className="mt-3 text-[9px] font-black uppercase tracking-widest">{t('profile.add')}</span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Gamification Tasks Accordion - Moved under Gallery */}
+          <div className="mb-12">
             <Accordion type="single" collapsible className="w-full">
               <AccordionItem value="tasks" className="border-0">
                 <AccordionTrigger className="bg-slate-900 text-white rounded-[1.5rem] px-6 py-4 hover:no-underline hover:bg-slate-800 transition-all shadow-lg shadow-slate-900/20 [&[data-state=open]]:rounded-b-none">
@@ -372,111 +477,6 @@ export default function ProfilePage() {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
-          </div>
-          
-          <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
-            {earnedTitles.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-4"><Trophy size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Мое звание</h4></div>
-                <div className="flex flex-wrap gap-2">
-                  {earnedTitles.map((title) => (
-                    <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-all hover:scale-105", title.color)}>
-                      <Star size={14} fill="currentColor" className="opacity-70" /> {title.displayName}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="h-px bg-border/50"></div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-3"><Info size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4></div>
-              <p className="text-[14px] text-foreground/80 leading-relaxed font-medium">{profile.bio}</p>
-            </div>
-            
-            <div className="h-px bg-border/50"></div>
-            
-            <div>
-              <div className="flex items-center gap-2 mb-4"><User size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.lifestyle')}</h4></div>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-4">
-                <LifestyleItem label={t('profile.label.gender')} value={profile.gender === 'male' ? 'Мужчина' : 'Женщина'} icon={User} />
-                <LifestyleItem label={t('profile.label.looking_for')} value={profile.lookingFor === 'male' ? 'Мужчину' : profile.lookingFor === 'female' ? 'Женщину' : 'Всех'} icon={Target} />
-                <LifestyleItem label={t('profile.label.zodiac')} value={profile.zodiac} icon={profile.zodiac} />
-                {profile.height && <LifestyleItem label={t('profile.label.height')} value={`${profile.height} см`} icon={Ruler} />}
-                <LifestyleItem label={t('profile.label.goal')} value={profile.datingGoal} icon={Heart} className="col-span-2" />
-              </div>
-            </div>
-            
-            <div className="h-px bg-border/50"></div>
-            
-            <div>
-              <div className="flex items-center gap-2 mb-4"><Star size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.interests')}</h4></div>
-              <div className="flex flex-wrap gap-2">{profile.interests.map((interest: string) => { const Icon = interestIconsMap[interest] || Heart; return <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70"><Icon size={14} className="text-primary" /> {interest}</Badge>; })}</div>
-            </div>
-
-            <div className="h-px bg-border/50"></div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Users size={16} className="text-primary" />
-                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.groups')}</h4>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {profile.joinedGroups && (profile.joinedGroups as string[]).map((groupName: string) => {
-                  const groupInfo = groupDataMap.get(groupName);
-                  if (!groupInfo) return null;
-
-                  const displayName = language === 'RU' ? groupInfo.ru : groupInfo.en;
-                  const linkHref = groupInfo.id ? `/chats?groupId=${groupInfo.id}` : '#';
-                  
-                  return (
-                    <Link href={linkHref} key={groupName}>
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:scale-105 shadow-sm cursor-pointer">
-                        <Users size={14} /> {displayName}
-                      </Badge>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-[1.5rem] p-6 app-shadow border border-border/40 mb-12 text-left">
-            <div className="flex justify-between items-center mb-6"><div className="flex items-center gap-2"><Camera size={18} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4></div><input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" /></div>
-            <div className="grid grid-cols-2 gap-3">
-              {photos.map((url, idx) => (
-                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-muted group shadow-sm border border-border/10">
-                  <Image src={url} alt={`Photo ${idx}`} fill sizes="(max-width: 480px) 50vw, 240px" className="object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button
-                          variant="outline"
-                          size="icon"
-                          aria-label="Expand photo"
-                          onClick={() => openPhotoViewer(idx)}
-                          className="h-12 w-12 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm border-white/30 transition-transform active:scale-90"
-                      >
-                          <Maximize2 size={24} />
-                      </Button>
-                      <Button
-                          variant="destructive"
-                          size="icon"
-                          aria-label="Delete photo"
-                          onClick={(e) => { e.stopPropagation(); requestDeletePhoto(idx); }}
-                          className="absolute top-2 right-2 h-9 w-9 rounded-full bg-destructive/80 text-destructive-foreground hover:bg-destructive backdrop-blur-sm border-white/20 shadow-lg"
-                      >
-                          <Trash2 size={16} />
-                      </Button>
-                  </div>
-                </div>
-              ))}
-              {photos.length < 10 && (
-                <div onClick={handleTriggerFileInput} className="relative aspect-square rounded-2xl border-2 border-dashed border-muted flex flex-col items-center justify-center text-muted-foreground hover:bg-muted/50 hover:border-primary/50 hover:text-primary cursor-pointer transition-colors group">
-                  <div className="p-4 bg-muted/60 rounded-full group-hover:bg-primary/10 transition-colors"><Upload size={24} /></div>
-                  <span className="mt-3 text-[9px] font-black uppercase tracking-widest">{t('profile.add')}</span>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </main>
