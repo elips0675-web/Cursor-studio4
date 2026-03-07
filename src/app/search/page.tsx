@@ -27,6 +27,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 const MotionDiv = dynamic(() => import('framer-motion').then(mod => mod.motion.div), { ssr: false });
@@ -125,6 +126,17 @@ function SearchContent() {
     } else handleNext();
   };
 
+  const handleReportSubmit = () => {
+    if (!reportReason) {
+      toast({ variant: 'destructive', title: t('report.toast.no_reason_title'), description: t('report.toast.no_reason_desc') });
+      return;
+    }
+    toast({ title: t('report.toast.success_title'), description: `${t('report.toast.success_desc')} ${user?.name || ''}.` });
+    setIsReportDialogOpen(false);
+    setReportReason('');
+    setReportDescription('');
+  };
+
   if (isLoading) return <div className="flex-1 flex items-center justify-center"><Skeleton className="w-[90%] h-[70vh] rounded-[2.5rem]" /></div>;
 
   if (!user) return (
@@ -144,7 +156,7 @@ function SearchContent() {
             <Badge variant="secondary" className="text-[8px] font-bold text-primary bg-primary/5">{pageTitle}</Badge>
         </div>
         
-        <div className="relative w-full flex-1 mb-6 max-w-[420px] flex items-center justify-center">
+        <div className="relative w-full flex-1 mb-10 max-w-[420px] flex items-center justify-center">
           <Button variant="ghost" size="icon" onClick={handlePrev} disabled={currentIndex === 0} className="absolute -left-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg"><ChevronLeft size={24} /></Button>
           <Button variant="ghost" size="icon" onClick={handleNext} className="absolute -right-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg"><ChevronRight size={24} /></Button>
 
@@ -156,7 +168,7 @@ function SearchContent() {
               initial="enter"
               animate="center"
               exit="exit"
-              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow border-4 border-white cursor-pointer"
+              className="absolute w-full h-full bg-white rounded-[2.5rem] overflow-hidden app-shadow border-4 border-white cursor-pointer group"
               onClick={() => router.push(`/user?id=${user.id}`)}
             >
               <Image 
@@ -166,33 +178,152 @@ function SearchContent() {
                 sizes="(max-width: 480px) 100vw, 420px" 
                 priority
                 loading="eager"
-                className="object-cover" 
+                className="object-cover transition-transform duration-700 group-hover:scale-105" 
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
               <div className="absolute bottom-6 left-6 right-6 text-white text-left">
                 <h3 className="text-3xl font-black font-headline mb-1">{user.name}, {user.age}</h3>
                 <p className="text-white/90 text-xs flex items-center gap-1 font-bold mb-3"><MapPin size={14} /> {user.distance} км</p>
-                <div className="flex flex-wrap gap-1.5"><span className="px-2 py-0.5 bg-white/20 text-white text-[8px] rounded-full font-black uppercase tracking-widest">{user.interests[0]}</span></div>
+                <div className="flex flex-wrap gap-1.5">
+                  {user.interests.slice(0, 3).map((interest: string) => (
+                    <span key={interest} className="px-2.5 py-1 bg-white/20 backdrop-blur-md text-white text-[9px] rounded-full font-black uppercase tracking-widest border border-white/10">
+                      {interest}
+                    </span>
+                  ))}
+                </div>
               </div>
             </MotionDiv>
           </Suspense>
         </div>
 
-        <div className="flex justify-center items-center gap-3 w-full">
-          <Button variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-lg border-muted" onClick={handleNext}><X size={24} /></Button>
-          <Button size="icon" className="w-18 h-18 rounded-full gradient-bg text-white shadow-xl" onClick={handleLike}><Heart size={32} fill="currentColor" /></Button>
-          <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-lg border-muted">
+        <div className="flex justify-center items-center gap-4 w-full max-w-[400px]">
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" 
+            onClick={handleNext}
+          >
+            <X size={28} strokeWidth={3} />
+          </Button>
+          
+          <Button 
+            size="icon" 
+            className="w-20 h-20 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" 
+            onClick={handleLike}
+          >
+            <Heart size={36} fill="currentColor" />
+          </Button>
+
+          <Button 
+            asChild 
+            variant="outline" 
+            size="icon" 
+            className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-blue-500 hover:text-blue-600 active:scale-90 transition-all"
+          >
             <Link href={`/user?id=${user.id}`}>
-              <User size={24} />
+              <User size={28} strokeWidth={3} />
             </Link>
           </Button>
-          <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-lg border-muted">
+
+          <Button 
+            asChild 
+            variant="outline" 
+            size="icon" 
+            className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-[#2ecc71] hover:text-[#27ae60] active:scale-90 transition-all"
+          >
             <Link href={`/chats?matchId=${user.id}`}>
-              <MessageCircle size={24} />
+              <MessageCircle size={28} strokeWidth={3} />
             </Link>
           </Button>
         </div>
       </main>
+      
+      <Dialog open={!!matchUser} onOpenChange={(open) => !open && setMatchUser(null)}>
+        <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 overflow-hidden bg-white app-shadow">
+          <div className="relative">
+            <HeartConfetti />
+            <div className="relative h-56 flex items-center justify-center p-6 gradient-bg">
+                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                <div className="flex items-center justify-center gap-0 relative">
+                    <MotionDiv initial={{ x: -60, opacity: 0, rotate: -15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: -8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.2 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-10 -mr-8 bg-muted">
+                        <Image src={ALL_DEMO_USERS[1].img} alt="Вы" fill sizes="144px" className="object-cover" />
+                    </MotionDiv>
+                    <MotionDiv initial={{ x: 60, opacity: 0, rotate: 15, scale: 0.8 }} animate={{ x: 0, opacity: 1, rotate: 8, scale: 1 }} transition={{ type: "spring", damping: 12, delay: 0.3 }} className="w-36 h-36 rounded-3xl border-4 border-white shadow-2xl overflow-hidden relative z-0 bg-muted">
+                        <Image src={matchUser?.img || ALL_DEMO_USERS[0].img} alt={matchUser?.name || "Matched user photo"} fill sizes="144px" className="object-cover" />
+                    </MotionDiv>
+                </div>
+            </div>
+
+            <div className="px-8 pt-8 pb-8 text-center">
+              <DialogTitle className="text-3xl font-black font-headline mb-3 gradient-text uppercase tracking-tight">{t('match.title')}</DialogTitle>
+              <DialogDescription className="text-muted-foreground text-sm mb-8 px-6 leading-relaxed font-medium">
+                {language === 'RU' ? 'Вы с ' : 'You and '} <span className="font-bold text-foreground">{matchUser?.name}</span> {language === 'RU' ? 'понравились друг другу.' : 'liked each other.'}
+              </DialogDescription>
+              
+              <MotionDiv initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="relative p-6 rounded-[2.5rem] mb-8 text-left border border-orange-500/20 bg-gradient-to-br from-white via-orange-500/[0.02] to-orange-500/[0.05] shadow-xl shadow-orange-500/5 overflow-hidden group">
+                  <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+                  <div className="flex items-center justify-between mb-4 relative z-10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 border border-orange-500/20">
+                        <Cpu size={14} className="animate-pulse" />
+                      </div>
+                      <h4 className="text-[11px] font-black text-orange-500 uppercase tracking-[0.2em]">{t('match.insight')}</h4>
+                    </div>
+                    <Sparkles size={20} className="text-orange-400 opacity-60" />
+                  </div>
+                  {loadingAi ? (
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground py-2 relative z-10">
+                      <div className="w-4 h-4 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+                      <span className="animate-pulse font-bold uppercase tracking-widest text-[10px]">{t('home.searching')}</span>
+                    </div>
+                  ) : (
+                    <div className="relative z-10">
+                      <p className="text-[13px] leading-relaxed text-foreground/90 font-semibold italic border-l-4 border-orange-500/30 pl-4 py-1">"{compatibility}"</p>
+                    </div>
+                  )}
+              </MotionDiv>
+
+              <div className="flex flex-col gap-4 w-full">
+                <Button onClick={() => matchUser?.id && router.push(`/chats?matchId=${matchUser.id}`)} className="w-full h-16 rounded-full gradient-bg text-white font-black app-shadow hover:scale-[1.02] active:scale-95 transition-all border-0 uppercase tracking-[0.2em] text-[11px] shadow-primary/30">
+                  {t('button.write_first')}
+                </Button>
+                <Button variant="ghost" onClick={() => setMatchUser(null)} className="w-full rounded-full h-12 text-muted-foreground font-black hover:bg-muted transition-all uppercase tracking-[0.1em] text-[10px]">
+                  {t('button.continue')}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isReportDialogOpen} onOpenChange={setIsReportDialogOpen}>
+        <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow">
+          <DialogHeader className="p-6 pb-4 text-left">
+              <DialogTitle className="flex items-center gap-2 font-black tracking-tight">
+                  <Flag size={20} className="text-destructive" />
+                  {t('report.title')}
+              </DialogTitle>
+              <DialogDescription className="pt-2">
+                  {t('report.description')}
+              </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 space-y-4">
+              <RadioGroup value={reportReason} onValueChange={setReportReason} className="space-y-2">
+                  {REPORT_REASONS.map(reasonKey => (
+                      <div key={reasonKey} className="flex items-center space-x-3 bg-muted/40 p-3 rounded-lg">
+                          <RadioGroupItem value={t(reasonKey)} id={reasonKey} />
+                          <Label htmlFor={reasonKey} className="font-bold text-sm cursor-pointer">{t(reasonKey)}</Label>
+                      </div>
+                  ))}
+              </RadioGroup>
+              <Textarea placeholder={t('report.details_placeholder')} value={reportDescription} onChange={(e) => setReportDescription(e.target.value)} className="min-h-[80px] rounded-xl bg-muted/40 border-0 focus-visible:ring-primary/20" />
+          </div>
+          <DialogFooter className="p-6 flex-row gap-2 justify-end bg-muted/20 rounded-b-3xl">
+              <Button variant="ghost" onClick={() => setIsReportDialogOpen(false)}>{t('report.button.cancel')}</Button>
+              <Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground" onClick={handleReportSubmit}>{t('report.button.send')}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       
       <BottomNav />
     </>
