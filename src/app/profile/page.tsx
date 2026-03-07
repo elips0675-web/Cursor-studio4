@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
@@ -44,12 +43,14 @@ const DialogDescription = dynamic(() => import("@/components/ui/dialog").then(mo
 const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogHeader));
 const DialogFooter = dynamic(() => import("@/components/ui/dialog").then(mod => mod.DialogFooter));
 
+// Canonical group names (using Russian names as identifiers)
+const defaultJoinedGroups = ["Хип-хоп", "Бег", "UI/UX Дизайн"];
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
-  const defaultProfile = {
+  const defaultProfile = useMemo(() => ({
     name: "Анна",
     age: 24,
     city: t('profile.city'),
@@ -69,10 +70,8 @@ export default function ProfilePage() {
     interests: language === 'RU' 
       ? ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт", "Искусство"]
       : ["Photography", "Travel", "Coffee", "Music", "Sports", "Art"],
-    joinedGroups: language === 'RU' 
-      ? ["Хип-хоп", "Бег", "UI/UX Дизайн"] 
-      : ["Hip-hop", "Running", "UI/UX Design"],
-  };
+    joinedGroups: defaultJoinedGroups,
+  }), [language, t]);
 
   const [profile, setProfile] = useState(defaultProfile as any);
   const [photos, setPhotos] = useState([
@@ -88,14 +87,17 @@ export default function ProfilePage() {
 
   const stats = { likes: 124, matches: 15 };
   const earnedTitles = useMemo(() => getUserTitles(profile, language), [profile, language]);
-  const groupNameToIdMap = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const category of GROUP_CATEGORIES) {
-      for (const subgroup of category.subgroups) {
-        map.set(subgroup.name_ru, subgroup.id);
-        map.set(subgroup.name_en, subgroup.id);
-      }
-    }
+  
+  // Memoized map for resolving group names and IDs
+  const groupDataMap = useMemo(() => {
+    const map = new Map<string, { ru: string; en: string; id: number }>();
+    GROUP_CATEGORIES.forEach(category => {
+      category.subgroups.forEach(subgroup => {
+        // Use both ru and en names as keys to handle any legacy data
+        map.set(subgroup.name_ru, { ru: subgroup.name_ru, en: subgroup.name_en, id: subgroup.id });
+        map.set(subgroup.name_en, { ru: subgroup.name_ru, en: subgroup.name_en, id: subgroup.id });
+      });
+    });
     return map;
   }, []);
 
@@ -104,13 +106,28 @@ export default function ProfilePage() {
       const savedProfileData = localStorage.getItem('userProfile');
       if (savedProfileData) {
         const loadedProfile = JSON.parse(savedProfileData);
+        // If joinedGroups is not in localStorage, initialize it with the static default and persist it.
+        if (loadedProfile.joinedGroups === undefined) {
+             loadedProfile.joinedGroups = defaultJoinedGroups;
+             localStorage.setItem('userProfile', JSON.stringify(loadedProfile));
+        }
         setProfile({ ...defaultProfile, ...loadedProfile });
-      } else setProfile(defaultProfile);
+      } else {
+        // If no profile exists, create the default one in localStorage
+        localStorage.setItem('userProfile', JSON.stringify(defaultProfile));
+        setProfile(defaultProfile);
+      }
       
       const savedPhotos = localStorage.getItem('userProfileGallery');
       if (savedPhotos) setPhotos(JSON.parse(savedPhotos));
-    } catch (error) { setProfile(defaultProfile); }
-  }, [language, t]);
+
+    } catch (error) { 
+      // On error, reset to a known good state.
+      localStorage.setItem('userProfile', JSON.stringify(defaultProfile));
+      setProfile(defaultProfile);
+    }
+  }, [defaultProfile]); // Depend on defaultProfile to update on language change, but localStorage logic is now robust.
+
 
   const handleTriggerFileInput = () => fileInputRef.current?.click();
 
@@ -281,13 +298,16 @@ export default function ProfilePage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 {profile.joinedGroups && (profile.joinedGroups as string[]).map((groupName: string) => {
-                  const groupId = groupNameToIdMap.get(groupName);
-                  const linkHref = groupId ? `/chats?groupId=${groupId}` : '#';
+                  const groupInfo = groupDataMap.get(groupName);
+                  if (!groupInfo) return null;
+
+                  const displayName = language === 'RU' ? groupInfo.ru : groupInfo.en;
+                  const linkHref = groupInfo.id ? `/chats?groupId=${groupInfo.id}` : '#';
                   
                   return (
                     <Link href={linkHref} key={groupName}>
                       <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:scale-105 shadow-sm cursor-pointer">
-                        <Users size={14} /> {groupName}
+                        <Users size={14} /> {displayName}
                       </Badge>
                     </Link>
                   );
@@ -408,5 +428,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    
