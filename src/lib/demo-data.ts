@@ -1,6 +1,27 @@
 import { PlaceHolderImages } from "./placeholder-images";
 
+export const SUPPORT_USER = {
+  id: 0,
+  name: 'Техподдержка',
+  name_en: 'Tech Support',
+  img: 'https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?q=80&w=128&h=128&auto=format&fit=crop',
+  hint: 'support agent',
+  online: true,
+  distance: 0,
+  match: 100,
+  city: 'SwiftMatch HQ',
+  zodiac: 'Shield',
+  interests: ['Помощь', 'Безопасность', 'Обновления'],
+  bio: 'Официальный аккаунт поддержки SwiftMatch. Мы здесь, чтобы помочь вам 24/7.',
+  height: 0,
+  goal: 'Помощь пользователям',
+  gender: 'system',
+  lookingFor: 'all',
+  isSystem: true
+};
+
 export const ALL_DEMO_USERS = [
+  SUPPORT_USER,
   { id: 1, name: 'Анна', age: 24, img: PlaceHolderImages[0].imageUrl, hint: PlaceHolderImages[0].imageHint, online: true, distance: 2, match: 87, city: 'Москва', zodiac: 'Лев', interests: ['Фотография', 'Путешествия', 'Кофе', 'Музыка', 'Спорт'], bio: 'Люблю закаты, хороший кофе и интересные разговоры.', height: 172, goal: 'Серьезные отношения', gender: 'female', lookingFor: 'male' },
   
   // 5 Men for Anna

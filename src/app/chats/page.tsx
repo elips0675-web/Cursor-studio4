@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { 
-  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, LogOut
+  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, LogOut, ShieldCheck
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ import { toast } from "@/hooks/use-toast";
 import { VideoCallDialog } from "@/components/video-call";
 import { VoiceCallDialog } from "@/components/voice-call";
 import { useFeatureFlags } from "@/context/feature-flags-context";
-import { ALL_DEMO_USERS, GROUP_CATEGORIES } from "@/lib/demo-data";
+import { ALL_DEMO_USERS, GROUP_CATEGORIES, SUPPORT_USER } from "@/lib/demo-data";
 import { containsForbiddenWords } from "@/lib/word-filter";
 
 const CHAT_THEMES = [
@@ -92,7 +92,12 @@ function ChatsContent() {
   const COOLDOWN_SECONDS = 5;
 
   const allChats = useMemo(() => {
-    const userChats = ALL_DEMO_USERS.map(u => ({ ...u, type: 'user' as const, lastMessage: language === 'RU' ? 'Привет!' : 'Hi!', time: u.id % 2 === 0 ? "10:30" : (language === 'RU' ? 'Вчера' : 'Yesterday') }));
+    const userChats = ALL_DEMO_USERS.map(u => ({ 
+      ...u, 
+      type: 'user' as const, 
+      lastMessage: u.id === 0 ? (language === 'RU' ? 'Добро пожаловать в SwiftMatch!' : 'Welcome to SwiftMatch!') : (language === 'RU' ? 'Привет!' : 'Hi!'), 
+      time: u.id % 2 === 0 ? "10:30" : (language === 'RU' ? 'Вчера' : 'Yesterday') 
+    }));
 
     const groupChats = GROUP_CATEGORIES.flatMap(category => 
       category.subgroups.map(subgroup => ({
@@ -106,14 +111,22 @@ function ChatsContent() {
         time: `${subgroup.members} ${t('chats.members')}`
       }))
     );
-    return [...userChats, ...groupChats];
+    
+    // Sort to put Support Chat first
+    return [...userChats, ...groupChats].sort((a, b) => {
+      if (a.id === 0) return -1;
+      if (b.id === 0) return 1;
+      return 0;
+    });
   }, [language, t]);
 
   const filteredChats = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
-    if (!query) return allChats.filter(chat => chat.type === 'user');
+    if (!query) return allChats.filter(chat => chat.type === 'user' || chat.id === 0);
     return allChats.filter(chat => 
-      chat.name.toLowerCase().includes(query)
+      (chat.name && chat.name.toLowerCase().includes(query)) || 
+      (chat.name_ru && chat.name_ru.toLowerCase().includes(query)) ||
+      (chat.name_en && chat.name_en.toLowerCase().includes(query))
     );
   }, [searchQuery, allChats]);
 
@@ -127,7 +140,7 @@ function ChatsContent() {
   useEffect(() => { if (selectedChat) scrollToBottom(); }, [messages, selectedChat]);
 
   const loadIcebreakers = async (chat: any, mood?: string) => {
-    if (!aiIcebreakersEnabled) return;
+    if (!aiIcebreakersEnabled || chat.id === 0) return;
     setLoadingIcebreakers(true);
     try {
       const res = await generateIcebreakerSuggestions({ currentUserInterests: ["Спорт", "Кофе", "Кино"], matchedUserName: chat.name, matchedUserInterests: chat.interests || [], matchedUserBio: chat.bio || "", mood: mood || "Friendly and polite" });
@@ -208,8 +221,18 @@ function ChatsContent() {
             }, 1500);
         }, 500);
     } else {
-        // Simulate a 1-on-1 reply
-        setTimeout(() => { setIsTyping(true); setTimeout(() => { setIsTyping(false); const response = { id: Date.now() + 1, text: language === 'RU' ? "Звучит здорово! Давай это обсудим." : "Sounds great! Let's discuss it.", sender: "other", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }; setMessages(prev => [...prev, response]); }, 2000); }, 1000);
+        // Support or user reply
+        setTimeout(() => { 
+          setIsTyping(true); 
+          setTimeout(() => { 
+            setIsTyping(false); 
+            const text = selectedChat.id === 0 
+              ? (language === 'RU' ? "Спасибо за обращение! Наш специалист рассмотрит ваш вопрос." : "Thank you for contacting us! Our specialist will review your request.")
+              : (language === 'RU' ? "Звучит здорово! Давай это обсудим." : "Sounds great! Let's discuss it.");
+            const response = { id: Date.now() + 1, text, sender: "other", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }; 
+            setMessages(prev => [...prev, response]); 
+          }, 2000); 
+        }, 1000);
     }
   };
 
@@ -242,7 +265,11 @@ function ChatsContent() {
       setShowThemeGrid(false);
       setIcebreakers([]);
     } else {
-      setMessages(INITIAL_MESSAGES);
+      if (chat.id === 0) {
+        setMessages([{ id: 1, text: language === 'RU' ? "Здравствуйте! Чем мы можем вам помочь?" : "Hello! How can we help you?", sender: "other", time: "10:00" }]);
+      } else {
+        setMessages(INITIAL_MESSAGES);
+      }
       setShowThemeGrid(false);
       setIcebreakers([]);
       loadIcebreakers(chat); 
@@ -259,15 +286,32 @@ function ChatsContent() {
 
   if (selectedChat) {
     const isGroupChat = selectedChat.type === 'group';
+    const isSupport = selectedChat.id === 0;
+
     return (
       <div className="flex flex-col h-svh bg-[#f8f9fb]">
         <header className="flex items-center gap-2 px-3 py-2 border-b border-border sticky top-0 bg-white/90 backdrop-blur-lg z-50">
           <Button variant="ghost" size="icon" onClick={handleBack} className="rounded-full hover:bg-muted/50"><ChevronLeft size={24} /></Button>
-          <div className="relative"><div className="w-10 h-10 rounded-full overflow-hidden relative border-2 border-white shadow-sm"><Image src={selectedChat.img} alt={selectedChat.name} fill sizes="40px" className="object-cover" /></div>{selectedChat.online && !isGroupChat && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-sm"></span>}</div>
-          <div className="flex-1 min-w-0"><h3 className="font-black text-sm leading-tight tracking-tight text-foreground">{selectedChat.name}</h3><p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">{isGroupChat ? `${selectedChat.members} ${t('chats.members')}, ${selectedChat.online} ${t('chats.online')}` : (selectedChat.online ? `• ${t('chats.online')}` : t('chats.offline'))}</p></div>
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full overflow-hidden relative border-2 border-white shadow-sm">
+              <Image src={selectedChat.img} alt={selectedChat.name || ''} fill sizes="40px" className="object-cover" />
+            </div>
+            {selectedChat.online && !isGroupChat && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-sm"></span>}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-black text-sm leading-tight tracking-tight text-foreground truncate">
+                {language === 'RU' ? (selectedChat.name_ru || selectedChat.name) : (selectedChat.name_en || selectedChat.name)}
+              </h3>
+              {isSupport && <ShieldCheck size={14} className="text-primary" />}
+            </div>
+            <p className="text-[9px] text-muted-foreground font-bold uppercase tracking-widest mt-0.5">
+              {isGroupChat ? `${selectedChat.members} ${t('chats.members')}, ${selectedChat.online} ${t('chats.online')}` : (selectedChat.online ? `• ${t('chats.online')}` : t('chats.offline'))}
+            </p>
+          </div>
           <div className="flex items-center">
-            {!isGroupChat && videoCallsEnabled && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVideoCall(true)}><Video size={18} /></Button>}
-            {!isGroupChat && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVoiceCall(true)}><Phone size={18} /></Button>}
+            {!isGroupChat && !isSupport && videoCallsEnabled && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVideoCall(true)}><Video size={18} /></Button>}
+            {!isGroupChat && !isSupport && <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50" onClick={() => setIsVoiceCall(true)}><Phone size={18} /></Button>}
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:bg-muted/50"><MoreVertical size={18} /></Button>
@@ -290,11 +334,11 @@ function ChatsContent() {
         </header>
         <main className="flex-1 overflow-y-auto p-4 space-y-2"><div className="text-center my-2"><Badge variant="secondary" className="bg-white/50 text-[9px] text-muted-foreground border-0 font-black uppercase tracking-widest px-2.5 py-0.5">{t('chats.today')}</Badge></div><AnimatePresence>{messages.map((msg: any) => (<motion.div initial={{ opacity: 0, y: 10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} key={msg.id} className={cn("flex flex-col max-w-[80%]", msg.sender === "me" ? "ml-auto items-end" : "items-start")}><div className={cn("px-3 py-2 rounded-lg text-sm shadow-sm font-medium leading-snug", msg.sender === "me" ? "gradient-bg text-white rounded-br-none shadow-primary/10" : "bg-white text-foreground rounded-bl-none border border-border/40")}>{isGroupChat && msg.sender === 'other' && msg.senderName && (<p className="text-xs font-black text-primary/80 mb-1">{msg.senderName}</p>)}{msg.text}</div><span className="text-[9px] text-muted-foreground mt-1.5 px-1 font-bold uppercase tracking-tighter opacity-60">{msg.time}</span></motion.div>))}</AnimatePresence>{isTyping && (<motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="flex items-center gap-1.5 text-muted-foreground"><div className="flex gap-1 bg-white px-3 py-2.5 rounded-lg border border-border/40 shadow-sm rounded-bl-none"><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce"></span><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]"></span><span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]"></span></div><span className="text-[9px] font-bold uppercase tracking-widest">{t('chats.typing')}</span></motion.div>)}<div ref={messagesEndRef} /></main>
         <div className="p-4 bg-white border-t border-border shadow-[0_-10px_40px_-20px_rgba(0,0,0,0.1)] relative z-10">
-          {!isGroupChat && aiIcebreakersEnabled && (<><div className="flex items-center justify-between mb-3 px-1"><button onClick={() => setShowThemeGrid(!showThemeGrid)} className={cn("flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all", showThemeGrid ? "gradient-bg text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary border border-primary/10")}> <Sparkles size={14} className={cn(loadingIcebreakers && "animate-spin")} /> {showThemeGrid ? t('chats.close_themes') : t('chats.ai_themes')} </button>{!showThemeGrid && icebreakers.length > 0 && !loadingIcebreakers && (<p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-40 italic">{language === 'RU' ? 'Листайте →' : 'Swipe →'}</p>)}</div><AnimatePresence>{showThemeGrid && (<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="grid grid-cols-3 gap-2.5 mb-5 overflow-hidden">{CHAT_THEMES.map((theme) => { const Icon = theme.icon; return (<button key={theme.id} onClick={() => loadIcebreakers(selectedChat, theme.mood)} className="flex flex-col items-center justify-center p-3.5 rounded-[1.5rem] bg-muted/40 border border-border/50 transition-all group active:scale-95"><Icon size={22} className={cn("mb-1.5 group-hover:scale-110", theme.color)} /><span className="text-[9px] font-black uppercase tracking-tighter text-foreground/70">{language === 'RU' ? theme.label_ru : theme.label_en}</span></button>) })}</motion.div>)}</AnimatePresence>{!showThemeGrid && (<div className="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 h-10 items-center px-1">{loadingIcebreakers ? (<div className="flex gap-2"><div className="h-8 w-32 bg-muted animate-pulse rounded-full"></div><div className="h-8 w-28 bg-muted animate-pulse rounded-full"></div></div>) : (icebreakers.map((text, i) => (<button key={i} onClick={() => setInputValue(text)} className="whitespace-nowrap px-4 py-2 bg-white hover:bg-muted transition-all text-[11px] font-bold rounded-full text-foreground/80 border border-border/60 shadow-sm active:scale-95">{text}</button>)))}</div>)}</>)}
+          {!isGroupChat && !isSupport && aiIcebreakersEnabled && (<><div className="flex items-center justify-between mb-3 px-1"><button onClick={() => setShowThemeGrid(!showThemeGrid)} className={cn("flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] transition-all", showThemeGrid ? "gradient-bg text-white shadow-lg shadow-primary/20" : "bg-primary/5 text-primary border border-primary/10")}> <Sparkles size={14} className={cn(loadingIcebreakers && "animate-spin")} /> {showThemeGrid ? t('chats.close_themes') : t('chats.ai_themes')} </button>{!showThemeGrid && icebreakers.length > 0 && !loadingIcebreakers && (<p className="text-[9px] text-muted-foreground font-black uppercase tracking-widest opacity-40 italic">{language === 'RU' ? 'Листайте →' : 'Swipe →'}</p>)}</div><AnimatePresence>{showThemeGrid && (<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="grid grid-cols-3 gap-2.5 mb-5 overflow-hidden">{CHAT_THEMES.map((theme) => { const Icon = theme.icon; return (<button key={theme.id} onClick={() => loadIcebreakers(selectedChat, theme.mood)} className="flex flex-col items-center justify-center p-3.5 rounded-[1.5rem] bg-muted/40 border border-border/50 transition-all group active:scale-95"><Icon size={22} className={cn("mb-1.5 group-hover:scale-110", theme.color)} /><span className="text-[9px] font-black uppercase tracking-tighter text-foreground/70">{language === 'RU' ? theme.label_ru : theme.label_en}</span></button>) })}</motion.div>)}</AnimatePresence>{!showThemeGrid && (<div className="flex gap-2.5 overflow-x-auto no-scrollbar mb-5 h-10 items-center px-1">{loadingIcebreakers ? (<div className="flex gap-2"><div className="h-8 w-32 bg-muted animate-pulse rounded-full"></div><div className="h-8 w-28 bg-muted animate-pulse rounded-full"></div></div>) : (icebreakers.map((text, i) => (<button key={i} onClick={() => setInputValue(text)} className="whitespace-nowrap px-4 py-2 bg-white hover:bg-muted transition-all text-[11px] font-bold rounded-full text-foreground/80 border border-border/60 shadow-sm active:scale-95">{text}</button>)))}</div>)}</>)}
           <div className="flex items-center gap-3"><div className="flex-1 relative group"><Input value={inputValue} onChange={(e) => setInputValue(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} placeholder={t('chats.placeholder')} className="pr-12 h-11 bg-muted/50 border-0 rounded-2xl font-medium px-6 text-sm" /><Popover><PopoverTrigger asChild><button className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground"><Smile size={20} /></button></PopoverTrigger><PopoverContent className="w-full max-w-[280px] p-2 rounded-2xl border-0 shadow-2xl bg-white" side="top" align="end"><div className="grid grid-cols-5 gap-1">{QUICK_REACTIONS.map(reaction => { const ReactionIcon = reaction.icon; return (<button key={reaction.id} onClick={() => handleSendMessage(reaction.label)} className="w-10 h-10 flex items-center justify-center hover:bg-muted rounded-xl transition-all active:scale-90"><ReactionIcon size={24} className={reaction.color} /></button>); })}</div></PopoverContent></Popover></div><Button size="icon" onClick={() => handleSendMessage()} disabled={!inputValue.trim()} className="h-11 w-11 rounded-2xl gradient-bg text-white shadow-xl shadow-primary/30 active:scale-95 transition-all"><Send size={18} className="ml-0.5" /></Button></div>
         </div>
-        {selectedChat && !isGroupChat && <VideoCallDialog open={isVideoCall} onOpenChange={setIsVideoCall} user={selectedChat} />}
-        {selectedChat && !isGroupChat && <VoiceCallDialog open={isVoiceCall} onOpenChange={setIsVoiceCall} user={selectedChat} />}
+        {selectedChat && !isGroupChat && !isSupport && <VideoCallDialog open={isVideoCall} onOpenChange={setIsVideoCall} user={selectedChat} />}
+        {selectedChat && !isGroupChat && !isSupport && <VoiceCallDialog open={isVoiceCall} onOpenChange={setIsVoiceCall} user={selectedChat} />}
       </div>
     );
   }
@@ -346,18 +390,33 @@ function ChatsContent() {
                 )
               }
               
-              const hasUnread = chat.id % 3 === 0;
+              const isSupport = chat.id === 0;
+              const hasUnread = chat.id % 3 === 0 || isSupport;
               return (
-                <div key={`user-${chat.id}`} onClick={() => openChat(chat)} className="flex items-center gap-3 p-3 bg-white rounded-2xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
+                <div key={`user-${chat.id}`} onClick={() => openChat(chat)} className={cn(
+                  "flex items-center gap-3 p-3 rounded-2xl transition-all cursor-pointer group border border-white",
+                  isSupport ? "bg-primary/5 app-shadow border-primary/10 mb-2" : "bg-white app-shadow hover:bg-muted/30"
+                )}>
                   <div className="relative flex-shrink-0">
-                    <div className="w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105">
-                      <Image src={chat.img} alt={chat.name} fill sizes="48px" className="object-cover" />
+                    <div className={cn(
+                      "w-12 h-12 rounded-xl overflow-hidden relative border-2 border-white shadow-sm transition-transform group-hover:scale-105",
+                      isSupport && "border-primary/20"
+                    )}>
+                      <Image src={chat.img} alt={chat.name || ''} fill sizes="48px" className="object-cover" />
                     </div>
-                    {chat.online && <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#2ecc71] border-2 border-white rounded-full shadow-md"></span>}
+                    {chat.online && <span className={cn(
+                      "absolute bottom-0 right-0 w-3 h-3 border-2 border-white rounded-full shadow-md",
+                      isSupport ? "bg-primary" : "bg-[#2ecc71]"
+                    )}></span>}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-0.5">
-                      <span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">{chat.name}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="font-black text-sm text-foreground tracking-tight group-hover:text-primary transition-colors">
+                          {language === 'RU' ? (chat.name_ru || chat.name) : (chat.name_en || chat.name)}
+                        </span>
+                        {isSupport && <ShieldCheck size={14} className="text-primary" />}
+                      </div>
                       <span className="text-[10px] text-muted-foreground font-bold opacity-60">{chat.time}</span>
                     </div>
                     <div className="flex justify-between items-center">
@@ -376,7 +435,7 @@ function ChatsContent() {
                       </div>
                       {hasUnread && (
                         <Badge className="h-5 min-w-[20px] px-1.5 gradient-bg text-white border-0 text-[9px] font-black flex items-center justify-center rounded-full scale-90 shadow-lg shadow-primary/20">
-                          2
+                          {isSupport ? '!' : '2'}
                         </Badge>
                       )}
                     </div>
