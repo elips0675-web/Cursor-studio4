@@ -80,6 +80,7 @@ function SearchContent() {
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem('userProfile');
@@ -95,10 +96,16 @@ function SearchContent() {
     if (mode === 'autosearch') {
         setPageTitle(t('button.autosearch'));
         const filters = JSON.parse(sessionStorage.getItem('autosearchFilters') || 'null');
-        initialUsers = filters ? performAutosearch(filters, ALL_DEMO_USERS, currentUser) : ALL_DEMO_USERS.slice(1, 11);
+        if (filters) {
+            setSelectedInterests(filters.selectedInterests || []);
+            initialUsers = performAutosearch(filters, ALL_DEMO_USERS, currentUser);
+        } else {
+            initialUsers = ALL_DEMO_USERS.slice(1, 11);
+        }
     } else {
         setPageTitle(t('home.nearby'));
         initialUsers = ALL_DEMO_USERS.filter(u => u.id !== currentUser.id && !u.isSystem).slice(0, 10);
+        setSelectedInterests([]);
     }
     setUserList(initialUsers);
     setCurrentIndex(0);
@@ -186,11 +193,20 @@ function SearchContent() {
                 <h3 className="text-3xl font-black font-headline mb-1">{user.name}, {user.age}</h3>
                 <p className="text-white/90 text-xs flex items-center gap-1 font-bold mb-3"><MapPin size={14} /> {user.distance} км</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {user.interests.slice(0, 3).map((interest: string) => (
-                    <span key={interest} className="px-2.5 py-1 bg-white/20 backdrop-blur-md text-white text-[9px] rounded-full font-black uppercase tracking-widest border border-white/10">
-                      {interest}
-                    </span>
-                  ))}
+                  {user.interests.slice(0, 3).map((interest: string) => {
+                    const isCommon = selectedInterests.includes(interest);
+                    return (
+                      <span key={interest} className={cn(
+                        "px-2.5 py-1 backdrop-blur-md text-[9px] rounded-full font-black uppercase tracking-widest border transition-all flex items-center gap-1",
+                        isCommon 
+                          ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110 z-10" 
+                          : "bg-white/20 text-white border-white/10"
+                      )}>
+                        {isCommon && <Sparkles size={8} className="fill-current" />}
+                        {interest}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             </MotionDiv>
