@@ -1,7 +1,8 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Cpu, Layers, Sparkles, Zap, ShieldCheck, Target, Users, ShieldAlert, MessageSquare, Settings2 } from "lucide-react";
+import { BookOpen, Cpu, Layers, Sparkles, Zap, ShieldCheck, Target, Users, ShieldAlert, MessageSquare, Settings2, Rocket, TestTube } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
@@ -99,6 +100,48 @@ export default function AdminDocsPage() {
                   </li>
                 ))}
               </ul>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* CI/CD & Testing */}
+        <motion.div variants={item}>
+          <Card className="border-0 shadow-sm h-full flex flex-col">
+            <CardHeader className="bg-purple-500/5 rounded-t-lg">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 mb-2">
+                <Rocket size={20} />
+              </div>
+              <CardTitle className="text-xl font-bold">{language === 'RU' ? 'CI/CD и Тесты' : 'CI/CD & Tests'}</CardTitle>
+              <CardDescription>{language === 'RU' ? 'Автоматизация и качество' : 'Automation and quality'}</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-4 flex-1">
+              <div className="flex items-start gap-3">
+                <div className="mt-1 p-1.5 rounded-lg bg-purple-100 text-purple-600">
+                  <TestTube size={14} />
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold">{language === 'RU' ? 'Unit и UI тесты' : 'Unit & UI Tests'}</h5>
+                  <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Jest + React Testing Library для проверки логики и интерфейса.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-1 p-1.5 rounded-lg bg-purple-100 text-purple-600">
+                  <ShieldCheck size={14} />
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold">{language === 'RU' ? 'GitHub Actions CI' : 'GitHub Actions CI'}</h5>
+                  <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Автоматическая проверка кода при каждом пуше в репозиторий.</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="mt-1 p-1.5 rounded-lg bg-purple-100 text-purple-600">
+                  <Zap size={14} />
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold">{language === 'RU' ? 'Firebase App Hosting' : 'Firebase App Hosting'}</h5>
+                  <p className="text-[10px] text-muted-foreground leading-tight mt-0.5">Автоматический деплой стабильных версий в облако Google.</p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
