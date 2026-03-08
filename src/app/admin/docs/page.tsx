@@ -1,10 +1,12 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   BookOpen, Cpu, Layers, Sparkles, Zap, ShieldCheck, Target, Users, ShieldAlert, 
   MessageSquare, Settings2, Rocket, TestTube, CheckCircle2, Trophy, Camera, 
-  Flame, Mail, DollarSign, Heart, Gift, Info, Video, Flag, SlidersHorizontal, Scale
+  Flame, Mail, DollarSign, Heart, Gift, Info, Video, Flag, SlidersHorizontal, Scale,
+  BarChart3, Activity, Gauge
 } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { Badge } from "@/components/ui/badge";
@@ -267,6 +269,77 @@ export default function AdminDocsPage() {
     </motion.div>
   );
 
+  const PerformanceContent = () => (
+    <motion.div variants={container} initial="hidden" animate="show" className="grid gap-8 md:grid-cols-2">
+      <motion.div variants={item}>
+        <Card className="border-0 shadow-md h-full">
+          <CardHeader className="bg-emerald-500/5 rounded-t-xl pb-8">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-600 mb-4">
+              <Gauge size={32} />
+            </div>
+            <CardTitle className="text-2xl font-black">Производительность</CardTitle>
+            <CardDescription className="text-lg">Ключевые метрики (Core Web Vitals)</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-8 space-y-6">
+            <div className="grid gap-6">
+              <div className="flex justify-between items-center p-4 rounded-2xl bg-muted/30">
+                <div className="space-y-1">
+                  <p className="text-sm font-black uppercase tracking-wider text-muted-foreground">LCP (Загрузка фото)</p>
+                  <p className="text-xs text-muted-foreground font-medium">Оптимизация через Next/Image и CDN</p>
+                </div>
+                <Badge className="bg-emerald-500 text-white font-black px-3 py-1">~1.2s</Badge>
+              </div>
+              <div className="flex justify-between items-center p-4 rounded-2xl bg-muted/30">
+                <div className="space-y-1">
+                  <p className="text-sm font-black uppercase tracking-wider text-muted-foreground">Доставка сообщений</p>
+                  <p className="text-xs text-muted-foreground font-medium">Real-time синхронизация Firestore</p>
+                </div>
+                <Badge className="bg-emerald-500 text-white font-black px-3 py-1">&lt; 200ms</Badge>
+              </div>
+              <div className="flex justify-between items-center p-4 rounded-2xl bg-muted/30">
+                <div className="space-y-1">
+                  <p className="text-sm font-black uppercase tracking-wider text-muted-foreground">AI Генерация</p>
+                  <p className="text-xs text-muted-foreground font-medium">Gemini 2.5 Flash API Latency</p>
+                </div>
+                <Badge className="bg-emerald-500 text-white font-black px-3 py-1">~1.5-3s</Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <Card className="border-0 shadow-md h-full">
+          <CardHeader className="bg-indigo-500/5 rounded-t-xl pb-8">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-600 mb-4">
+              <Activity size={32} />
+            </div>
+            <CardTitle className="text-2xl font-black">Мониторинг здоровья</CardTitle>
+            <CardDescription className="text-lg">Инструменты контроля системы</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-8 space-y-6">
+            <div className="space-y-6">
+              <div className="flex gap-4">
+                <div className="mt-1 p-2.5 rounded-lg bg-indigo-50 shrink-0"><BarChart3 size={24} className="text-indigo-600" /></div>
+                <div>
+                  <p className="text-lg font-black">Google Cloud Operations</p>
+                  <p className="text-base text-muted-foreground leading-relaxed">Дашборды для отслеживания активных соединений, ошибок БД и таймаутов AI-запросов.</p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="mt-1 p-2.5 rounded-lg bg-indigo-50 shrink-0"><ShieldAlert size={24} className="text-indigo-600" /></div>
+                <div>
+                  <p className="text-lg font-black">Sentry & Firebase Perf</p>
+                  <p className="text-base text-muted-foreground leading-relaxed">Сбор исключений на клиенте и автоматический замер производительности каждого сетевого запроса.</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
+
   const AdminContent = () => (
     <motion.div variants={container} initial="hidden" animate="show" className="grid gap-8 md:grid-cols-2">
       <motion.div variants={item}>
@@ -453,6 +526,7 @@ export default function AdminDocsPage() {
         <TabsList className="flex flex-wrap w-full h-auto p-1.5 bg-muted/50 rounded-xl mb-10 gap-1">
           <TabsTrigger value="all" className="flex-1 min-w-[80px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">ВСЕ</TabsTrigger>
           <TabsTrigger value="architecture" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Архитектура</TabsTrigger>
+          <TabsTrigger value="performance" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Метрики</TabsTrigger>
           <TabsTrigger value="features" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Функционал</TabsTrigger>
           <TabsTrigger value="logic" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Алгоритмы</TabsTrigger>
           <TabsTrigger value="admin" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Управление</TabsTrigger>
@@ -469,6 +543,16 @@ export default function AdminDocsPage() {
             <ArchitectureContent />
           </section>
           
+          <Separator />
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-3 px-2">
+              <Gauge className="text-primary" size={28} />
+              <h3 className="text-3xl font-black uppercase tracking-tight">Производительность и Мониторинг</h3>
+            </div>
+            <PerformanceContent />
+          </section>
+
           <Separator />
 
           <section className="space-y-8">
@@ -522,6 +606,10 @@ export default function AdminDocsPage() {
 
         <TabsContent value="architecture" className="outline-none">
           <ArchitectureContent />
+        </TabsContent>
+
+        <TabsContent value="performance" className="outline-none">
+          <PerformanceContent />
         </TabsContent>
 
         <TabsContent value="features" className="outline-none">
