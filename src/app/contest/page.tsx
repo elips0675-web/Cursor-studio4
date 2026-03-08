@@ -134,7 +134,7 @@ export default function ContestPage() {
             animate={{ scale: 1, opacity: 1 }}
             className="inline-flex p-4 rounded-3xl bg-amber-500/10 text-amber-600 mb-4 shadow-sm border border-amber-500/20"
           >
-            <Trophy size={32} />
+            <Trophy size={32} fill="currentColor" />
           </motion.div>
           <h2 className="text-3xl font-black font-headline tracking-tighter text-foreground leading-none">
             {t('contest.title')}

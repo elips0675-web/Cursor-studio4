@@ -221,7 +221,7 @@ export default function AdminDocsPage() {
         <Card className="border-0 shadow-md h-full hover:shadow-lg transition-shadow">
           <CardHeader>
             <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-3">
-              <Trophy size={28} />
+              <Trophy size={28} fill="currentColor" />
             </div>
             <CardTitle className="text-xl font-black">Фотоконкурс</CardTitle>
           </CardHeader>

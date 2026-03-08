@@ -281,7 +281,7 @@ export default function ProfilePage() {
                 <AccordionTrigger className="bg-white text-foreground rounded-[1.5rem] px-6 py-4 hover:no-underline hover:bg-muted/30 transition-all app-shadow border border-border/40 [&[data-state=open]]:rounded-b-none [&[data-state=open]]:shadow-none">
                   <div className="flex items-center gap-3 w-full text-left">
                     <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shadow-sm border border-amber-200">
-                      <Trophy size={16} fill="currentColor" />
+                      <Target size={16} />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-sm font-black uppercase tracking-tight">Задания</h4>
@@ -364,7 +364,7 @@ export default function ProfilePage() {
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                <Trophy size={20} />
+                <Trophy size={20} fill="currentColor" />
               </div>
               <div>
                 <h4 className="text-xs font-black uppercase tracking-tight">{t('contest.title')}</h4>
@@ -518,7 +518,7 @@ export default function ProfilePage() {
           <Dialog open={showContestDialog} onOpenChange={setShowContestDialog}>
             <DialogContent className="max-w-[360px] rounded-[2.5rem] p-0 overflow-hidden border-0 bg-white app-shadow">
               <div className="relative h-32 bg-gradient-to-r from-amber-500 to-orange-600 flex flex-col items-center justify-center text-white p-6">
-                 <Trophy className="text-white/40 absolute -right-4 -bottom-4" size={100} />
+                 <Trophy className="text-white/40 absolute -right-4 -bottom-4" size={100} fill="currentColor" />
                  <DialogTitle className="text-xl font-black uppercase tracking-tighter relative z-10">{t('contest.select_photo')}</DialogTitle>
               </div>
               <div className="p-5">
