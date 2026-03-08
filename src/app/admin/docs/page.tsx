@@ -1,8 +1,7 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, Cpu, Layers, Sparkles, Zap, ShieldCheck, Target, Users } from "lucide-react";
+import { BookOpen, Cpu, Layers, Sparkles, Zap, ShieldCheck, Target, Users, ShieldAlert, MessageSquare, Settings2 } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
@@ -26,7 +25,7 @@ export default function AdminDocsPage() {
   };
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
+    <div className="space-y-8 max-w-5xl mx-auto pb-12">
       <header className="space-y-2">
         <h2 className="text-3xl font-black tracking-tight">{t('admin.docs.title')}</h2>
         <p className="text-muted-foreground">{t('admin.docs.desc')}</p>
@@ -104,6 +103,70 @@ export default function AdminDocsPage() {
           </Card>
         </motion.div>
 
+        {/* Safety & Moderation */}
+        <motion.div variants={item}>
+          <Card className="border-0 shadow-sm h-full flex flex-col">
+            <CardHeader className="bg-green-500/5 rounded-t-lg">
+              <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-600 mb-2">
+                <ShieldAlert size={20} />
+              </div>
+              <CardTitle className="text-xl font-bold">{language === 'RU' ? 'Безопасность' : 'Safety'}</CardTitle>
+              <CardDescription>{language === 'RU' ? 'Антимат и система жалоб' : 'Anti-profanity and Reporting'}</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 space-y-4 flex-1">
+              <div className="space-y-2">
+                <h5 className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
+                  <MessageSquare size={12} /> {language === 'RU' ? 'Фильтр сообщений' : 'Message Filter'}
+                </h5>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {language === 'RU' 
+                    ? 'Внедрена автоматическая проверка сообщений на наличие нецензурной лексики, спама, политических тем и ссылок. Система блокирует отправку вредоносного контента в реальном времени.'
+                    : 'Automatic checking of messages for profanity, spam, political topics, and links is implemented. The system blocks malicious content in real-time.'}
+                </p>
+              </div>
+              <div className="space-y-2">
+                <h5 className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1.5">
+                  <ShieldAlert size={12} /> {language === 'RU' ? 'Жалобы' : 'Reporting'}
+                </h5>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  {language === 'RU' 
+                    ? 'Пользователи могут пожаловаться на профиль или чат. Все жалобы мгновенно поступают в раздел «Жалобы» панели администратора для принятия мер.'
+                    : 'Users can report profiles or chats. All reports instantly appear in the "Reports" section of the admin panel for action.'}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Admin Capabilities */}
+        <motion.div variants={item}>
+          <Card className="border-0 shadow-sm h-full flex flex-col">
+            <CardHeader className="bg-amber-500/5 rounded-t-lg">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600 mb-2">
+                <Settings2 size={20} />
+              </div>
+              <CardTitle className="text-xl font-bold">{language === 'RU' ? 'Управление' : 'Management'}</CardTitle>
+              <CardDescription>{language === 'RU' ? 'Возможности администратора' : 'Admin capabilities'}</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6 flex-1">
+              <ul className="space-y-2 text-xs text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1 shrink-0" />
+                  <span>{language === 'RU' ? 'Feature Flags: Включение/выключение функций (видеозвонки, AI) без деплоя.' : 'Feature Flags: Toggle features (video calls, AI) without redeploying.'}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1 shrink-0" />
+                  <span>{language === 'RU' ? 'Рассылки: Массовая отправка уведомлений пользователям (In-app и Email).' : 'Broadcasts: Mass notification delivery (In-app and Email).'}</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1 shrink-0" />
+                  <span>{language === 'RU' ? 'Контент: Управление глобальными списками интересов и целей.' : 'Content: Managing global lists of interests and goals.'}</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* Autosearch Logic */}
         <motion.div variants={item} className="md:col-span-2">
           <Card className="border-0 shadow-sm">
@@ -111,7 +174,7 @@ export default function AdminDocsPage() {
               <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600 mb-2">
                 <Target size={20} />
               </div>
-              <CardTitle className="text-xl font-bold">{t('admin.docs.logic_title')}</CardTitle>
+              <CardTitle className="text-xl font-bold">{t('admin.docs.logic_title')}</Target>
               <CardDescription>{language === 'RU' ? 'Как работает умный подбор' : 'How smart matching works'}</CardDescription>
             </CardHeader>
             <CardContent className="pt-6 space-y-6">
