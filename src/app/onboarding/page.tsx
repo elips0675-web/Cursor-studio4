@@ -227,7 +227,7 @@ export default function OnboardingPage() {
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step1.gender_label')}</Label>
                 <div className="grid grid-cols-1 gap-3">
                   {GENDER_OPTIONS.map(opt => (
-                    <button key={opt.id} onClick={() => setFormData({...formData, gender: opt.id})} className={cn("h-14 rounded-2xl border-2 transition-all font-bold flex items-center px-6 gap-3", formData.gender === opt.id ? "border-primary bg-primary/5 text-primary" : "border-muted text-muted-foreground bg-transparent")}>
+                    <button key={opt.id} onClick={() => setFormData({...formData, gender: opt.id})} className={cn("h-14 rounded-2xl border-2 transition-all font-bold flex items-center px-6 gap-3", formData.gender === opt.id ? "border-primary bg-primary/5 text-primary" : "border-muted text-muted-foreground bg-transparent hover:bg-muted/30")}>
                       <div className={cn("w-5 h-5 rounded-full border-2 flex items-center justify-center", formData.gender === opt.id ? "border-primary bg-primary" : "border-muted")}>
                         {formData.gender === opt.id && <div className="w-2 h-2 bg-white rounded-full"></div>}
                       </div>
@@ -262,7 +262,7 @@ export default function OnboardingPage() {
                 <div className="relative">
                   <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary" size={20} />
                   <Input value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} placeholder={t('onboarding.step2.city_placeholder')} className="h-14 pl-14 pr-16 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-bold" />
-                  <button onClick={handleDetectLocation} disabled={isDetectingLocation} type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-primary hover:bg-primary/5 p-2 rounded-xl transition-colors active:scale-90" title={t('onboarding.loc.detecting')}>
+                  <button onClick={handleDetectLocation} disabled={isDetectingLocation} type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-primary hover:bg-muted p-2 rounded-xl transition-colors active:scale-90" title={t('onboarding.loc.detecting')}>
                     <Navigation size={20} className={cn(isDetectingLocation && "animate-pulse")} fill={isDetectingLocation ? "currentColor" : "none"} />
                   </button>
                 </div>
@@ -316,7 +316,7 @@ export default function OnboardingPage() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {INTEREST_OPTIONS.map(interest => (
-                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>
+                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md hover:brightness-110" : "bg-muted text-muted-foreground hover:bg-border")}>
                   {t(interest)}
                 </Badge>
               ))}
@@ -351,7 +351,7 @@ export default function OnboardingPage() {
             <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 space-y-4">
               <div className="flex justify-between items-center">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step5.bio_label')}</Label>
-                <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors shadow-sm">
+                <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-muted/50 px-3 py-1.5 rounded-full hover:bg-muted transition-colors shadow-sm">
                   <p className="flex items-center gap-1.5">
                     <Sparkles size={12} className={cn(isGeneratingBio && "animate-spin")} /> AI {t('button.save')}
                   </p>
@@ -401,13 +401,13 @@ export default function OnboardingPage() {
             <div key={i} className={cn("w-2 h-2 rounded-full transition-all", step === i + 1 ? "w-6 bg-primary" : "bg-muted")}></div>
           ))}
         </div>
-        <Button onClick={skipStep} className="rounded-2xl gradient-bg text-white h-10 px-6 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all border-0">
+        <Button onClick={skipStep} className="rounded-2xl gradient-bg text-white h-10 px-6 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all border-0 hover:brightness-110">
           {t('button.skip')}
         </Button>
       </header>
       <main className="flex-1 px-8 pt-4 pb-24 max-w-md mx-auto w-full">{renderStep()}</main>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 bg-white/80 backdrop-blur-md">
-        <Button onClick={nextStep} disabled={!isStepValid()} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all">
+        <Button onClick={nextStep} disabled={!isStepValid()} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all hover:brightness-110">
           {step === totalSteps ? t('button.start') : t('button.continue')} <ArrowRight size={20} className="ml-2" />
         </Button>
       </div>

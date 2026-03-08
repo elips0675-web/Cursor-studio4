@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -173,7 +172,7 @@ export default function EditProfilePage() {
               <Image src={mainPhoto} alt="Profile" fill className="object-cover" />
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]"><Camera className="text-white" size={24} /></div>
             </div>
-            <button className="absolute bottom-1 right-1 bg-primary text-white p-2.5 rounded-2xl shadow-md border-2 border-white"><Camera size={16} /></button>
+            <button className="absolute bottom-1 right-1 bg-primary text-white p-2.5 rounded-2xl shadow-md border-2 border-white active:scale-95 transition-transform"><Camera size={16} /></button>
           </div>
         </div>
 
@@ -184,7 +183,7 @@ export default function EditProfilePage() {
                 <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Info size={14} /></div>
                 <h3 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">О себе</h3>
               </div>
-              <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-tight bg-primary/5 px-3 py-1.5 rounded-full hover:bg-primary/10 transition-colors shadow-sm">
+              <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-tight bg-muted/50 px-3 py-1.5 rounded-full hover:bg-muted transition-colors shadow-sm">
                 <p className="flex items-center gap-1.5">
                   <Sparkles size={11} className={isGeneratingBio ? "animate-spin" : ""} /> AI Улучшить
                 </p>
@@ -218,7 +217,7 @@ export default function EditProfilePage() {
               <div className="space-y-1.5">
                 <Label className="text-[9px] font-black uppercase tracking-widest text-primary ml-1 flex items-center gap-1">Кого ищу</Label>
                 <Select value={profile.lookingFor || ''} onValueChange={(val) => setProfile({...profile, lookingFor: val})}>
-                  <SelectTrigger className="rounded-xl bg-primary/5 border-primary/10 h-11 font-bold px-4"><SelectValue /></SelectTrigger>
+                  <SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger>
                   <SelectContent className="rounded-xl border-0 shadow-2xl">
                     <SelectItem value="male" className="font-bold text-xs">Мужчину</SelectItem>
                     <SelectItem value="female" className="font-bold text-xs">Женщину</SelectItem>
@@ -270,7 +269,7 @@ export default function EditProfilePage() {
             <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Интересы</Label>
             <div className="flex flex-wrap gap-2">
               {INTEREST_OPTIONS.map(interest => (
-                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={profile.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", profile.interests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>{t(interest)}</Badge>
+                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={profile.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", profile.interests.includes(interest) ? "gradient-bg text-white shadow-md hover:brightness-110" : "bg-muted text-muted-foreground hover:bg-border")}>{t(interest)}</Badge>
               ))}
             </div>
           </div>
@@ -287,7 +286,7 @@ export default function EditProfilePage() {
                     const displayName = language === 'RU' ? groupInfo.ru : groupInfo.en;
 
                     return (
-                        <Badge key={groupName} variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-1.5 px-3 font-bold text-[10px] rounded-lg shadow-sm">
+                        <Badge key={groupName} variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-1.5 px-3 font-bold text-[10px] rounded-lg shadow-sm hover:bg-blue-200 transition-colors">
                         <Users size={12} />
                         <span>{displayName}</span>
                         <button
@@ -305,7 +304,7 @@ export default function EditProfilePage() {
                 </div>
             </div>
         </div>
-        <Button onClick={handleSave} className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/30 border-0 active:scale-95 transition-all">Сохранить</Button>
+        <Button onClick={handleSave} className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/30 border-0 hover:brightness-110">Сохранить</Button>
       </main>
     </div>
   );
