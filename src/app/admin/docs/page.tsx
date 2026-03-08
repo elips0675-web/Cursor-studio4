@@ -605,7 +605,7 @@ const InvestorContent = memo(() => (
         <div className="p-4 rounded-xl bg-muted/30 border space-y-3">
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm border">1</div>
-            <p className="text-xs font-bold pt-1">Нажмите на иконку <Download className="inline-block mx-1 text-primary" size={14} /> (Download) в верхней панели или в меню проекта.</p>
+            <p className="text-xs font-bold pt-1">Нажмите на иконку <Download className="inline-block mx-1 text-primary" size={14} /> (Download) в верхней панели управления (справа от названия проекта).</p>
           </div>
           <div className="flex items-start gap-3">
             <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center text-[10px] font-black shrink-0 shadow-sm border">2</div>
@@ -784,7 +784,7 @@ export default function AdminDocsPage() {
 
       <footer className="text-center pt-16 border-t mt-16">
         <p className="text-sm font-black uppercase tracking-[0.4em] text-muted-foreground/30">
-          SwiftMatch Platform Documentation • Version 1.2.0 • 2024
+          SwiftMatch • Version 1.2.0 • 2024
         </p>
       </footer>
     </div>
