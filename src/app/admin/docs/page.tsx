@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { 
   BookOpen, Cpu, Layers, Sparkles, Zap, ShieldCheck, Target, Users, ShieldAlert, 
   MessageSquare, Settings2, Rocket, TestTube, CheckCircle2, Trophy, Camera, 
-  Flame, Mail, DollarSign, Heart, Gift, Info, Video, Flag, SlidersHorizontal
+  Flame, Mail, DollarSign, Heart, Gift, Info, Video, Flag, SlidersHorizontal, Scale
 } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
 import { Badge } from "@/components/ui/badge";
@@ -390,6 +390,53 @@ export default function AdminDocsPage() {
     </motion.div>
   );
 
+  const LegalContent = () => (
+    <motion.div variants={container} initial="hidden" animate="show" className="grid gap-8 md:grid-cols-2">
+      <motion.div variants={item}>
+        <Card className="border-0 shadow-md h-full">
+          <CardHeader className="bg-slate-100 rounded-t-xl pb-8">
+            <div className="w-14 h-14 rounded-2xl bg-white flex items-center justify-center text-slate-600 mb-4 shadow-sm">
+              <Scale size={32} />
+            </div>
+            <CardTitle className="text-2xl font-black">Юридическая база</CardTitle>
+            <CardDescription className="text-lg">Compliance и документы</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-8 space-y-6">
+            <div className="space-y-4">
+              <p className="text-base leading-relaxed text-muted-foreground font-medium">
+                Проект укомплектован полным набором юридических шаблонов, необходимых для официального запуска в РФ и Европе:
+              </p>
+              <ul className="text-base space-y-3 text-muted-foreground font-bold">
+                <li className="flex items-center gap-3"><CheckCircle2 size={20} className="text-blue-500"/> GDPR Compliance (Европа)</li>
+                <li className="flex items-center gap-3"><CheckCircle2 size={20} className="text-blue-500"/> 152-ФЗ (Россия)</li>
+                <li className="flex items-center gap-3"><CheckCircle2 size={20} className="text-blue-500"/> Cookie Consent & Privacy</li>
+              </ul>
+              <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 text-amber-800 text-sm font-medium leading-relaxed italic">
+                Примечание: Перед продажей необходимо заменить плейсхолдеры в текстах на реальные реквизиты юридического лица.
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <Card className="border-0 shadow-md h-full">
+          <CardHeader>
+            <div className="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 mb-3">
+              <ShieldCheck size={28} />
+            </div>
+            <CardTitle className="text-xl font-black">Обработка данных</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-base leading-relaxed text-muted-foreground font-medium">
+            <p>• <b>Контроль:</b> Каждый пользователь может отозвать согласие на обработку данных в настройках.</p>
+            <p>• <b>Прозрачность:</b> Прямые ссылки на политику конфиденциальности в профиле и при регистрации.</p>
+            <p>• <b>Защита:</b> Описание методов хранения данных на базе Google Cloud Trust Center.</p>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </motion.div>
+  );
+
   return (
     <div className="space-y-10 max-w-6xl mx-auto pb-24 px-4">
       <header className="space-y-4">
@@ -398,7 +445,7 @@ export default function AdminDocsPage() {
           {t('admin.docs.title')}
         </h2>
         <p className="text-muted-foreground text-xl max-w-3xl leading-relaxed">
-          Полное техническое и функциональное описание платформы SwiftMatch для администраторов и разработчиков.
+          Полное техническое, функциональное и юридическое описание платформы SwiftMatch для администраторов и инвесторов.
         </p>
       </header>
 
@@ -410,6 +457,7 @@ export default function AdminDocsPage() {
           <TabsTrigger value="logic" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Алгоритмы</TabsTrigger>
           <TabsTrigger value="admin" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Управление</TabsTrigger>
           <TabsTrigger value="security" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Безопасность</TabsTrigger>
+          <TabsTrigger value="legal" className="flex-1 min-w-[120px] rounded-lg py-3 font-black text-sm uppercase tracking-wider">Юридическое</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-20 outline-none">
@@ -460,6 +508,16 @@ export default function AdminDocsPage() {
             </div>
             <SecurityContent />
           </section>
+
+          <Separator />
+
+          <section className="space-y-8">
+            <div className="flex items-center gap-3 px-2">
+              <Scale className="text-primary" size={28} />
+              <h3 className="text-3xl font-black uppercase tracking-tight">Юридическое соответствие</h3>
+            </div>
+            <LegalContent />
+          </section>
         </TabsContent>
 
         <TabsContent value="architecture" className="outline-none">
@@ -480,6 +538,10 @@ export default function AdminDocsPage() {
 
         <TabsContent value="security" className="outline-none">
           <SecurityContent />
+        </TabsContent>
+
+        <TabsContent value="legal" className="outline-none">
+          <LegalContent />
         </TabsContent>
       </Tabs>
 

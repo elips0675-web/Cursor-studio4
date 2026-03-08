@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
@@ -243,6 +242,11 @@ const translations = {
     'settings.support.chat_desc': 'Чат с разработчиками приложения',
     'settings.about_app': 'О приложении',
     'settings.about_app_desc': 'Технологический стек и информация',
+    'settings.legal': 'Юридическая информация',
+    'settings.legal_desc': 'Политика, правила и согласия',
+    'settings.privacy_policy': 'Политика конфиденциальности',
+    'settings.terms_of_service': 'Пользовательское соглашение',
+    'settings.data_consent': 'Согласие на обработку данных',
     'logout.title': 'Вы вышли из системы',
     'logout.button': 'Выйти',
     'delete_profile.button': 'Удалить профиль',
@@ -598,6 +602,11 @@ const translations = {
     'settings.support.chat_desc': 'Chat with app developers',
     'settings.about_app': 'About the App',
     'settings.about_app_desc': 'Tech stack and info',
+    'settings.legal': 'Legal Information',
+    'settings.legal_desc': 'Policies, rules and consents',
+    'settings.privacy_policy': 'Privacy Policy',
+    'settings.terms_of_service': 'Terms of Service',
+    'settings.data_consent': 'Data Processing Consent',
     'logout.title': 'You have been logged out',
     'logout.button': 'Logout',
     'delete_profile.button': 'Delete Profile',

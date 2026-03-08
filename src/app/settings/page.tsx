@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -16,7 +15,8 @@ import {
   ChevronRight,
   HelpCircle,
   Mail,
-  Info
+  Info,
+  Scale
 } from "lucide-react";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -37,13 +37,18 @@ export default function SettingsPage() {
     smartPhotos: true,
     security: true,
     location: true,
-    photoVerification: true
+    photoVerification: true,
+    dataProcessingConsent: true
   });
 
   useEffect(() => {
     const savedIncognito = localStorage.getItem('incognito-mode');
     if (savedIncognito) {
       setSettings(prev => ({ ...prev, incognito: JSON.parse(savedIncognito) }));
+    }
+    const savedConsent = localStorage.getItem('data-processing-consent');
+    if (savedConsent) {
+      setSettings(prev => ({ ...prev, dataProcessingConsent: JSON.parse(savedConsent) }));
     }
   }, []);
 
@@ -53,6 +58,15 @@ export default function SettingsPage() {
     toast({
       title: t('settings.incognito'),
       description: val ? t('settings.incognito.enabled_desc') : t('settings.incognito.disabled_desc'),
+    });
+  };
+
+  const handleConsentChange = (val: boolean) => {
+    setSettings(prev => ({ ...prev, dataProcessingConsent: val }));
+    localStorage.setItem('data-processing-consent', JSON.stringify(val));
+    toast({
+      title: t('settings.data_consent'),
+      description: val ? "Consent enabled" : "Consent withdrawn",
     });
   };
 
@@ -73,7 +87,7 @@ export default function SettingsPage() {
       <AppHeader />
       
       <main className="flex-1 overflow-y-auto p-6 flex flex-col">
-        <div className="space-y-6 flex-1">
+        <div className="space-y-6 flex-1 pb-12">
           <section className="space-y-4">
             <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">{t('settings.account') || 'Аккаунт'}</h5>
             <div className="space-y-1">
@@ -152,6 +166,57 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <Badge variant="outline" className="text-[10px] text-primary border-primary/20">{t('settings.security.status') || 'OK'}</Badge>
+              </div>
+
+              <div className="flex items-center justify-between py-3 border-b border-border/50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                    <ShieldCheck size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{t('settings.data_consent')}</p>
+                  </div>
+                </div>
+                <Switch checked={settings.dataProcessingConsent} onCheckedChange={handleConsentChange} />
+              </div>
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <h5 className="text-[10px] font-black uppercase tracking-[2px] text-muted-foreground">{t('settings.legal')}</h5>
+            <div className="space-y-1">
+              <div className="flex items-center justify-between py-3 border-b border-border/50 cursor-pointer hover:bg-muted/30 -mx-6 px-6 transition-colors" onClick={() => router.push('/legal/privacy')}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                    <Scale size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{t('settings.privacy_policy')}</p>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-muted-foreground" />
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/50 cursor-pointer hover:bg-muted/30 -mx-6 px-6 transition-colors" onClick={() => router.push('/legal/terms')}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                    <Scale size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{t('settings.terms_of_service')}</p>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-muted-foreground" />
+              </div>
+              <div className="flex items-center justify-between py-3 border-b border-border/50 cursor-pointer hover:bg-muted/30 -mx-6 px-6 transition-colors" onClick={() => router.push('/legal/data-processing')}>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600">
+                    <Scale size={18} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{t('settings.data_consent')}</p>
+                  </div>
+                </div>
+                <ChevronRight size={16} className="text-muted-foreground" />
               </div>
             </div>
           </section>
