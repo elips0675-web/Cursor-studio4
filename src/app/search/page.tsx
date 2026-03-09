@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/context/language-context";
 import { toast } from "@/hooks/use-toast";
-import { generateMatchCompatibilityInsight } from "@/ai/flows/ai-match-compatibility-insight";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -62,8 +61,7 @@ function performAutosearch(filters: any, allUsers: any[], currentUser: any) {
           }
           score += commonInterests * 100;
           
-          const hasCommonInterests = commonInterests > 0;
-          const isCandidate = hasMatchingGoal || hasCommonInterests;
+          const isCandidate = hasMatchingGoal || (commonInterests > 0);
 
           return { ...user, score, isCandidate };
         })
@@ -81,8 +79,6 @@ function SearchContent() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [matchUser, setMatchUser] = useState<any>(null);
-  const [compatibility, setCompatibility] = useState("");
-  const [loadingAi, setLoadingAi] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [reportReason, setReportReason] = useState('');
   const [reportDescription, setReportDescription] = useState('');
@@ -91,8 +87,15 @@ function SearchContent() {
 
   useEffect(() => {
     const saved = localStorage.getItem('userProfile');
-    if (saved) setCurrentUser(JSON.parse(saved));
-    else setCurrentUser(ALL_DEMO_USERS[1]);
+    if (saved) {
+      try {
+        setCurrentUser(JSON.parse(saved));
+      } catch (e) {
+        setCurrentUser(ALL_DEMO_USERS[1]);
+      }
+    } else {
+      setCurrentUser(ALL_DEMO_USERS[1]);
+    }
   }, []);
 
   useEffect(() => {
@@ -144,23 +147,6 @@ function SearchContent() {
     // Simulate a match
     if (Math.random() > 0.7) {
       setMatchUser(user);
-      setLoadingAi(true);
-      try {
-        const res = await generateMatchCompatibilityInsight({
-          currentUser: { 
-            name: currentUser?.name || "Вы", 
-            age: currentUser?.age || 25, 
-            interests: currentUser?.interests || ["Спорт"], 
-            bio: currentUser?.bio || "Активный пользователь." 
-          },
-          matchUser: { name: user.name, age: user.age, interests: user.interests, bio: user.bio || "" }
-        });
-        setCompatibility(res.explanation);
-      } catch (e) { 
-        console.error("AI Insight Error:", e);
-        setCompatibility(t('match.insight_default')); 
-      }
-      finally { setLoadingAi(false); }
     } else {
       handleNext();
     }
@@ -198,7 +184,7 @@ function SearchContent() {
         
         <div className="relative w-full flex-1 mb-10 max-w-[420px] flex items-center justify-center">
           <Button variant="ghost" size="icon" onClick={handlePrev} disabled={currentIndex === 0} className="absolute -left-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronLeft size={24} /></Button>
-          <Button variant="ghost" size="icon" onClick={handleNext} className="absolute -right-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronRight size={24} /></Button>
+          <Button variant="ghost" size="icon" onClick={handleNext} disabled={currentIndex >= userList.length - 1} className="absolute -right-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronRight size={24} /></Button>
 
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
@@ -270,17 +256,6 @@ function SearchContent() {
             asChild 
             variant="outline" 
             size="icon" 
-            className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-blue-500 hover:text-blue-600 active:scale-90 transition-all"
-          >
-            <Link href={`/user?id=${user.id}`}>
-              <User size={28} strokeWidth={3} />
-            </Link>
-          </Button>
-
-          <Button 
-            asChild 
-            variant="outline" 
-            size="icon" 
             className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-[#2ecc71] hover:text-[#27ae60] active:scale-90 transition-all"
           >
             <Link href={`/chats?matchId=${user.id}`}>
@@ -294,9 +269,8 @@ function SearchContent() {
         <MatchDialog
           open={!!matchUser}
           onOpenChange={(open) => !open && setMatchUser(null)}
+          currentUser={currentUser}
           matchUser={matchUser}
-          compatibility={compatibility}
-          loadingAi={loadingAi}
         />
       )}
 
