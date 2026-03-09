@@ -1,0 +1,29 @@
+{
+  "name": "SwiftMatch - Найти свою идеальную пару",
+  "short_name": "SwiftMatch",
+  "description": "Современный опыт знакомств с искусственным интеллектом. Найди свою любовь в SwiftMatch.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#fe3c72",
+  "icons": [
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
