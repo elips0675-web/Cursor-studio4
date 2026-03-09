@@ -168,7 +168,7 @@ export default function ProfilePage() {
       setProfile(defaultProfile);
     }
     setIsLoading(false);
-  }, []);
+  }, [defaultProfile]);
 
 
   const handleTriggerFileInput = () => fileInputRef.current?.click();
@@ -418,7 +418,7 @@ export default function ProfilePage() {
                 <div className="flex flex-wrap gap-2">
                   {earnedTitles.map((title) => (
                     <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-all hover:scale-105", title.color)}>
-                      <Star size={14} fill="currentColor" className="opacity-70" /> {title.displayName}
+                      <Star size={12} fill="currentColor" className="opacity-70" /> {title.displayName}
                     </Badge>
                   ))}
                 </div>
@@ -628,5 +628,3 @@ export default function ProfilePage() {
     </>
   );
 }
-
-    

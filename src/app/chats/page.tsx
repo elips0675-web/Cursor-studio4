@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
@@ -139,7 +140,7 @@ function ChatsContent() {
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   useEffect(() => { if (selectedChat) scrollToBottom(); }, [messages, selectedChat]);
 
-  const loadIcebreakers = async (chat: any, mood?: string) => {
+  const loadIcebreakers = useCallback(async (chat: any, mood?: string) => {
     if (!aiIcebreakersEnabled || chat.id === 0) return;
     setLoadingIcebreakers(true);
     try {
@@ -147,8 +148,10 @@ function ChatsContent() {
       setIcebreakers(res.suggestions);
     } catch (e) {
       setIcebreakers(language === 'RU' ? ["Привет! Как прошел твой день?", "Чем любишь заниматься в свободное время?", "Какой твой любимый фильм?"] : ["Hi! How was your day?", "What do you like doing in your free time?", "What's your favorite movie?"]);
-    } finally { setLoadingIcebreakers(false); if (mood) setShowThemeGrid(false); }
-  };
+    } finally {
+      setLoadingIcebreakers(false); if (mood) setShowThemeGrid(false);
+    }
+  }, [aiIcebreakersEnabled, language]);
 
   useEffect(() => {
     if (matchId) {
@@ -178,7 +181,7 @@ function ChatsContent() {
             setIcebreakers([]);
         }
     }
-  }, [matchId, groupId, language, aiIcebreakersEnabled]);
+  }, [matchId, groupId, language, loadIcebreakers]);
 
   const handleSendMessage = (textOverride?: string) => {
     const textToSend = textOverride || inputValue;

@@ -88,6 +88,17 @@ const interestIcons: Record<string, any> = {
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
+const LifestyleItem = React.memo(({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
+    <div className={cn("flex flex-col gap-1", className)}>
+      <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{label}</span>
+      <Badge variant="secondary" className="bg-muted/40 text-foreground border-0 gap-1.5 py-2 px-3 font-bold text-[10px] rounded-lg shadow-sm justify-start w-full transition-all hover:bg-muted/60">
+        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={12} className="text-primary/70" />)}
+        <span className="truncate">{value}</span>
+      </Badge>
+    </div>
+  ));
+LifestyleItem.displayName = "LifestyleItem";
+
 function UserProfileContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -95,7 +106,7 @@ function UserProfileContent() {
   const { t, language } = useLanguage();
   const { aiCompatibilityEnabled } = useFeatureFlags();
 
-  const user = ALL_DEMO_USERS.find(u => u.id === Number(userId)) || ALL_DEMO_USERS[1]; 
+  const user = useMemo(() => ALL_DEMO_USERS.find(u => u.id === Number(userId)) || ALL_DEMO_USERS[1], [userId]);
   
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -172,16 +183,6 @@ function UserProfileContent() {
       getAiInsight(user);
     }
   };
-
-  const LifestyleItem = ({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
-    <div className={cn("flex flex-col gap-1", className)}>
-      <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{label}</span>
-      <Badge variant="secondary" className="bg-muted/40 text-foreground border-0 gap-1.5 py-2 px-3 font-bold text-[10px] rounded-lg shadow-sm justify-start w-full transition-all hover:bg-muted/60">
-        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={12} className="text-primary/70" />)}
-        <span className="truncate">{value}</span>
-      </Badge>
-    </div>
-  );
 
   if (!user || user.isSystem) return null;
 
@@ -270,17 +271,12 @@ function UserProfileContent() {
             <div className="h-px bg-border/50"></div>
 
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                 <Star size={16} className="text-primary" />
-                 <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.interests')}</h4>
-              </div>
+              <div className="flex items-center gap-2 mb-4"><Star size={16} className="text-primary" /><h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.interests')}</h4></div>
               <div className="flex flex-wrap gap-2">
                 {user.interests.map((interest) => {
                   const Icon = interestIcons[interest] || Heart;
                   return (
-                    <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70">
-                      <Icon size={14} className="text-primary" /> {interest}
-                    </Badge>
+                    <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70"><Icon size={14} className="text-primary" /> {interest}</Badge>
                   );
                 })}
               </div>
