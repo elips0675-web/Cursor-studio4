@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -29,6 +30,7 @@ export default function SettingsPage() {
   const router = useRouter();
   const { t } = useLanguage();
   const auth = useAuth();
+  
   const [settings, setSettings] = useState({
     pushNotifications: true,
     emailNewsletter: false,
@@ -40,8 +42,10 @@ export default function SettingsPage() {
     photoVerification: true,
     dataProcessingConsent: true
   });
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const savedIncognito = localStorage.getItem('incognito-mode');
     if (savedIncognito) {
       setSettings(prev => ({ ...prev, incognito: JSON.parse(savedIncognito) }));
@@ -100,7 +104,7 @@ export default function SettingsPage() {
                     <p className="text-sm font-bold">{t('settings.push_notifications') || 'Push-уведомления'}</p>
                   </div>
                 </div>
-                <Switch checked={settings.pushNotifications} onCheckedChange={(val) => setSettings({...settings, pushNotifications: val})} />
+                <Switch checked={isClient ? settings.pushNotifications : true} onCheckedChange={(val) => setSettings({...settings, pushNotifications: val})} />
               </div>
 
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -112,7 +116,7 @@ export default function SettingsPage() {
                     <p className="text-sm font-bold">{t('settings.email_newsletter') || 'Email-рассылка'}</p>
                   </div>
                 </div>
-                <Switch checked={settings.emailNewsletter} onCheckedChange={(val) => setSettings({...settings, emailNewsletter: val})} />
+                <Switch checked={isClient ? settings.emailNewsletter : false} onCheckedChange={(val) => setSettings({...settings, emailNewsletter: val})} />
               </div>
 
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -124,7 +128,7 @@ export default function SettingsPage() {
                     <p className="text-sm font-bold">{t('settings.location') || 'Геолокация'}</p>
                   </div>
                 </div>
-                <Switch checked={settings.location} onCheckedChange={(val) => setSettings({...settings, location: val})} />
+                <Switch checked={isClient ? settings.location : true} onCheckedChange={(val) => setSettings({...settings, location: val})} />
               </div>
 
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -136,7 +140,7 @@ export default function SettingsPage() {
                     <p className="text-sm font-bold">{t('settings.discovery') || 'Показывать меня'}</p>
                   </div>
                 </div>
-                <Switch checked={settings.discovery} onCheckedChange={(val) => setSettings({...settings, discovery: val})} />
+                <Switch checked={isClient ? settings.discovery : true} onCheckedChange={(val) => setSettings({...settings, discovery: val})} />
               </div>
             </div>
           </section>
@@ -153,7 +157,7 @@ export default function SettingsPage() {
                     <p className="text-sm font-bold">{t('settings.incognito') || 'Инкогнито'}</p>
                   </div>
                 </div>
-                <Switch checked={settings.incognito} onCheckedChange={handleIncognitoChange} />
+                <Switch checked={isClient ? settings.incognito : false} onCheckedChange={handleIncognitoChange} />
               </div>
 
               <div className="flex items-center justify-between py-3 border-b border-border/50">
@@ -177,7 +181,7 @@ export default function SettingsPage() {
                     <p className="text-sm font-bold">{t('settings.data_consent')}</p>
                   </div>
                 </div>
-                <Switch checked={settings.dataProcessingConsent} onCheckedChange={handleConsentChange} />
+                <Switch checked={isClient ? settings.dataProcessingConsent : true} onCheckedChange={handleConsentChange} />
               </div>
             </div>
           </section>
@@ -281,3 +285,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    

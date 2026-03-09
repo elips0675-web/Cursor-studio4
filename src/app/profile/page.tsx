@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { 
-  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog, ChevronRight, Heart, Clock, Flame, Check, Gift
+  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog, ChevronRight, Heart, Clock, Flame, Check, Gift, Loader2
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -50,6 +50,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const defaultJoinedGroups = ["Хип-хоп", "Бег", "UI/UX Дизайн"];
 
@@ -58,6 +59,36 @@ const DAILY_QUESTS = [
   { id: 2, title_ru: 'Посмотреть 3 анкеты', title_en: 'View 3 profiles', progress: 3, total: 3, icon: User, color: 'text-blue-500' },
   { id: 3, title_ru: 'Написать сообщение', title_en: 'Send a message', progress: 0, total: 1, icon: Zap, color: 'text-amber-500' },
 ];
+
+function ProfileLoadingSkeleton() {
+  return (
+    <>
+      <AppHeader />
+      <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
+        <div className="h-24 gradient-bg relative shadow-sm"></div>
+        <div className="px-5 -mt-10">
+          <div className="text-center mb-6">
+            <div className="relative inline-block mb-4">
+              <Skeleton className="w-32 h-32 rounded-xl border-[6px] border-white app-shadow" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48 mx-auto" />
+              <Skeleton className="h-4 w-32 mx-auto" />
+            </div>
+            <div className="grid grid-cols-3 gap-2 mt-6 max-w-sm mx-auto">
+              <Skeleton className="h-[76px] rounded-xl" />
+              <Skeleton className="h-[76px] rounded-xl" />
+              <Skeleton className="h-[76px] rounded-xl" />
+            </div>
+          </div>
+          <Skeleton className="h-48 w-full rounded-xl mb-6" />
+          <Skeleton className="h-64 w-full rounded-xl" />
+        </div>
+      </main>
+      <BottomNav />
+    </>
+  )
+}
 
 export default function ProfilePage() {
   const { t, language } = useLanguage();
@@ -90,6 +121,7 @@ export default function ProfilePage() {
   const [photos, setPhotos] = useState([
     PlaceHolderImages[0].imageUrl, PlaceHolderImages[2].imageUrl, PlaceHolderImages[4].imageUrl, PlaceHolderImages[6].imageUrl, PlaceHolderImages[8].imageUrl,
   ]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [showBoostDialog, setShowBoostDialog] = useState(false);
@@ -135,7 +167,8 @@ export default function ProfilePage() {
       localStorage.setItem('userProfile', JSON.stringify(defaultProfile));
       setProfile(defaultProfile);
     }
-  }, [defaultProfile]);
+    setIsLoading(false);
+  }, []);
 
 
   const handleTriggerFileInput = () => fileInputRef.current?.click();
@@ -234,6 +267,10 @@ export default function ProfilePage() {
     const progress = DAILY_QUESTS.reduce((acc, q) => acc + q.progress, 0);
     return Math.round((progress / total) * 100);
   }, []);
+
+  if (isLoading) {
+    return <ProfileLoadingSkeleton />;
+  }
 
   return (
     <>
@@ -591,3 +628,5 @@ export default function ProfilePage() {
     </>
   );
 }
+
+    

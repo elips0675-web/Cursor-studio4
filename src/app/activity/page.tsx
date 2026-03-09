@@ -58,8 +58,10 @@ export default function ActivityPage() {
   const [isAdLoading, setIsAdLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('6m');
   const [isIncognito, setIsIncognito] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const savedIncognito = localStorage.getItem('incognito-mode');
     if (savedIncognito) {
       setIsIncognito(JSON.parse(savedIncognito));
@@ -111,7 +113,7 @@ export default function ActivityPage() {
           </TabsList>
           
           <TabsContent value={activeTab} className="mt-6 space-y-4 outline-none">
-            {activeTab === 'visits' && isIncognito && (
+            {isClient && activeTab === 'visits' && isIncognito && (
                 <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -407,3 +409,5 @@ function ActivityItem({ item, onUnlock }: { item: any, onUnlock: () => void }) {
     </div>
   );
 }
+
+    
