@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -60,7 +59,6 @@ export default function RegisterPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Update basic profile info in Auth
       await updateProfile(user, { displayName: name });
       
       toast({
@@ -68,7 +66,6 @@ export default function RegisterPage() {
         description: `Аккаунт создан! Пожалуйста, расскажите о себе.`,
       });
       
-      // Redirect to onboarding to create the full user profile in Firestore
       router.push('/onboarding');
 
     } catch (error: any) {
@@ -153,7 +150,7 @@ export default function RegisterPage() {
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-lg shadow-primary/10 hover:scale-[1.02] transition-all active:scale-95 border-0"
+              className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 border-0"
             >
               {isLoading ? "Создание..." : "Создать аккаунт"} <ArrowRight size={18} className="ml-2" />
             </Button>

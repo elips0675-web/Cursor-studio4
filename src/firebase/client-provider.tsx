@@ -1,14 +1,16 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
 import { FirebaseProvider } from './provider';
-import { initializeFirebase } from './index';
+import { initializeFirebase } from './init';
 
+/**
+ * Client-side Firebase provider that ensures initialization happens only once.
+ */
 export const FirebaseClientProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  // Инициализируем Firebase на клиенте один раз с помощью useMemo
+  // Initialize Firebase on the client once using useMemo and the isolated init function
   const { firebaseApp, firestore, auth } = useMemo(() => initializeFirebase(), []);
 
   return (

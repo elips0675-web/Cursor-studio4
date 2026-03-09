@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -57,14 +56,12 @@ export default function LoginPage() {
       if (userDoc.exists()) {
         const userProfile = { uid: firebaseUser.uid, ...userDoc.data() };
         localStorage.setItem('userProfile', JSON.stringify(userProfile));
-        // Redirect to home, let other pages load from localStorage
         router.push('/');
         toast({
           title: "С возвращением!",
           description: `Вы успешно вошли, ${firebaseUser.displayName}.`,
         });
       } else {
-        // New user, redirect to onboarding
         router.push('/onboarding');
       }
     } catch (error: any) {
@@ -173,7 +170,7 @@ export default function LoginPage() {
             <Button 
               type="submit" 
               disabled={isLoading}
-              className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-lg shadow-primary/10 hover:scale-[1.02] transition-all active:scale-95 border-0"
+              className="w-full h-14 rounded-full gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95 border-0"
             >
               {isLoading ? "Вход..." : "Продолжить"} <ArrowRight size={18} className="ml-2" />
             </Button>
