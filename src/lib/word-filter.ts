@@ -57,47 +57,53 @@ export const isGibberish = (text: string): boolean => {
   // 1. Repeating characters like "aaaaaaa" or "!!!!! "
   if (/(.)\1{4,}/.test(normalized)) return true;
 
-  const words = normalized.split(/\s+/).filter(w => w.length >= 4);
+  const words = normalized.split(/\s+/);
 
   for (const word of words) {
-    // Strip non-letters for analysis
     const letters = word.replace(/[^a-zа-яё]/g, '');
-    if (letters.length < 4) continue;
+    if (letters.length < 3) continue;
 
+    // 2. No vowels at all in a word of 3+ letters.
     const vowelsMatch = letters.match(/[aeiouyаеёиоуыэюя]/g);
     const vowelsCount = vowelsMatch ? vowelsMatch.length : 0;
-    
-    // 2. No vowels at all in a 4+ letter word (e.g. "sdfg", "прлш")
-    if (vowelsCount === 0) return true;
+    if (letters.length >= 3 && vowelsCount === 0) return true;
 
-    // 3. Very low vowel-to-letter ratio (e.g. 1 vowel in 7 letters)
-    // Most real words have at least 25-30% vowels.
-    if (vowelsCount < letters.length * 0.2) return true;
-
-    // 4. Excessive consonant clusters
-    // Russian "всплеск" has 4 consonants. 5+ is almost always gibberish.
-    // Also catch "шрлш" type sequences which are rare in real speech.
-    const consonantClusters = word.match(/[bcdfghjklmnpqrstvwxzбвгджзйклмнпрстфхцчшщ]{4,}/g);
+    // 3. Check for excessive consonant clusters.
+    // Whitelist for common Russian 4-consonant clusters.
+    const allowed_4_consonant_clusters = [
+        'взгл', // взгляд
+        'вств', // чувство
+        'вспл', // всплеск
+        'здрв', // здравствуй
+        'кстр', // экстренный
+        'нтрв', // контр-
+        'ртств', // черствый
+        'рвств' // первенство
+    ];
+    // Find clusters of 4 or more consonants
+    const consonantClusters = letters.match(/[bcdfghjklmnpqrstvwxzбвгджзйклмнпрстфхцчшщ]{4,}/g);
     if (consonantClusters) {
       for (const cluster of consonantClusters) {
-        // Specifically block "шрлш" and other keyboard-heavy clusters
-        const suspiciousClusters = ['шрлш', 'рлши', 'ишрл', 'фыва', 'йцук', 'ячсм', 'jklm', 'sdfg'];
-        if (cluster.length >= 5 || suspiciousClusters.some(sc => cluster.includes(sc))) {
-          return true;
+        if (cluster.length === 4 && allowed_4_consonant_clusters.includes(cluster)) {
+          continue; // It's an allowed cluster, so check the next one
         }
+        // If the cluster has 5+ consonants, or it's a 4-consonant cluster not in the whitelist,
+        // it's gibberish.
+        return true;
       }
     }
 
-    // 5. Common keyboard row sequences
+    // 4. Common keyboard row sequences (mashing)
     const mashPatterns = [
-      'asdf', 'sdfg', 'dfgh', 'fghj', 'ghjk', 'hjkl', 
+      'asdf', 'sdfg', 'dfgh', 'fghj', 'ghjk', 'hjkl', 'zxcv', 'xcvb',
       'йцук', 'цуке', 'укен', 'кенг', 'фыва', 'ывап', 'вапр', 'апро', 'прол', 'ролд', 'олдж',
       'ячсм', 'чсми', 'смит', 'мить',
-      'ишрл', 'шрлш', 'рлши' // Patterns reported by users
+      // User reported patterns
+      'ишрл', 'шрлш', 'рлши', 'некн', 'кегн', 'егнн'
     ];
 
     for (const pattern of mashPatterns) {
-      if (word.includes(pattern)) return true;
+      if (letters.includes(pattern)) return true;
     }
   }
 
