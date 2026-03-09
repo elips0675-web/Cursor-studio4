@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "@/context/language-context";
 import { ALL_DEMO_USERS } from "@/lib/demo-data";
 import { INTEREST_OPTIONS, CAPITALS, DATING_GOALS } from "@/lib/constants";
+import { toast } from "@/hooks/use-toast";
 
 // Агрессивная ленивая загрузка для снижения TBT
 const TopOfWeekSection = dynamic(() => import('@/components/sections/top-of-week').then(mod => mod.TopOfWeekSection), { 
@@ -77,7 +78,7 @@ export default function Home() {
         selectedCity: currentUser.city || "Все",
         distance: [50],
         genderPref: currentUser.gender === 'female' ? 'male' : 'female',
-        selectedDatingGoal: "all",
+        selectedDatingGoal: currentUser.datingGoal || "all",
         selectedInterests: currentUser.interests || [],
     };
     sessionStorage.setItem('autosearchFilters', JSON.stringify(filters));

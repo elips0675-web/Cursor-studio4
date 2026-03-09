@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useCallback, useEffect, Suspense } from "react";
@@ -48,14 +49,23 @@ function performAutosearch(filters: any, allUsers: any[], currentUser: any) {
           const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
           const matchesCity = selectedCity === "Все" || user.city === selectedCity;
           const matchesGender = genderPref === "all" || user.gender === genderPref;
-          return matchesAge && matchesCity && matchesGender;
+          const matchesDistance = user.distance <= distance[0];
+          return matchesAge && matchesCity && matchesGender && matchesDistance;
         })
         .map(user => {
           let score = 0;
-          const common = user.interests.filter((i: string) => selectedInterests.includes(i)).length;
-          if (user.goal === selectedDatingGoal) score += 1000;
-          score += common * 100;
-          return { ...user, score, isCandidate: score > 0 || user.goal === selectedDatingGoal };
+          const commonInterests = user.interests.filter((i: string) => selectedInterests.includes(i)).length;
+          const hasMatchingGoal = selectedDatingGoal !== "all" && user.goal === selectedDatingGoal;
+
+          if (hasMatchingGoal) {
+            score += 1000;
+          }
+          score += commonInterests * 100;
+          
+          const hasCommonInterests = commonInterests > 0;
+          const isCandidate = hasMatchingGoal || hasCommonInterests;
+
+          return { ...user, score, isCandidate };
         })
         .filter(user => user.isCandidate)
         .sort((a, b) => b.score - a.score);
@@ -123,7 +133,7 @@ function SearchContent() {
   const handlePrev = useCallback(() => { 
     if (currentIndex > 0) { 
       setDirection(-1); 
-      setCurrentIndex(prev => prev + 1); 
+      setCurrentIndex(prev => prev - 1); 
     } 
   }, [currentIndex]);
 
