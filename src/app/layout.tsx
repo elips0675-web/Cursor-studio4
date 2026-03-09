@@ -8,6 +8,7 @@ import { AppContainer } from '@/components/layout/app-container';
 import { FeatureFlagsProvider } from '@/context/feature-flags-context';
 import { CookieConsent } from '@/components/shared/cookie-consent';
 import { PwaInstallBanner } from '@/components/shared/pwa-install-banner';
+import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -65,6 +66,7 @@ export default function RootLayout({
         <LanguageProvider>
           <FirebaseClientProvider>
             <FeatureFlagsProvider>
+              <FirebaseErrorListener />
               <AppContainer>
                 {children}
                 <CookieConsent />
