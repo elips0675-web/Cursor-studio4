@@ -241,7 +241,15 @@ function SearchContent() {
             className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" 
             onClick={handleNext}
           >
-            <X size={28} strokeWidth={3} />
+            <ChevronRight size={28} strokeWidth={3} />
+          </Button>
+
+          <Button 
+            size="icon" 
+            className="w-20 h-20 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" 
+            onClick={handleLike}
+          >
+            <Heart size={36} fill="currentColor" />
           </Button>
 
           <Button 
@@ -255,14 +263,6 @@ function SearchContent() {
             </Link>
           </Button>
           
-          <Button 
-            size="icon" 
-            className="w-20 h-20 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" 
-            onClick={handleLike}
-          >
-            <Heart size={36} fill="currentColor" />
-          </Button>
-
           <Button 
             asChild 
             variant="outline" 
