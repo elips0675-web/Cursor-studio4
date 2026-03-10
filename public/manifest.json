@@ -1,26 +1,23 @@
 {
-  "name": "SwiftMatch - AI Dating",
+  "name": "SwiftMatch",
   "short_name": "SwiftMatch",
-  "description": "Современные знакомства с искусственным интеллектом",
+  "description": "Современные знакомства с ИИ",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#fe3c72",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/swiftmatch_icon/192/192",
+      "src": "https://picsum.photos/seed/app_icon_192/192/192",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://picsum.photos/seed/swiftmatch_icon/512/512",
+      "src": "https://picsum.photos/seed/app_icon_512/512/512",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "orientation": "portrait",
-  "scope": "/",
-  "categories": ["lifestyle", "social"]
+  ]
 }
