@@ -250,7 +250,7 @@ function SearchContent() {
             size="icon" 
             className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all"
           >
-            <Link href={`/user?id=${user.id}`}>
+            <Link href={`/user?id=${user.id}`} prefetch={true}>
               <User size={28} strokeWidth={3} />
             </Link>
           </Button>
@@ -269,7 +269,7 @@ function SearchContent() {
             size="icon" 
             className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-[#2ecc71] hover:text-[#27ae60] active:scale-90 transition-all"
           >
-            <Link href={`/chats?matchId=${user.id}`}>
+            <Link href={`/chats?matchId=${user.id}`} prefetch={true}>
               <MessageCircle size={32} strokeWidth={3} />
             </Link>
           </Button>

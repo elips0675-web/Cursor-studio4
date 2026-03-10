@@ -101,7 +101,7 @@ export function AppHeader() {
       </div>
 
       <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
-        <Link href="/" prefetch={false}>
+        <Link href="/" prefetch={true}>
           <h1 className="text-xl font-black font-headline gradient-text cursor-pointer tracking-tighter select-none active:scale-95 transition-transform">
             SwiftMatch
           </h1>
@@ -227,7 +227,7 @@ export function AppHeader() {
           size="sm" 
           className="text-[10px] font-black uppercase tracking-widest gap-2 text-muted-foreground hover:text-foreground hover:bg-muted transition-all h-9 px-3 ml-0.5 rounded-full"
         >
-          <Link href="/login" prefetch={false}>
+          <Link href="/login" prefetch={true}>
             <LogIn size={16} />
             <span className="hidden xs:block">{language === "RU" ? "Вход" : "Login"}</span>
           </Link>

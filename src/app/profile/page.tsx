@@ -277,15 +277,22 @@ export default function ProfilePage() {
       <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
         <div className="h-24 gradient-bg relative shadow-sm">
-          <Link href="/settings" className="absolute top-4 right-6 text-white/90 p-2 bg-black/15 rounded-full hover:bg-black/25 transition-all backdrop-blur-md"><Settings size={18} /></Link>
+          <Link href="/settings" prefetch={true} className="absolute top-4 right-6 text-white/90 p-2 bg-black/15 rounded-full hover:bg-black/25 transition-all backdrop-blur-md"><Settings size={18} /></Link>
         </div>
         <div className="px-5 -mt-10">
           <div className="text-center mb-6">
             <div className="relative inline-block mb-4">
               <div className="relative w-32 h-32 rounded-xl border-[6px] border-white app-shadow overflow-hidden bg-muted">
-                <Image src={photos[0] || PlaceHolderImages[0].imageUrl} alt={profile.name} fill sizes="128px" className="object-cover" priority />
+                <Image 
+                  src={photos[0] || PlaceHolderImages[0].imageUrl} 
+                  alt={profile.name} 
+                  fill 
+                  sizes="128px" 
+                  className="object-cover" 
+                  priority 
+                />
               </div>
-              <Link href="/profile/edit" className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"><Edit2 size={18} /></Link>
+              <Link href="/profile/edit" prefetch={true} className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"><Edit2 size={18} /></Link>
             </div>
             <div className="space-y-2">
               <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">{profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" /></h3>
@@ -470,7 +477,7 @@ export default function ProfilePage() {
                   const linkHref = groupInfo.id ? `/chats?groupId=${groupInfo.id}` : '#';
                   
                   return (
-                    <Link href={linkHref} key={groupName}>
+                    <Link href={linkHref} key={groupName} prefetch={true}>
                       <Badge variant="secondary" className="bg-blue-100 text-blue-700 border-blue-200 border gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:scale-105 shadow-sm cursor-pointer">
                         <Users size={14} /> {displayName}
                       </Badge>

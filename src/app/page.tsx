@@ -105,7 +105,7 @@ export default function Home() {
               <Zap size={14} fill="currentColor" /> {t('button.autosearch')}
             </Button>
             <Button asChild className="h-12 rounded-xl bg-white border-2 border-primary text-primary font-black text-[10px] shadow-lg uppercase tracking-widest">
-              <Link href="/search?mode=nearby"><Search size={14} className="stroke-[3px]" /> {t('home.nearby')}</Link>
+              <Link href="/search?mode=nearby" prefetch={true}><Search size={14} className="stroke-[3px]" /> {t('home.nearby')}</Link>
             </Button>
           </div>
         </section>
@@ -115,7 +115,7 @@ export default function Home() {
         </Suspense>
 
         <section className="px-5 pt-8">
-          <Link href="/contest" className="block relative h-28 rounded-xl overflow-hidden group bg-gradient-to-r from-amber-500 to-orange-600">
+          <Link href="/contest" prefetch={true} className="block relative h-28 rounded-xl overflow-hidden group bg-gradient-to-r from-amber-500 to-orange-600">
             <div className="relative h-full flex items-center p-6 text-white">
               <div className="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md border border-white/20 flex items-center justify-center mr-4">
                 <Trophy size={24} fill="currentColor" />

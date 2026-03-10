@@ -11,7 +11,7 @@ import Image from "next/image";
 const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLike: () => void; priority?: boolean }) => {
     return (
       <div className="bg-white rounded-[1rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
-        <Link href={`/user?id=${user.id}`} className="relative aspect-[4/3] bg-muted block overflow-hidden cursor-pointer">
+        <Link href={`/user?id=${user.id}`} prefetch={true} className="relative aspect-[4/3] bg-muted block overflow-hidden cursor-pointer">
           <Image 
             src={user.img} 
             alt={user.name} 
@@ -50,7 +50,7 @@ const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLi
               size="sm" 
               className="h-8 rounded-lg border-muted bg-muted/30 text-foreground hover:bg-muted/50 active:scale-95 transition-all shadow-sm"
             >
-              <Link href={`/user?id=${user.id}`}>
+              <Link href={`/user?id=${user.id}`} prefetch={true}>
                 <User size={14} />
               </Link>
             </Button>
