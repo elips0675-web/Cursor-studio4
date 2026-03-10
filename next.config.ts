@@ -1,4 +1,3 @@
-
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -10,13 +9,13 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 31536000, // Кэширование на год для оптимизированных фото
+    minimumCacheTTL: 31536000,
     remotePatterns: [
       { protocol: 'https', hostname: 'placehold.co', pathname: '/**' },
       { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' },
       { protocol: 'https', hostname: 'picsum.photos', pathname: '/**' },
     ],
-    deviceSizes: [320, 420, 768, 1024, 1200], // Оптимизированные брейкпоинты для мобильных
+    deviceSizes: [320, 420, 768, 1024, 1200],
     imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   experimental: {
@@ -27,7 +26,10 @@ const nextConfig: NextConfig = {
       '@radix-ui/react-icons',
       'embla-carousel-react',
       'react-dom',
-      'recharts'
+      'recharts',
+      'date-fns',
+      'clsx',
+      'tailwind-merge'
     ],
   },
   compiler: {
@@ -36,6 +38,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  productionBrowserSourceMaps: false, // Уменьшает размер клиентского кода в проде
 };
 
 export default nextConfig;
