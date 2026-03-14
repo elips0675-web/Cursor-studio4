@@ -122,13 +122,24 @@ export default function Home() {
 
   if (!isMounted) {
     return (
-      <div className="flex flex-col h-svh bg-white items-center justify-center">
+      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-4xl font-black font-headline gradient-text tracking-tighter"
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="relative flex flex-col items-center"
         >
-          SwiftMatch
+          <div className="w-20 h-20 rounded-[2.5rem] gradient-bg flex items-center justify-center shadow-2xl shadow-primary/20 mb-6">
+            <Zap className="text-white" size={40} fill="currentColor" />
+          </div>
+          <h1 className="text-4xl font-black font-headline tracking-tighter gradient-text">
+            SwiftMatch
+          </h1>
+          <div className="mt-8 flex gap-1">
+            <span className="w-1.5 h-1.5 bg-primary/20 rounded-full animate-bounce"></span>
+            <span className="w-1.5 h-1.5 bg-primary/20 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+            <span className="w-1.5 h-1.5 bg-primary/20 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+          </div>
         </motion.div>
       </div>
     );
@@ -180,11 +191,16 @@ export default function Home() {
           <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
         </Suspense>
 
-        {/* Popular Groups Section */}
-        <section className="px-5 pt-8">
+        {/* Popular Groups Section - Moved above Recommendations */}
+        <section className="px-5 pt-10">
           <div className="flex items-center justify-between mb-4 px-1">
-            <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
-            <Link href="/groups" className="text-[10px] font-black text-primary uppercase tracking-widest">Все</Link>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
+                <Users size={16} />
+              </div>
+              <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
+            </div>
+            <Link href="/groups" className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-3 py-1 rounded-full border border-primary/10">Все</Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
             {popularGroups.map((group) => {
@@ -193,15 +209,15 @@ export default function Home() {
                 <Link 
                   href={`/groups/${group.id}`} 
                   key={group.id} 
-                  className="bg-white rounded-xl app-shadow border border-white overflow-hidden hover:bg-primary/5 transition-all flex flex-col group"
+                  className="bg-white rounded-2xl app-shadow border border-white overflow-hidden hover:bg-primary/5 transition-all flex flex-col group"
                 >
                   <div className="h-16 w-full bg-muted flex items-center justify-center">
-                    <Icon size={20} className="text-orange-500 group-hover:scale-110 transition-transform" />
+                    <Icon size={24} className="text-orange-500 group-hover:scale-110 transition-transform duration-300" />
                   </div>
                   <div className="p-3 text-center">
-                    <h4 className="font-bold text-xs leading-tight truncate">{language === 'RU' ? group.name_ru : group.name_en}</h4>
-                    <p className="text-[9px] text-green-600 font-bold uppercase mt-1 flex items-center justify-center gap-1">
-                      <span className="w-1 h-1 bg-current rounded-full"></span>
+                    <h4 className="font-black text-[11px] uppercase tracking-tight leading-tight truncate">{language === 'RU' ? group.name_ru : group.name_en}</h4>
+                    <p className="text-[9px] text-green-600 font-bold uppercase mt-1.5 flex items-center justify-center gap-1.5">
+                      <span className="w-1.5 h-1.5 bg-current rounded-full"></span>
                       {group.onlineCount} {t('chats.online')}
                     </p>
                   </div>
