@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -81,10 +81,10 @@ export default function ContentManagementPage() {
     const { t, language } = useLanguage();
     const firestore = useFirestore();
     
-    const [interests, setInterests] = useState<string[]>([]);
-    const [datingGoals, setDatingGoals] = useState<string[]>([]);
-    const [educationLevels, setEducationLevels] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
+    // Initialized with constants for instant display
+    const [interests, setInterests] = useState<string[]>(INTEREST_OPTIONS);
+    const [datingGoals, setDatingGoals] = useState<string[]>(DATING_GOALS);
+    const [educationLevels, setEducationLevels] = useState<string[]>(EDUCATION_OPTIONS);
     const [isSaving, setIsSaving] = useState(false);
 
     const configRef = useMemo(() => {
@@ -98,15 +98,10 @@ export default function ContentManagementPage() {
         const unsubscribe = onSnapshot(configRef, (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                setInterests(data.interests || INTEREST_OPTIONS);
-                setDatingGoals(data.datingGoals || DATING_GOALS);
-                setEducationLevels(data.educationLevels || EDUCATION_OPTIONS);
-            } else {
-                setInterests(INTEREST_OPTIONS);
-                setDatingGoals(DATING_GOALS);
-                setEducationLevels(EDUCATION_OPTIONS);
+                if (data.interests) setInterests(data.interests);
+                if (data.datingGoals) setDatingGoals(data.datingGoals);
+                if (data.educationLevels) setEducationLevels(data.educationLevels);
             }
-            setLoading(false);
         });
 
         return () => unsubscribe();
@@ -130,15 +125,6 @@ export default function ContentManagementPage() {
             setIsSaving(false);
         }
     };
-
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center h-64 gap-4">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Загрузка контента...</p>
-            </div>
-        );
-    }
 
     return (
         <Card className="border-0 shadow-sm">

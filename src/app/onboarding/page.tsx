@@ -36,7 +36,6 @@ import { generateProfileBio } from "@/ai/flows/ai-generate-profile-bio";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
 import { INTEREST_OPTIONS, DATING_GOALS } from "@/lib/constants";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const GENDER_OPTIONS = [
   { id: 'male', labelKey: 'onboarding.step1.male' },
@@ -53,24 +52,10 @@ export default function OnboardingPage() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  // Dynamic config from Firestore
-  const [dynamicInterests, setDynamicInterests] = useState<string[]>([]);
-  const [dynamicGoals, setDynamicGoals] = useState<string[]>([]);
-  const [isConfigLoading, setIsConfigLoading] = useState(true);
-
-  const [formData, setFormData] = useState({
-    gender: "",
-    name: "",
-    age: "",
-    city: "",
-    height: "",
-    datingGoal: "",
-    zodiac: "",
-    interests: [] as string[],
-    bio: "",
-    photo: PlaceHolderImages.find(p => p.id === 'me')?.imageUrl || PlaceHolderImages[10].imageUrl,
-    lookingFor: "all"
-  });
+  // Dynamic config from Firestore - Initialized with defaults for instant loading
+  const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
+  const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
+  const [isConfigLoading, setIsConfigLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -88,13 +73,9 @@ export default function OnboardingPage() {
     const unsubscribe = onSnapshot(configRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setDynamicInterests(data.interests || INTEREST_OPTIONS);
-        setDynamicGoals(data.datingGoals || DATING_GOALS);
-      } else {
-        setDynamicInterests(INTEREST_OPTIONS);
-        setDynamicGoals(DATING_GOALS);
+        if (data.interests) setDynamicInterests(data.interests);
+        if (data.datingGoals) setDynamicGoals(data.datingGoals);
       }
-      setIsConfigLoading(false);
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -102,6 +83,20 @@ export default function OnboardingPage() {
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    gender: "",
+    name: "",
+    age: "",
+    city: "",
+    height: "",
+    datingGoal: "",
+    zodiac: "",
+    interests: [] as string[],
+    bio: "",
+    photo: PlaceHolderImages.find(p => p.id === 'me')?.imageUrl || PlaceHolderImages[10].imageUrl,
+    lookingFor: "all"
+  });
 
   const nextStep = () => {
     if (step < totalSteps) setStep(step + 1);
@@ -293,7 +288,7 @@ export default function OnboardingPage() {
                 </Label>
                 <Select value={formData.datingGoal} onValueChange={(val) => setFormData({...formData, datingGoal: val})}>
                   <SelectTrigger className="h-14 rounded-xl bg-muted/30 border-0 font-bold px-6">
-                    {isConfigLoading ? <Loader2 size={14} className="animate-spin" /> : <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />}
+                    <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-0 shadow-2xl">
                     {dynamicGoals.map(goal => <SelectItem key={goal} value={goal} className="font-bold py-3">{goal}</SelectItem>)}
@@ -326,15 +321,11 @@ export default function OnboardingPage() {
               <p className="text-muted-foreground text-sm">{t('onboarding.step4.desc')}</p>
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
-              {isConfigLoading ? (
-                  <Skeleton className="h-32 w-full rounded-2xl" />
-              ) : (
-                dynamicInterests.map(interest => (
-                    <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-xl transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>
-                      {t(interest)}
-                    </Badge>
-                ))
-              )}
+              {dynamicInterests.map(interest => (
+                  <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-xl transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md" : "bg-muted text-muted-foreground hover:bg-border")}>
+                    {t(interest)}
+                  </Badge>
+              ))}
             </div>
           </div>
         );

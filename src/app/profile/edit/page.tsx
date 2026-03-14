@@ -23,10 +23,9 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, PET_OPTIONS, SLEEP_SCHEDULE_OPTIONS, EDUCATION_OPTIONS } from "@/lib/constants";
+import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, EDUCATION_OPTIONS } from "@/lib/constants";
 import { GROUP_CATEGORIES } from "@/lib/demo-data";
 import { useLanguage } from "@/context/language-context";
-import { Skeleton } from "@/components/ui/skeleton";
 
 const defaultProfile = {
     displayName: "Анна",
@@ -56,11 +55,10 @@ export default function EditProfilePage() {
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
   const [profile, setProfile] = useState(defaultProfile as any);
   
-  // Dynamic config from Firestore
-  const [dynamicInterests, setDynamicInterests] = useState<string[]>([]);
-  const [dynamicGoals, setDynamicGoals] = useState<string[]>([]);
-  const [dynamicEducation, setDynamicEducation] = useState<string[]>([]);
-  const [isConfigLoading, setIsConfigLoading] = useState(true);
+  // Dynamic config from Firestore - Initialized with defaults for instant loading
+  const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
+  const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
+  const [dynamicEducation, setDynamicEducation] = useState<string[]>(EDUCATION_OPTIONS);
 
   useEffect(() => {
     if (!firestore) return;
@@ -68,15 +66,10 @@ export default function EditProfilePage() {
     const unsubscribe = onSnapshot(configRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setDynamicInterests(data.interests || INTEREST_OPTIONS);
-        setDynamicGoals(data.datingGoals || DATING_GOALS);
-        setDynamicEducation(data.educationLevels || EDUCATION_OPTIONS);
-      } else {
-        setDynamicInterests(INTEREST_OPTIONS);
-        setDynamicGoals(DATING_GOALS);
-        setDynamicEducation(EDUCATION_OPTIONS);
+        if (data.interests) setDynamicInterests(data.interests);
+        if (data.datingGoals) setDynamicGoals(data.datingGoals);
+        if (data.educationLevels) setDynamicEducation(data.educationLevels);
       }
-      setIsConfigLoading(false);
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -239,7 +232,7 @@ export default function EditProfilePage() {
               <Label className="text-[9px] font-black uppercase tracking-widest text-primary ml-1 flex items-center gap-1.5"><Target size={12} /> Цель знакомства</Label>
               <Select value={profile.datingGoal || ''} onValueChange={(val) => setProfile({...profile, datingGoal: val})}>
                 <SelectTrigger className="rounded-xl bg-white border-0 h-11 font-bold px-4 shadow-sm">
-                    {isConfigLoading ? <Loader2 size={14} className="animate-spin" /> : <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />}
+                    <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-0 shadow-2xl">
                     {dynamicGoals.map(goal => <SelectItem key={goal} value={goal} className="font-bold text-xs">{goal}</SelectItem>)}
@@ -274,7 +267,7 @@ export default function EditProfilePage() {
                 <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1 flex items-center gap-1"><GraduationCap size={12}/> Образование</Label>
                 <Select value={profile.education || ''} onValueChange={(val) => setProfile({...profile, education: val})}>
                     <SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4">
-                        {isConfigLoading ? <Loader2 size={14} className="animate-spin" /> : <SelectValue />}
+                        <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-0 shadow-2xl">
                         {dynamicEducation.map(opt => <SelectItem key={opt} value={opt} className="font-bold text-xs">{opt}</SelectItem>)}
@@ -287,23 +280,19 @@ export default function EditProfilePage() {
           <div className="space-y-3">
             <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Интересы</Label>
             <div className="flex flex-wrap gap-2">
-              {isConfigLoading ? (
-                  <Skeleton className="h-20 w-full rounded-xl" />
-              ) : (
-                dynamicInterests.map(interest => (
-                    <Badge 
-                        key={interest} 
-                        onClick={() => toggleInterest(interest)} 
-                        variant={profile.interests.includes(interest) ? "default" : "secondary"} 
-                        className={cn(
-                            "cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", 
-                            profile.interests.includes(interest) ? "gradient-bg text-white shadow-md hover:brightness-110" : "bg-muted text-muted-foreground hover:bg-border"
-                        )}
-                    >
-                        {t(interest)}
-                    </Badge>
-                ))
-              )}
+              {dynamicInterests.map(interest => (
+                  <Badge 
+                      key={interest} 
+                      onClick={() => toggleInterest(interest)} 
+                      variant={profile.interests.includes(interest) ? "default" : "secondary"} 
+                      className={cn(
+                          "cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", 
+                          profile.interests.includes(interest) ? "gradient-bg text-white shadow-md hover:brightness-110" : "bg-muted text-muted-foreground hover:bg-border"
+                      )}
+                  >
+                      {t(interest)}
+                  </Badge>
+              ))}
             </div>
           </div>
 
