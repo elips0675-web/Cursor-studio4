@@ -32,10 +32,14 @@ export default function ProfilePage() {
     setIsMounted(true);
     const savedProfile = localStorage.getItem('userProfile');
     if (savedProfile) {
-      setProfile(JSON.parse(savedProfile));
+      const parsed = JSON.parse(savedProfile);
+      setProfile({
+        ...parsed,
+        displayName: parsed.displayName || parsed.name || "Пользователь"
+      });
     } else {
       setProfile({
-        name: "Анна",
+        displayName: "Анна",
         age: 24,
         city: "Москва",
         height: 172,
@@ -81,11 +85,10 @@ export default function ProfilePage() {
               </div>
               <Link href="/profile/edit" className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-2xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"><Edit2 size={18} /></Link>
             </div>
-            <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">{profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" /></h3>
+            <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">{profile.displayName}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" /></h3>
             <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-80 mt-1">{profile.city}</p>
           </div>
 
-          {/* Combined Profile Card - RECTANGULAR STYLE */}
           <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -132,7 +135,7 @@ export default function ProfilePage() {
               </div>
 
               <div className="pt-2 flex flex-wrap gap-2">
-                {profile.interests.map((interest: string) => {
+                {profile.interests?.map((interest: string) => {
                   const Icon = interestIconsMap[interest] || Heart;
                   return (
                     <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-3 font-bold text-[10px] rounded-lg transition-all hover:bg-muted/70 shadow-sm">
@@ -154,7 +157,6 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Gallery */}
           <div className="mt-6 bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-8">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">

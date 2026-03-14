@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo, useCallback, Suspense } from "react";
+import React, { useState, useEffect, useMemo, useCallback, Suspense } from "react";
 import { 
   Zap, 
   Search, 
@@ -80,7 +80,6 @@ export default function Home() {
       setCurrentUser(ALL_DEMO_USERS[1]);
     }
 
-    // Рандомизация данных только на клиенте для избежания ошибок гидратации
     setPopularGroups(GROUP_CATEGORIES.slice(0, 4).map(cat => ({
       ...cat,
       onlineCount: Math.floor(Math.random() * 50) + 10
@@ -119,7 +118,6 @@ export default function Home() {
     router.push('/search?mode=autosearch');
   }, [currentUser, router]);
 
-  // Защита от FOUC и Hydration Error: показываем чистый Splash Screen до монтирования
   if (!isMounted) {
     return (
       <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white">
@@ -143,7 +141,6 @@ export default function Home() {
     <div className="flex flex-col min-h-svh bg-[#f8f9fb] relative">
       <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24">
-        {/* Hero Section */}
         <section className="px-6 py-10 text-center relative overflow-hidden bg-white border-b border-border/40">
           <Badge variant="secondary" className="mb-4 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
             <Sparkles size={12} fill="currentColor" /> {t('home.popular')}
@@ -165,7 +162,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Contest Banner */}
         <section className="px-5 pt-8">
           <Link href="/contest" prefetch={true} className="block relative h-28 rounded-2xl overflow-hidden group bg-gradient-to-r from-amber-500 to-orange-600 shadow-xl shadow-amber-500/20">
             <div className="relative h-full flex items-center p-6 text-white">
@@ -185,7 +181,6 @@ export default function Home() {
           <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
         </Suspense>
 
-        {/* Popular Groups Section - MOVED ABOVE RECOMMENDATIONS */}
         <section className="px-5 pt-10">
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="flex items-center gap-2">
