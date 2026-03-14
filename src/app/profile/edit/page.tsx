@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore } from "@/firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
-import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed, Target, Heart, Users, Trash2, Maximize2, Loader2, Plus } from "lucide-react";
+import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Briefcase, Target, Heart, Users, Trash2, Loader2, Plus, Ruler } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -55,7 +55,6 @@ export default function EditProfilePage() {
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
   const [profile, setProfile] = useState(defaultProfile as any);
   
-  // Dynamic config from Firestore
   const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
   const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
   const [dynamicEducation, setDynamicEducation] = useState<string[]>(EDUCATION_OPTIONS);
@@ -72,7 +71,6 @@ export default function EditProfilePage() {
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
         if (data.educationLevels) setDynamicEducation(data.educationLevels);
         
-        // SYNC: If items were deleted globally, remove them from user selection
         setProfile((prev: any) => {
             const validInterests = prev.interests.filter((i: string) => !data.interests || data.interests.includes(i));
             return { ...prev, interests: validInterests };
@@ -333,7 +331,6 @@ export default function EditProfilePage() {
               ))}
             </div>
             
-            {/* Quick Add Custom Interest */}
             <div className="flex items-center gap-2 pt-2 border-t border-border/40">
                 <Input 
                     value={customInterest}

@@ -141,7 +141,7 @@ export default function ContentManagementPage() {
                     {t('admin.content.title')}
                 </CardTitle>
                 <CardDescription>{t('admin.content.description')}</CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent>
                 <Tabs defaultValue="interests" className="w-full">
                     <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto p-1 bg-muted/50 rounded-xl mb-6">

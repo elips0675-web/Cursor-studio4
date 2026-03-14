@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore } from "@/firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
@@ -52,7 +52,6 @@ export default function OnboardingPage() {
   const { user } = useUser();
   const firestore = useFirestore();
 
-  // Dynamic config from Firestore - Initialized with defaults for instant loading
   const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
   const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
 
@@ -75,7 +74,6 @@ export default function OnboardingPage() {
         if (data.interests) setDynamicInterests(data.interests);
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
         
-        // SYNC: Filter out any interests that might have been deleted globally if we were in the middle of picking
         setFormData(prev => ({
             ...prev,
             interests: prev.interests.filter(i => !data.interests || data.interests.includes(i))
