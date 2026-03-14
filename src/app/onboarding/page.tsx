@@ -118,7 +118,7 @@ export default function OnboardingPage() {
       async (position) => {
         try {
           const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}&zoom=10`, {
-            signal: AbortSignal.timeout(5000) // Таймаут для предотвращения бесконечного ожидания
+            signal: AbortSignal.timeout(5000)
           });
           
           if (!res.ok) throw new Error('Network response was not ok');
@@ -335,7 +335,7 @@ export default function OnboardingPage() {
             </div>
             <div className="flex flex-wrap gap-2 pt-2">
               {INTEREST_OPTIONS.map(interest => (
-                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-lg transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md hover:brightness-110" : "bg-muted text-muted-foreground hover:bg-border")}>
+                <Badge key={interest} onClick={() => toggleInterest(interest)} variant={formData.interests.includes(interest) ? "default" : "secondary"} className={cn("cursor-pointer px-4 py-2.5 rounded-xl transition-all border-0 font-bold text-[10px] uppercase tracking-tight shadow-sm", formData.interests.includes(interest) ? "gradient-bg text-white shadow-md hover:brightness-110" : "bg-muted text-muted-foreground hover:bg-border")}>
                   {t(interest)}
                 </Badge>
               ))}
@@ -367,7 +367,7 @@ export default function OnboardingPage() {
               <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step5.title')}</h2>
               <p className="text-muted-foreground text-sm px-4">{t('onboarding.step5.desc')}</p>
             </div>
-            <div className="bg-white rounded-[2rem] p-6 app-shadow border border-border/40 space-y-4">
+            <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-4">
               <div className="flex justify-between items-center">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step5.bio_label')}</Label>
                 <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-muted/50 px-3 py-1.5 rounded-full hover:bg-muted transition-colors shadow-sm">
