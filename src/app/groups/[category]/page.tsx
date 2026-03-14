@@ -65,7 +65,7 @@ function SubGroupsContent() {
                 </div>
             </header>
             <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
-                {/* Promo Banner - Rectangular style */}
+                {/* Promo Banner */}
                 <div 
                     onClick={() => setShowPremiumDialog(true)}
                     className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 p-4 rounded-xl text-white flex items-center gap-4 cursor-pointer hover:scale-[1.01] transition-transform app-shadow"
@@ -79,7 +79,7 @@ function SubGroupsContent() {
                     </div>
                 </div>
 
-                {/* Subgroups List - Icons removed, online added */}
+                {/* Subgroups List - No Icons */}
                 <div className="space-y-3">
                     {category.subgroups.map(subgroup => (
                         <Link href={`/chats?groupId=${subgroup.id}`} key={subgroup.id} className="flex items-center justify-between p-4 bg-white rounded-xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
@@ -109,7 +109,7 @@ function SubGroupsContent() {
             </main>
             <BottomNav />
 
-            {/* Dialogs - Rectangular style */}
+            {/* Dialogs */}
             <AnimatePresence>
                 {showPremiumDialog && (
                 <Dialog open={showPremiumDialog} onOpenChange={setShowPremiumDialog}>
@@ -155,7 +155,6 @@ function LoadingSkeleton() {
                 <div className="space-y-3">
                     {Array.from({ length: 10 }).map((_, i) => (
                          <div key={i} className="flex items-center gap-4 p-3 bg-white rounded-xl app-shadow">
-                            <Skeleton className="w-14 h-14 rounded-xl" />
                             <div className="flex-1 space-y-2">
                                 <Skeleton className="h-5 w-4/5 rounded-md" />
                                 <Skeleton className="h-4 w-3/5 rounded-md" />

@@ -67,7 +67,8 @@ export default function OnboardingPage() {
     zodiac: "",
     interests: [] as string[],
     bio: "",
-    photo: PlaceHolderImages.find(p => p.id === 'me')?.imageUrl || PlaceHolderImages[10].imageUrl
+    photo: PlaceHolderImages.find(p => p.id === 'me')?.imageUrl || PlaceHolderImages[10].imageUrl,
+    lookingFor: "all"
   });
 
   useEffect(() => {
@@ -85,11 +86,6 @@ export default function OnboardingPage() {
   const [isUploading, setIsUploading] = useState(false);
 
   const nextStep = () => {
-    if (step < totalSteps) setStep(step + 1);
-    else handleFinish();
-  };
-
-  const skipStep = () => {
     if (step < totalSteps) setStep(step + 1);
     else handleFinish();
   };
@@ -117,38 +113,20 @@ export default function OnboardingPage() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}&zoom=10`, {
-            signal: AbortSignal.timeout(5000)
-          });
-          
-          if (!res.ok) throw new Error('Network response was not ok');
-          
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}&zoom=10`);
           const data = await res.json();
-          const city = data.address.city || data.address.town || data.address.village || data.address.state || "";
-          
+          const city = data.address.city || data.address.town || data.address.village || "";
           if (city) {
             setFormData(prev => ({ ...prev, city }));
             toast({ title: `${t('onboarding.loc.success')}${city}` });
-          } else {
-            toast({ title: t('onboarding.loc.fail'), variant: "destructive" });
           }
         } catch (error) {
           console.error("Geocoding error:", error);
-          toast({ 
-            title: t('onboarding.loc.fail'), 
-            description: language === 'RU' ? "Пожалуйста, введите город вручную." : "Please enter city manually.",
-            variant: "destructive" 
-          });
         } finally {
           setIsDetectingLocation(false);
         }
       },
-      (geoError) => {
-        console.error("Geolocation error:", geoError);
-        setIsDetectingLocation(false);
-        toast({ title: t('onboarding.loc.denied'), variant: "destructive" });
-      },
-      { timeout: 10000 }
+      () => setIsDetectingLocation(false)
     );
   };
 
@@ -165,8 +143,7 @@ export default function OnboardingPage() {
         toast({ title: t('onboarding.toast.bio_ai') });
       }
     } catch (error) {
-      console.error("AI Bio Generation error:", error);
-      toast({ variant: "destructive", title: "AI Error", description: "Could not generate bio at this moment." });
+      console.error("AI Bio error:", error);
     } finally {
       setIsGeneratingBio(false);
     }
@@ -182,11 +159,6 @@ export default function OnboardingPage() {
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, photo: reader.result as string }));
         setIsUploading(false);
-        toast({ title: t('onboarding.toast.photo_added'), description: t('onboarding.toast.photo_desc') });
-      };
-      reader.onerror = () => {
-        setIsUploading(false);
-        toast({ title: "Error", description: "Failed to read file", variant: "destructive" });
       };
       reader.readAsDataURL(file);
     }
@@ -194,14 +166,12 @@ export default function OnboardingPage() {
 
   const handleFinish = async () => {
     if (!user) {
-        toast({ title: "Ошибка", description: "Вы не авторизованы. Пожалуйста, вернитесь на страницу входа.", variant: "destructive"});
         router.push('/login');
         return;
     }
 
     try {
         const userDocRef = doc(firestore, 'users', user.uid);
-        
         const profileForDb = {
             displayName: formData.name,
             photoURL: formData.photo,
@@ -213,18 +183,18 @@ export default function OnboardingPage() {
             datingGoal: formData.datingGoal,
             zodiac: formData.zodiac,
             gender: formData.gender,
+            lookingFor: formData.lookingFor,
+            joinedGroups: []
         };
         
         await setDoc(userDocRef, profileForDb);
-
         localStorage.setItem('userProfile', JSON.stringify({ uid: user.uid, ...profileForDb }));
-        localStorage.setItem('userProfileGallery', JSON.stringify([formData.photo]));
-
+        
         toast({ title: t('onboarding.toast.finish_title'), description: t('onboarding.toast.finish_desc') });
         router.push("/");
     } catch (error) {
         console.error("Error saving profile:", error);
-        toast({ title: "Ошибка сохранения", description: "Не удалось сохранить профиль.", variant: "destructive" });
+        toast({ title: "Ошибка сохранения", variant: "destructive" });
     }
   };
 
@@ -281,7 +251,7 @@ export default function OnboardingPage() {
                 <div className="relative">
                   <MapPin className="absolute left-6 top-1/2 -translate-y-1/2 text-primary" size={20} />
                   <Input value={formData.city} onChange={e => setFormData({...formData, city: e.target.value})} placeholder={t('onboarding.step2.city_placeholder')} className="h-14 pl-14 pr-16 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-bold" />
-                  <button onClick={handleDetectLocation} disabled={isDetectingLocation} type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-primary hover:bg-muted p-2 rounded-xl transition-colors active:scale-90" title={t('onboarding.loc.detecting')}>
+                  <button onClick={handleDetectLocation} disabled={isDetectingLocation} type="button" className="absolute right-4 top-1/2 -translate-y-1/2 text-primary hover:bg-muted p-2 rounded-xl transition-colors active:scale-90">
                     <Navigation size={20} className={cn(isDetectingLocation && "animate-pulse")} fill={isDetectingLocation ? "currentColor" : "none"} />
                   </button>
                 </div>
@@ -294,7 +264,7 @@ export default function OnboardingPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2">
               <h2 className="text-3xl font-black font-headline tracking-tight">{t('onboarding.step3.title')}</h2>
-              <p className="text-muted-foreground text-sm">{t('onboarding.step2.desc')}</p>
+              <p className="text-muted-foreground text-sm">{t('onboarding.step3.desc')}</p>
             </div>
             <div className="space-y-6">
               <div className="space-y-2">
@@ -312,14 +282,16 @@ export default function OnboardingPage() {
               </div>
               <div className="space-y-2">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
-                  <Stars size={14} className="text-primary" /> {t('onboarding.step3.zodiac_label')}
+                  <Search size={14} className="text-primary" /> {language === 'RU' ? 'Кого вы ищете?' : 'Who are you looking for?'}
                 </Label>
-                <Select value={formData.zodiac} onValueChange={(val) => setFormData({...formData, zodiac: val})}>
+                <Select value={formData.lookingFor} onValueChange={(val) => setFormData({...formData, lookingFor: val})}>
                   <SelectTrigger className="h-14 rounded-2xl bg-muted/30 border-0 font-bold px-6 focus:ring-primary/20">
-                    <SelectValue placeholder={t('onboarding.step3.zodiac_placeholder')} />
+                    <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="rounded-2xl border-0 shadow-2xl">
-                    {ZODIAC_SIGNS.map(sign => <SelectItem key={sign} value={sign} className="font-bold py-3">{t(sign)}</SelectItem>)}
+                    <SelectItem value="male" className="font-bold py-3">{language === 'RU' ? 'Мужчин' : 'Men'}</SelectItem>
+                    <SelectItem value="female" className="font-bold py-3">{language === 'RU' ? 'Женщин' : 'Women'}</SelectItem>
+                    <SelectItem value="all" className="font-bold py-3">{language === 'RU' ? 'Всех' : 'All'}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -347,19 +319,14 @@ export default function OnboardingPage() {
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
             <div className="space-y-2 text-center">
               <div className="relative inline-block mx-auto mb-4">
-                <div onClick={handleTriggerFileInput} className="w-40 h-40 rounded-[2.5rem] border-[6px] border-white shadow-2xl overflow-hidden relative group cursor-pointer transition-transform active:scale-95">
+                <div onClick={handleTriggerFileInput} className="w-40 h-40 rounded-2xl border-[6px] border-white shadow-2xl overflow-hidden relative group cursor-pointer transition-transform active:scale-95">
                   <Image src={formData.photo} alt="Me" fill className={cn("object-cover transition-all", isUploading && "blur-sm grayscale")} />
                   <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-[2px]">
                     <Camera className="text-white mb-1" size={32} />
                     <span className="text-white text-[9px] font-black uppercase tracking-widest">{t('onboarding.step5.photo_label')}</span>
                   </div>
-                  {isUploading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/20">
-                      <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  )}
                 </div>
-                <button onClick={handleTriggerFileInput} className="absolute -bottom-1 -right-1 bg-primary text-white p-3 rounded-2xl shadow-xl border-2 border-white hover:scale-110 transition-transform active:scale-90">
+                <button onClick={handleTriggerFileInput} className="absolute -bottom-1 -right-1 bg-primary text-white p-3 rounded-xl shadow-xl border-2 border-white hover:scale-110 transition-transform active:scale-90">
                   <Upload size={18} />
                 </button>
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
@@ -371,9 +338,7 @@ export default function OnboardingPage() {
               <div className="flex justify-between items-center">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step5.bio_label')}</Label>
                 <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-widest bg-muted/50 px-3 py-1.5 rounded-full hover:bg-muted transition-colors shadow-sm">
-                  <div className="flex items-center gap-1.5">
-                    <Sparkles size={12} className={cn(isGeneratingBio && "animate-spin")} /> AI {t('button.save')}
-                  </div>
+                  <Sparkles size={12} className={cn(isGeneratingBio && "animate-spin")} /> AI {t('button.save')}
                 </button>
               </div>
               <Textarea value={formData.bio} onChange={e => setFormData({...formData, bio: e.target.value})} placeholder={t('onboarding.step5.bio_placeholder')} className="min-h-[120px] rounded-2xl bg-muted/30 border-0 text-sm font-medium p-4 resize-none focus-visible:ring-primary/10" />
@@ -388,7 +353,7 @@ export default function OnboardingPage() {
   const isStepValid = () => {
     if (step === 1) return formData.name.length > 1 && formData.gender !== "";
     if (step === 2) return formData.age !== "";
-    if (step === 3) return formData.datingGoal !== "" || formData.zodiac !== "";
+    if (step === 3) return formData.datingGoal !== "";
     if (step === 4) return formData.interests.length >= 1;
     if (step === 5) return formData.bio.length > 5;
     return true;
@@ -400,33 +365,17 @@ export default function OnboardingPage() {
         <div className="h-full gradient-bg transition-all duration-500 ease-out" style={{ width: `${(step / totalSteps) * 100}%` }}></div>
       </div>
       <header className="p-6 flex items-center justify-between h-20">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={prevStep} disabled={step === 1} className="rounded-full"><ChevronLeft size={24} /></Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="h-9 px-2.5 rounded-full bg-muted/50 flex items-center justify-center text-foreground hover:bg-muted transition-all active:scale-95 gap-1.5 border border-transparent">
-                <Languages size={15} className="text-primary" />
-                <span className="text-[9px] font-black uppercase tracking-tighter">{language}</span>
-              </button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="rounded-2xl border-0 app-shadow p-1.5 min-w-[120px] bg-white">
-              <DropdownMenuItem onClick={() => setLanguage("RU")} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2">Русский (RU)</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLanguage("EN")} className="rounded-xl font-bold text-[10px] uppercase tracking-wider cursor-pointer py-2">English (EN)</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <Button variant="ghost" size="icon" onClick={prevStep} disabled={step === 1} className="rounded-full"><ChevronLeft size={24} /></Button>
         <div className="flex gap-1.5">
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div key={i} className={cn("w-2 h-2 rounded-full transition-all", step === i + 1 ? "w-6 bg-primary" : "bg-muted")}></div>
           ))}
         </div>
-        <Button onClick={skipStep} className="rounded-2xl gradient-bg text-white h-10 px-6 font-black uppercase text-[10px] tracking-widest shadow-xl shadow-primary/20 active:scale-95 transition-all border-0 hover:brightness-110">
-          {t('button.skip')}
-        </Button>
+        <Button variant="ghost" onClick={() => setStep(totalSteps)} className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('button.skip')}</Button>
       </header>
       <main className="flex-1 px-8 pt-4 pb-24 max-w-md mx-auto w-full">{renderStep()}</main>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 bg-white/80 backdrop-blur-md">
-        <Button onClick={nextStep} disabled={!isStepValid()} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all hover:brightness-110">
+        <Button onClick={nextStep} disabled={!isStepValid()} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all">
           {step === totalSteps ? t('button.start') : t('button.continue')} <ArrowRight size={20} className="ml-2" />
         </Button>
       </div>

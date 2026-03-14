@@ -127,7 +127,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Popular Groups Section - Subgroup Style Centered */}
+        {/* Popular Groups Section */}
         <section className="px-5 pt-8">
           <div className="flex items-center justify-between mb-4 px-1">
             <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
@@ -155,7 +155,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Photo Month Section - Keep rounded-2.5rem for accent */}
+        {/* Photo Month Section */}
         <section className="px-5 pt-8">
           <Link href="/contest" prefetch={true} className="block relative h-28 rounded-[2.5rem] overflow-hidden group bg-gradient-to-r from-amber-500 to-orange-600 shadow-xl shadow-amber-500/20">
             <div className="relative h-full flex items-center p-6 text-white">
