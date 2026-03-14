@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Suspense, useState, useMemo } from 'react';
@@ -79,7 +80,7 @@ function SubGroupsContent() {
                     </div>
                 </div>
 
-                {/* Subgroups List - No Icons */}
+                {/* Subgroups List - NO ICONS PER USER REQUEST */}
                 <div className="space-y-3">
                     {category.subgroups.map(subgroup => (
                         <Link href={`/chats?groupId=${subgroup.id}`} key={subgroup.id} className="flex items-center justify-between p-4 bg-white rounded-xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">

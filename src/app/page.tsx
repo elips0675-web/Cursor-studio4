@@ -120,6 +120,7 @@ export default function Home() {
     router.push('/search?mode=autosearch');
   }, [currentUser, router]);
 
+  // FULL SCREEN SPLASH TO PREVENT BROKEN TEXT/STYLES (FOUC)
   if (!isMounted) {
     return (
       <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white">
@@ -191,7 +192,7 @@ export default function Home() {
           <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
         </Suspense>
 
-        {/* Popular Groups Section - Moved above Recommendations */}
+        {/* Popular Groups Section - MOVED ABOVE RECOMMENDATIONS & STYLED LIKE GROUPS PAGE */}
         <section className="px-5 pt-10">
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="flex items-center gap-2">

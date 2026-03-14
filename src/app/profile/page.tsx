@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -84,7 +85,7 @@ export default function ProfilePage() {
             <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-80 mt-1">{profile.city}</p>
           </div>
 
-          {/* Combined Profile Card */}
+          {/* Combined Profile Card - RECTANGULAR STYLE */}
           <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2">

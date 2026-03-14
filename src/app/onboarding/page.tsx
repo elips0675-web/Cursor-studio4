@@ -16,7 +16,8 @@ import {
   Stars,
   Upload,
   Languages,
-  Search
+  Search,
+  VenetianMask
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -193,7 +194,7 @@ export default function OnboardingPage() {
         localStorage.setItem('userProfile', JSON.stringify({ uid: user.uid, ...profileForDb }));
         
         toast({ title: t('onboarding.toast.finish_title'), description: t('onboarding.toast.finish_desc') });
-        router.push("/");
+        router.push("/"); // REDIRECT TO HOME AFTER FINISH
     } catch (error) {
         console.error("Error saving profile:", error);
         toast({ title: "Ошибка сохранения", variant: "destructive" });
@@ -215,7 +216,9 @@ export default function OnboardingPage() {
                 <Input value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder={t('onboarding.step1.placeholder')} className="h-14 rounded-2xl bg-muted/30 border-0 focus-visible:ring-primary/20 font-bold px-6" />
               </div>
               <div className="space-y-2 pt-4">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">{t('onboarding.step1.gender_label')}</Label>
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-2">
+                  <VenetianMask size={14} className="text-primary" /> {t('onboarding.step1.gender_label')}
+                </Label>
                 <div className="grid grid-cols-1 gap-3">
                   {GENDER_OPTIONS.map(opt => (
                     <button key={opt.id} onClick={() => setFormData({...formData, gender: opt.id})} className={cn("h-14 rounded-2xl border-2 transition-all font-bold flex items-center px-6 gap-3", formData.gender === opt.id ? "border-primary bg-primary/5 text-primary" : "border-muted text-muted-foreground bg-transparent hover:bg-muted/30")}>
