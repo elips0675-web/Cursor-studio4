@@ -17,7 +17,7 @@ import {
 import { useLanguage } from "@/context/language-context";
 import { TrendingUp, Users, DollarSign, ArrowUpRight, Zap, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 const REGISTRATION_DATA = [
   { day: 'Пн', users: 120 },
@@ -44,7 +44,7 @@ const REVENUE_SOURCES = [
 ];
 
 const StatCard = memo(({ title, value, subtext, icon: Icon, colorClass, borderClass }: any) => (
-  <Card className={`border-0 shadow-sm border-b-4 ${borderClass}`}>
+  <Card className={`border-0 shadow-sm border-b-4 ${borderClass} transition-transform hover:translate-y-[-2px]`}>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
       <CardTitle className="text-xs font-black uppercase tracking-widest text-muted-foreground">{title}</CardTitle>
       <Icon className={`h-4 w-4 ${colorClass}`} />
@@ -70,7 +70,7 @@ const RetentionChart = memo(({ language }: any) => (
     </CardHeader>
     <CardContent className="pt-4 h-[300px]">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={RETENTION_DATA}>
+        <AreaChart data={RETENTION_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="colorRetention" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#fe3c72" stopOpacity={0.3}/>
@@ -78,13 +78,13 @@ const RetentionChart = memo(({ language }: any) => (
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-          <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} />
-          <YAxis unit="%" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} />
+          <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 600, fill: '#94a3b8'}} />
+          <YAxis unit="%" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 600, fill: '#94a3b8'}} />
           <Tooltip 
             contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
             labelStyle={{ fontWeight: 800, color: '#1e293b' }}
           />
-          <Area type="monotone" dataKey="rate" stroke="#fe3c72" strokeWidth={4} fillOpacity={1} fill="url(#colorRetention)" />
+          <Area type="monotone" dataKey="rate" stroke="#fe3c72" strokeWidth={4} fillOpacity={1} fill="url(#colorRetention)" animationDuration={1000} />
         </AreaChart>
       </ResponsiveContainer>
     </CardContent>
@@ -95,8 +95,14 @@ RetentionChart.displayName = "RetentionChart";
 export default function AdminAnalyticsPage() {
   const { language } = useLanguage();
 
+  const stats = useMemo(() => [
+    { title: "MAU (Monthly Active)", value: "12,480", subtext: language === 'RU' ? '+12% к прошлому месяцу' : '+12% vs last month', icon: Users, color: "text-blue-500", border: "border-blue-500" },
+    { title: "Conversion Rate", value: "5.2%", subtext: language === 'RU' ? '0.8% прирост' : '0.8% improvement', icon: Zap, color: "text-primary", border: "border-primary" },
+    { title: "ARPU (Avg Revenue)", value: "$8.45", subtext: language === 'RU' ? 'Оптимизировано' : 'Optimized', icon: DollarSign, color: "text-amber-500", border: "border-amber-500" },
+  ], [language]);
+
   return (
-    <div className="space-y-8 max-w-7xl mx-auto pb-24">
+    <div className="space-y-8 max-w-7xl mx-auto pb-24 animate-in fade-in duration-500">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 mb-1">
@@ -113,9 +119,9 @@ export default function AdminAnalyticsPage() {
       </header>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <StatCard title="MAU (Monthly Active)" value="12,480" subtext={language === 'RU' ? '+12% к прошлому месяцу' : '+12% vs last month'} icon={Users} colorClass="text-blue-500" borderClass="border-blue-500" />
-        <StatCard title="Conversion Rate" value="5.2%" subtext={language === 'RU' ? '0.8% прирост' : '0.8% improvement'} icon={Zap} colorClass="text-primary" borderClass="border-primary" />
-        <StatCard title="ARPU (Avg Revenue)" value="$8.45" subtext={language === 'RU' ? 'Оптимизировано' : 'Optimized'} icon={DollarSign} colorClass="text-amber-500" borderClass="border-amber-500" />
+        {stats.map((s, i) => (
+          <StatCard key={i} title={s.title} value={s.value} subtext={s.subtext} icon={s.icon} colorClass={s.color} borderClass={s.border} />
+        ))}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -137,17 +143,20 @@ export default function AdminAnalyticsPage() {
                   outerRadius={80}
                   paddingAngle={5}
                   dataKey="value"
+                  animationDuration={1000}
                 >
                   {REVENUE_SOURCES.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip 
+                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
+                />
               </PieChart>
             </ResponsiveContainer>
             <div className="w-full space-y-2 mt-4">
                 {REVENUE_SOURCES.map((source) => (
-                    <div key={source.name} className="flex items-center justify-between text-xs font-bold">
+                    <div key={source.name} className="flex items-center justify-between text-[10px] font-black uppercase tracking-tight">
                         <div className="flex items-center gap-2">
                             <div className="w-2 h-2 rounded-full" style={{ backgroundColor: source.color }}></div>
                             <span className="text-muted-foreground">{source.name}</span>
@@ -168,7 +177,7 @@ export default function AdminAnalyticsPage() {
           </CardHeader>
           <CardContent className="pt-4 h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={REGISTRATION_DATA}>
+              <AreaChart data={REGISTRATION_DATA} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
@@ -176,13 +185,13 @@ export default function AdminAnalyticsPage() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 12, fontWeight: 600, fill: '#94a3b8'}} />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fontSize: 10, fontWeight: 600, fill: '#94a3b8'}} />
                 <YAxis hide />
                 <Tooltip 
                   contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                   labelStyle={{ fontWeight: 800, color: '#1e293b' }}
                 />
-                <Area type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" />
+                <Area type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorUsers)" animationDuration={1000} />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>

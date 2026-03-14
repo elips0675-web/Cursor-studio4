@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -6,14 +7,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Users, UserCheck, Heart, DollarSign } from "lucide-react";
+import { Users, UserCheck, Heart, DollarSign, BarChart3, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function AdminDashboardPage() {
   const { t } = useLanguage();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="border-0 shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -56,6 +59,23 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-600 to-indigo-700 text-white overflow-hidden relative">
+        <div className="absolute right-0 top-0 p-8 opacity-10">
+            <BarChart3 size={120} />
+        </div>
+        <CardHeader>
+            <CardTitle className="text-xl font-black uppercase tracking-tight">Расширенная аналитика</CardTitle>
+            <p className="text-sm text-blue-100 font-medium">Просмотрите подробные графики удержания, роста и доходов в специальном разделе.</p>
+        </CardHeader>
+        <CardContent>
+            <Button asChild className="rounded-full bg-white text-blue-700 font-black uppercase tracking-widest text-[10px] h-11 px-8 hover:bg-blue-50 border-0 shadow-xl shadow-black/20">
+                <Link href="/admin/analytics">
+                    Перейти к отчетам <ChevronRight className="ml-2" size={14} strokeWidth={3} />
+                </Link>
+            </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }
