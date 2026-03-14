@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore } from "@/firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
-import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed, Target, Heart, Users, Trash2, Maximize2, Loader2 } from "lucide-react";
+import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Dog, Briefcase, Bed, Target, Heart, Users, Trash2, Maximize2, Loader2, Plus } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -55,10 +55,12 @@ export default function EditProfilePage() {
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
   const [profile, setProfile] = useState(defaultProfile as any);
   
-  // Dynamic config from Firestore - Initialized with defaults for instant loading
+  // Dynamic config from Firestore
   const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
   const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
   const [dynamicEducation, setDynamicEducation] = useState<string[]>(EDUCATION_OPTIONS);
+  const [customInterest, setCustomInterest] = useState("");
+  const [isAddingInterest, setIsAddingInterest] = useState(false);
 
   useEffect(() => {
     if (!firestore) return;
@@ -69,6 +71,12 @@ export default function EditProfilePage() {
         if (data.interests) setDynamicInterests(data.interests);
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
         if (data.educationLevels) setDynamicEducation(data.educationLevels);
+        
+        // SYNC: If items were deleted globally, remove them from user selection
+        setProfile((prev: any) => {
+            const validInterests = prev.interests.filter((i: string) => !data.interests || data.interests.includes(i));
+            return { ...prev, interests: validInterests };
+        });
       }
     });
     return () => unsubscribe();
@@ -118,6 +126,36 @@ export default function EditProfilePage() {
       toast({ variant: "destructive", title: "Ошибка AI" });
     } finally {
       setIsGeneratingBio(false);
+    }
+  };
+
+  const handleAddCustomInterest = async () => {
+    if (!customInterest.trim() || !firestore) return;
+    if (dynamicInterests.includes(customInterest.trim())) {
+        if (!profile.interests.includes(customInterest.trim())) {
+            toggleInterest(customInterest.trim());
+        }
+        setCustomInterest("");
+        return;
+    }
+
+    setIsAddingInterest(true);
+    try {
+        const updatedList = [...dynamicInterests, customInterest.trim()];
+        const configRef = doc(firestore, 'config', 'content');
+        await setDoc(configRef, { interests: updatedList }, { merge: true });
+        
+        setProfile((prev: any) => ({
+            ...prev,
+            interests: [...prev.interests, customInterest.trim()]
+        }));
+        
+        setCustomInterest("");
+        toast({ title: "Интерес добавлен и выбран" });
+    } catch (e) {
+        toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось добавить интерес' });
+    } finally {
+        setIsAddingInterest(false);
     }
   };
 
@@ -277,7 +315,7 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Интересы</Label>
             <div className="flex flex-wrap gap-2">
               {dynamicInterests.map(interest => (
@@ -293,6 +331,24 @@ export default function EditProfilePage() {
                       {t(interest)}
                   </Badge>
               ))}
+            </div>
+            
+            {/* Quick Add Custom Interest */}
+            <div className="flex items-center gap-2 pt-2 border-t border-border/40">
+                <Input 
+                    value={customInterest}
+                    onChange={(e) => setCustomInterest(e.target.value)}
+                    placeholder="Свой вариант..."
+                    className="h-9 rounded-lg bg-muted/30 border-0 text-[10px] font-bold"
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddCustomInterest()}
+                />
+                <Button 
+                    onClick={handleAddCustomInterest} 
+                    disabled={isAddingInterest || !customInterest.trim()}
+                    className="h-9 w-9 shrink-0 rounded-lg gradient-bg text-white shadow-lg border-0"
+                >
+                    {isAddingInterest ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
+                </Button>
             </div>
           </div>
 

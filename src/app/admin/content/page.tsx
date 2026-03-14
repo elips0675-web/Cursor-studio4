@@ -114,12 +114,15 @@ export default function ContentManagementPage() {
         setIsSaving(true);
         setIsAddingAction(isAdding);
         try {
-            const dataToUpdate = {
-                interests: key === 'interests' ? newItems : interests,
-                datingGoals: key === 'goals' ? newItems : datingGoals,
-                educationLevels: key === 'education' ? newItems : educationLevels,
+            const fieldMap: Record<string, string> = {
+                'interests': 'interests',
+                'goals': 'datingGoals',
+                'education': 'educationLevels'
             };
-            await setDoc(configRef, dataToUpdate, { merge: true });
+            const fieldName = fieldMap[key];
+            if (!fieldName) throw new Error("Invalid field key");
+
+            await setDoc(configRef, { [fieldName]: newItems }, { merge: true });
             toast({ title: t(`admin.content.${key}.save_toast`) });
         } catch (error) {
             console.error("Error updating config:", error);
@@ -138,7 +141,7 @@ export default function ContentManagementPage() {
                     {t('admin.content.title')}
                 </CardTitle>
                 <CardDescription>{t('admin.content.description')}</CardDescription>
-            </CardHeader>
+            </Header>
             <CardContent>
                 <Tabs defaultValue="interests" className="w-full">
                     <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3 h-auto p-1 bg-muted/50 rounded-xl mb-6">

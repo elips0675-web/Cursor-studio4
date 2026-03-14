@@ -55,7 +55,6 @@ export default function OnboardingPage() {
   // Dynamic config from Firestore - Initialized with defaults for instant loading
   const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
   const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
-  const [isConfigLoading, setIsConfigLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -75,6 +74,12 @@ export default function OnboardingPage() {
         const data = docSnap.data();
         if (data.interests) setDynamicInterests(data.interests);
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
+        
+        // SYNC: Filter out any interests that might have been deleted globally if we were in the middle of picking
+        setFormData(prev => ({
+            ...prev,
+            interests: prev.interests.filter(i => !data.interests || data.interests.includes(i))
+        }));
       }
     });
     return () => unsubscribe();
@@ -381,7 +386,7 @@ export default function OnboardingPage() {
       </header>
       <main className="flex-1 px-8 pt-4 pb-24 max-w-md mx-auto w-full">{renderStep()}</main>
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 bg-white/80 backdrop-blur-md">
-        <Button onClick={nextStep} disabled={(formData.gender === "" && step === 1) || isConfigLoading} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all">
+        <Button onClick={nextStep} disabled={(formData.gender === "" && step === 1)} className="w-full h-16 rounded-full gradient-bg text-white font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/30 active:scale-95 transition-all">
           {step === totalSteps ? t('button.start') : t('button.continue')} <ArrowRight size={20} className="ml-2" />
         </Button>
       </div>
