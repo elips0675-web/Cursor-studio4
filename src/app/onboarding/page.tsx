@@ -71,13 +71,14 @@ export default function OnboardingPage() {
     const unsubscribe = onSnapshot(configRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.interests) setDynamicInterests(data.interests);
+        if (data.interests) {
+            setDynamicInterests(data.interests);
+            setFormData(prev => ({
+                ...prev,
+                interests: prev.interests.filter(i => data.interests.includes(i))
+            }));
+        }
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
-        
-        setFormData(prev => ({
-            ...prev,
-            interests: prev.interests.filter(i => !data.interests || data.interests.includes(i))
-        }));
       }
     });
     return () => unsubscribe();

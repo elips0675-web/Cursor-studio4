@@ -67,14 +67,16 @@ export default function EditProfilePage() {
     const unsubscribe = onSnapshot(configRef, (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.interests) setDynamicInterests(data.interests);
+        if (data.interests) {
+            setDynamicInterests(data.interests);
+            // Reactive cleanup: ensure profile interests match global config
+            setProfile((prev: any) => ({
+                ...prev,
+                interests: prev.interests.filter((i: string) => data.interests.includes(i))
+            }));
+        }
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
         if (data.educationLevels) setDynamicEducation(data.educationLevels);
-        
-        setProfile((prev: any) => {
-            const validInterests = prev.interests.filter((i: string) => !data.interests || data.interests.includes(i));
-            return { ...prev, interests: validInterests };
-        });
       }
     });
     return () => unsubscribe();
@@ -143,11 +145,7 @@ export default function EditProfilePage() {
         const configRef = doc(firestore, 'config', 'content');
         await setDoc(configRef, { interests: updatedList }, { merge: true });
         
-        setProfile((prev: any) => ({
-            ...prev,
-            interests: [...prev.interests, customInterest.trim()]
-        }));
-        
+        // No need to manually setProfile interests here as onSnapshot will handle it
         setCustomInterest("");
         toast({ title: "Интерес добавлен и выбран" });
     } catch (e) {

@@ -91,7 +91,7 @@ export default function AdminMessagingPage() {
                     {t('admin.messaging.title')}
                 </CardTitle>
                 <CardDescription>{t('admin.messaging.description')}</CardDescription>
-            </Header>
+            </CardHeader>
             <CardContent className="space-y-6">
                 <Tabs defaultValue="app" className="w-full" onValueChange={setChannel}>
                     <TabsList className="grid w-full grid-cols-2 mb-6 h-12 bg-muted/50 p-1 rounded-xl">
