@@ -9,27 +9,7 @@ import {
     Plus, 
     Gift, 
     Play, 
-    CreditCard,
-    Music,
-    Dumbbell,
-    Palette,
-    Gamepad2,
-    Film,
-    Globe,
-    ChefHat,
-    Cpu,
-    BookOpen,
-    Sparkles,
-    Shirt,
-    HeartPulse,
-    Dog,
-    FlaskConical,
-    Briefcase,
-    Home,
-    Car,
-    Laugh,
-    Star,
-    Scroll
+    CreditCard
 } from 'lucide-react';
 import { GROUP_CATEGORIES } from '@/lib/demo-data';
 import { AppHeader } from '@/components/layout/app-header';
@@ -40,10 +20,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
-
-const iconMap: Record<string, React.ElementType> = {
-    Music, Dumbbell, Palette, Gamepad2, Film, Globe, ChefHat, Cpu, BookOpen, Sparkles, Shirt, HeartPulse, Dog, FlaskConical, Briefcase, Home, Car, Laugh, Star, Scroll
-};
 
 function SubGroupsContent() {
     const params = useParams();
@@ -75,8 +51,6 @@ function SubGroupsContent() {
           </div>
         );
     }
-    
-    const CategoryIcon = iconMap[category.icon] || Users;
 
     return (
         <div className="flex flex-col h-svh bg-[#f8f9fb]">
@@ -84,16 +58,14 @@ function SubGroupsContent() {
                 <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-muted/50">
                   <ChevronLeft size={24} className="text-foreground" />
                 </Button>
-                <div className="flex-1 min-w-0 flex items-center gap-3">
-                  <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center flex-shrink-0">
-                    <CategoryIcon size={18} className="text-orange-500" />
-                  </div>
+                <div className="flex-1 min-w-0">
                   <h3 className="font-black text-lg leading-tight tracking-tight text-foreground truncate">
                     {language === 'RU' ? category.name_ru : category.name_en}
                   </h3>
                 </div>
             </header>
             <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24">
+                {/* Promo Banner - Rectangular style */}
                 <div 
                     onClick={() => setShowPremiumDialog(true)}
                     className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 p-4 rounded-xl text-white flex items-center gap-4 cursor-pointer hover:scale-[1.01] transition-transform app-shadow"
@@ -107,6 +79,7 @@ function SubGroupsContent() {
                     </div>
                 </div>
 
+                {/* Subgroups List - Icons removed, online added */}
                 <div className="space-y-3">
                     {category.subgroups.map(subgroup => (
                         <Link href={`/chats?groupId=${subgroup.id}`} key={subgroup.id} className="flex items-center justify-between p-4 bg-white rounded-xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
@@ -136,6 +109,7 @@ function SubGroupsContent() {
             </main>
             <BottomNav />
 
+            {/* Dialogs - Rectangular style */}
             <AnimatePresence>
                 {showPremiumDialog && (
                 <Dialog open={showPremiumDialog} onOpenChange={setShowPremiumDialog}>

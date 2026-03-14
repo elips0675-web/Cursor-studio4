@@ -57,28 +57,35 @@ export default function ProfilePage() {
 
   const earnedTitles = useMemo(() => getUserTitles(profile, language), [profile, language]);
 
-  if (!isMounted || !profile) return <div className="flex-1 p-6 bg-[#f8f9fb]"><Skeleton className="h-64 w-full rounded-xl" /></div>;
+  if (!isMounted || !profile) return (
+    <div className="flex flex-col h-svh bg-[#f8f9fb]">
+      <AppHeader />
+      <main className="flex-1 p-6"><Skeleton className="h-64 w-full rounded-2xl" /></main>
+      <BottomNav />
+    </div>
+  );
 
   return (
-    <>
+    <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
+      <main className="flex-1 overflow-y-auto pb-24">
         <div className="h-24 gradient-bg relative">
           <Link href="/settings" className="absolute top-4 right-6 text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md"><Settings size={18} /></Link>
         </div>
         <div className="px-5 -mt-10">
           <div className="text-center mb-6">
             <div className="relative inline-block mb-4">
-              <div className="relative w-32 h-32 rounded-xl border-[6px] border-white app-shadow overflow-hidden bg-muted">
+              <div className="relative w-32 h-32 rounded-2xl border-[6px] border-white app-shadow overflow-hidden bg-muted">
                 <Image src={photos[0] || PlaceHolderImages[0].imageUrl} alt="Profile" fill className="object-cover" />
               </div>
-              <Link href="/profile/edit" className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"><Edit2 size={18} /></Link>
+              <Link href="/profile/edit" className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-2xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"><Edit2 size={18} /></Link>
             </div>
             <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">{profile.name}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" /></h3>
             <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-80 mt-1">{profile.city}</p>
           </div>
 
-          <div className="bg-white rounded-xl p-6 app-shadow border border-border/40 space-y-6">
+          {/* Combined Profile Card - Rectangular style */}
+          <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><User size={14} /></div>
@@ -97,7 +104,7 @@ export default function ProfilePage() {
                   <span className="text-[8px] font-black uppercase text-muted-foreground ml-1">Ищу</span>
                   <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[10px] gap-2">
                     <Search size={12} className="text-primary" />
-                    {profile.lookingFor === 'male' ? 'Мужчину' : 'Женщину'}
+                    {profile.lookingFor === 'male' ? 'Мужчину' : profile.lookingFor === 'female' ? 'Женщину' : 'Всех'}
                   </Badge>
                 </div>
                 <div className="space-y-1">
@@ -146,7 +153,8 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="mt-6 bg-white rounded-xl p-6 app-shadow border border-border/40">
+          {/* Gallery - Rectangular style */}
+          <div className="mt-6 bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-8">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <Camera size={18} className="text-primary" />
@@ -156,7 +164,7 @@ export default function ProfilePage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {photos.map((url, idx) => (
-                <div key={idx} className="relative aspect-square rounded-lg overflow-hidden bg-muted border border-border/10">
+                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-muted border border-border/10">
                   <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover" />
                 </div>
               ))}
@@ -165,6 +173,6 @@ export default function ProfilePage() {
         </div>
       </main>
       <BottomNav />
-    </>
+    </div>
   );
 }

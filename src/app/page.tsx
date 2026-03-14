@@ -102,9 +102,10 @@ export default function Home() {
   }
 
   return (
-    <>
+    <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <main className="flex-1 overflow-y-auto pb-24 bg-[#f8f9fb]">
+      <main className="flex-1 overflow-y-auto pb-24">
+        {/* Hero Section */}
         <section className="px-6 py-10 text-center relative overflow-hidden bg-white border-b border-border/40">
           <Badge variant="secondary" className="mb-4 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
             <Sparkles size={12} fill="currentColor" /> {t('home.popular')}
@@ -126,6 +127,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Popular Groups Section - Subgroup Style Centered */}
         <section className="px-5 pt-8">
           <div className="flex items-center justify-between mb-4 px-1">
             <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
@@ -133,7 +135,11 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-2 gap-3">
             {popularGroups.map((group) => (
-              <Link href={`/groups/${group.id}`} key={group.id} className="bg-white p-4 rounded-xl app-shadow border border-white hover:bg-primary/5 transition-all flex flex-col items-center text-center gap-2 group">
+              <Link 
+                href={`/groups/${group.id}`} 
+                key={group.id} 
+                className="bg-white p-4 rounded-xl app-shadow border border-white hover:bg-primary/5 transition-all flex flex-col items-center text-center gap-2 group"
+              >
                 <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                   <ShieldCheck size={20} />
                 </div>
@@ -149,6 +155,7 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Photo Month Section - Keep rounded-2.5rem for accent */}
         <section className="px-5 pt-8">
           <Link href="/contest" prefetch={true} className="block relative h-28 rounded-[2.5rem] overflow-hidden group bg-gradient-to-r from-amber-500 to-orange-600 shadow-xl shadow-amber-500/20">
             <div className="relative h-full flex items-center p-6 text-white">
@@ -176,6 +183,6 @@ export default function Home() {
       {showAutosearchDialog && <AutosearchDialog open={showAutosearchDialog} onOpenChange={setShowAutosearchDialog} onAutosearch={runAutosearch} />}
 
       <BottomNav />
-    </>
+    </div>
   );
 }
