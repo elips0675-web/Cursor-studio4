@@ -1,9 +1,8 @@
-
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { 
-  Settings, MapPin, CheckCircle2, Star, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Trash2, Film, Flower2, Briefcase, Gamepad2, Maximize2, X, Ruler, Target, Zap, Play, CreditCard, Users, Upload, Info, User, GraduationCap, Trophy, Dog, ChevronRight, Heart, Clock, Flame, Check, Gift, Loader2, VenetianMask, Search
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,12 +11,9 @@ import { AppHeader } from "@/components/layout/app-header";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
 import { cn, getUserTitles } from "@/lib/utils";
 import { ZodiacIcon } from "@/components/shared/zodiac-icon";
-import { motion, AnimatePresence } from "framer-motion";
-import { GROUP_CATEGORIES } from "@/lib/demo-data";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const interestIconsMap: Record<string, any> = {
@@ -61,7 +57,7 @@ export default function ProfilePage() {
 
   const earnedTitles = useMemo(() => getUserTitles(profile, language), [profile, language]);
 
-  if (!isMounted || !profile) return <div className="flex-1 p-6"><Skeleton className="h-64 w-full rounded-xl" /></div>;
+  if (!isMounted || !profile) return <div className="flex-1 p-6 bg-[#f8f9fb]"><Skeleton className="h-64 w-full rounded-xl" /></div>;
 
   return (
     <>

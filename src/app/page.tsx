@@ -60,7 +60,7 @@ export default function Home() {
     return ALL_DEMO_USERS.filter(u => u.id !== (currentUser?.id || 1) && !u.isSystem)
       .map(u => ({
         ...u,
-        commonInterests: u.interests.filter(i => myInterests.includes(i)).length
+        commonInterests: u.interests.filter((i: string) => myInterests.includes(i)).length
       }))
       .sort((a, b) => b.commonInterests - a.commonInterests)
       .slice(0, 4);
@@ -91,8 +91,8 @@ export default function Home() {
     return (
       <div className="flex flex-col h-svh bg-white items-center justify-center">
         <motion.div 
-          animate={{ scale: [1, 1.1, 1] }} 
-          transition={{ duration: 2, repeat: Infinity }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
           className="text-4xl font-black font-headline gradient-text tracking-tighter"
         >
           SwiftMatch
