@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, Suspense, useMemo } from "react";
@@ -141,7 +140,6 @@ function UserProfileContent() {
       return;
     }
 
-    // Generate unique random photos to avoid duplicate key issues
     const randomPhotos: string[] = [];
     const available = [...PlaceHolderImages].filter(p => p.imageUrl !== user.img);
     const count = Math.min(2, available.length);
@@ -281,8 +279,13 @@ function UserProfileContent() {
               {photos.map((url, idx) => (
                 <div key={`${url}-${idx}`} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm border border-border/10">
                   <Image src={url} alt={`Photo ${idx}`} fill sizes="(max-width: 480px) 50vw, 240px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
-                    <Maximize2 size={24} className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  
+                  {/* Center Reveal Overlay */}
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 group-hover:scale-100 transition-transform">
+                      <Maximize2 size={12} />
+                      <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
+                    </div>
                   </div>
                 </div>
               ))}

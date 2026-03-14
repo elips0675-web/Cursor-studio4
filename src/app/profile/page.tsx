@@ -1,9 +1,8 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
 import { 
-  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -163,12 +162,20 @@ export default function ProfilePage() {
                 <Camera size={18} className="text-primary" />
                 <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
               </div>
-              <Button variant="ghost" size="sm" className="h-8 rounded-lg text-[9px] font-black uppercase tracking-widest">Добавить</Button>
+              <Link href="/profile/edit" className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline">Изменить</Link>
             </div>
             <div className="grid grid-cols-2 gap-3">
               {photos.map((url, idx) => (
-                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden bg-muted border border-border/10">
-                  <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover" />
+                <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border/10 group cursor-pointer">
+                  <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
+                  
+                  {/* Center Reveal Overlay */}
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 group-hover:scale-100 transition-transform">
+                      <Maximize2 size={12} />
+                      <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
