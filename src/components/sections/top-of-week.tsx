@@ -10,16 +10,14 @@ import Image from "next/image";
 
 const FeaturedCard = memo(({ user, onLike, priority = false }: { user: any; onLike: () => void; priority?: boolean }) => {
     return (
-      <div className="bg-white rounded-[1rem] overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
+      <div className="bg-white rounded-xl overflow-hidden app-shadow group border border-transparent hover:border-primary/10 flex flex-col h-full transition-all relative">
         <Link href={`/user?id=${user.id}`} prefetch={true} className="relative aspect-[4/3] bg-muted block overflow-hidden cursor-pointer">
           <Image 
             src={user.img} 
             alt={user.name} 
             fill 
             sizes="(max-width: 480px) 45vw, 240px"
-            data-ai-hint={user.hint}
             priority={priority}
-            loading={priority ? "eager" : "lazy"}
             className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
           <div className="absolute top-1.5 right-1.5">
