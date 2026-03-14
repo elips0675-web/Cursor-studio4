@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -22,16 +23,6 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, PET_OPTIONS, SLEEP_SCHEDULE_OPTIONS, EDUCATION_OPTIONS } from "@/lib/constants";
 import { GROUP_CATEGORIES } from "@/lib/demo-data";
@@ -60,9 +51,7 @@ export default function EditProfilePage() {
   const { t, language } = useLanguage();
   const [isGeneratingBio, setIsGeneratingBio] = useState(false);
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
-  const [photos, setPhotos] = useState<string[]>([]);
   const [profile, setProfile] = useState(defaultProfile as any);
-  const [photoToDelete, setPhotoToDelete] = useState<number | null>(null);
   
   const { user } = useUser();
   const firestore = useFirestore();
@@ -93,19 +82,12 @@ export default function EditProfilePage() {
         }
       } catch(e) {}
     }
-
-    const savedPhotos = localStorage.getItem('userProfileGallery');
-    if (savedPhotos) {
-      setPhotos(JSON.parse(savedPhotos));
-    } else {
-      setPhotos([PlaceHolderImages[0].imageUrl, PlaceHolderImages[2].imageUrl, PlaceHolderImages[4].imageUrl]);
-    }
   }, []);
 
   const handleChangeMainPhoto = () => {
     const randomIdx = Math.floor(Math.random() * PlaceHolderImages.length);
     setMainPhoto(PlaceHolderImages[randomIdx].imageUrl);
-    toast({ title: "Фото обновлено" });
+    toast({ title: "Главное фото обновлено" });
   };
 
   const handleGenerateBio = async () => {
@@ -113,32 +95,12 @@ export default function EditProfilePage() {
     try {
       const result = await generateProfileBio({ keywords: profile.interests, description: profile.bio });
       setProfile((prev: any) => ({ ...prev, bio: result.bio }));
-      toast({ title: "Био улучшено" });
+      toast({ title: "Био улучшено AI" });
     } catch (error) {
-      toast({ variant: "destructive", title: "Ошибка" });
+      toast({ variant: "destructive", title: "Ошибка AI" });
     } finally {
       setIsGeneratingBio(false);
     }
-  };
-
-  const handleDeletePhoto = () => {
-    if (photoToDelete === null) return;
-    
-    if (photos.length <= 1) {
-      toast({
-        variant: "destructive",
-        title: t('delete_photo_error.title'),
-        description: t('delete_photo_error.description'),
-      });
-      setPhotoToDelete(null);
-      return;
-    }
-
-    const newPhotos = photos.filter((_, i) => i !== photoToDelete);
-    setPhotos(newPhotos);
-    localStorage.setItem('userProfileGallery', JSON.stringify(newPhotos));
-    toast({ title: "Фото удалено" });
-    setPhotoToDelete(null);
   };
 
   const handleSave = async () => {
@@ -187,7 +149,7 @@ export default function EditProfilePage() {
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <main className="flex-1 overflow-y-auto p-4 space-y-5 pb-6">
+      <main className="flex-1 overflow-y-auto p-4 space-y-5 pb-24">
         <div className="flex flex-col items-center gap-2 pt-2">
           <div className="relative group cursor-pointer" onClick={handleChangeMainPhoto}>
             <div className="w-40 h-40 rounded-2xl border-4 border-white overflow-hidden relative shadow-lg transform transition-transform group-hover:scale-[1.02]">
@@ -196,6 +158,7 @@ export default function EditProfilePage() {
             </div>
             <button className="absolute bottom-1 right-1 bg-primary text-white p-2.5 rounded-xl shadow-md border-2 border-white active:scale-95 transition-transform"><Camera size={16} /></button>
           </div>
+          <p className="text-[10px] font-black uppercase text-muted-foreground/60 tracking-widest mt-1">Основное фото профиля</p>
         </div>
 
         <div className="bg-white rounded-2xl p-6 app-shadow space-y-6 border border-border/40">
@@ -325,63 +288,12 @@ export default function EditProfilePage() {
             </div>
         </div>
 
-        <div className="mt-6 bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex items-center gap-2">
-              <Camera size={18} className="text-primary" />
-              <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
-            </div>
-            <Button variant="ghost" size="sm" className="h-8 rounded-lg text-[9px] font-black uppercase tracking-widest">Добавить</Button>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {photos.map((url, idx) => (
-              <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border/10 group">
-                <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
-                
-                {/* Center Reveal Overlay */}
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer">
-                  <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 group-hover:scale-100 transition-transform">
-                    <Maximize2 size={12} />
-                    <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
-                  </div>
-                </div>
-
-                {/* Top Right Trash Icon */}
-                <button 
-                  onClick={() => setPhotoToDelete(idx)}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
+        <div className="mt-8 px-2">
+            <Button onClick={handleSave} className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/30 border-0 hover:brightness-110 active:scale-95 transition-all">
+                Сохранить все изменения
+            </Button>
         </div>
-
-        <Button onClick={handleSave} className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/30 border-0 hover:brightness-110">Сохранить</Button>
       </main>
-
-      <AlertDialog open={photoToDelete !== null} onOpenChange={(open) => !open && setPhotoToDelete(null)}>
-        <AlertDialogContent className="rounded-3xl border-0 p-6 bg-white app-shadow">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-black tracking-tight">{t('dialog.delete_photo.title')}</AlertDialogTitle>
-            <AlertDialogDescription className="font-medium text-muted-foreground">
-              {t('dialog.delete_photo.description')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-row gap-3 sm:gap-0 sm:justify-end mt-4">
-            <AlertDialogCancel className="rounded-xl border-muted font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none">
-              {t('dialog.delete_photo.cancel')}
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDeletePhoto}
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none"
-            >
-              {t('dialog.delete_photo.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }
