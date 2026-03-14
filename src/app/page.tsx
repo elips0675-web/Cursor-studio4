@@ -1,7 +1,35 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useCallback, Suspense } from "react";
-import { Zap, Search, Sparkles, Trophy, ChevronRight, ShieldCheck } from "lucide-react";
+import { 
+  Zap, 
+  Search, 
+  Sparkles, 
+  Trophy, 
+  ChevronRight, 
+  ShieldCheck,
+  Music,
+  Dumbbell,
+  Palette,
+  Gamepad2,
+  Film,
+  Globe,
+  ChefHat,
+  Cpu,
+  BookOpen,
+  Shirt,
+  HeartPulse,
+  Dog,
+  FlaskConical,
+  Briefcase,
+  Home as HomeIcon,
+  Car,
+  Laugh,
+  Star,
+  Scroll,
+  Users
+} from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -14,6 +42,11 @@ import { useLanguage } from "@/context/language-context";
 import { ALL_DEMO_USERS, GROUP_CATEGORIES } from "@/lib/demo-data";
 import { toast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
+
+const iconMap: Record<string, React.ElementType> = {
+  Music, Dumbbell, Palette, Gamepad2, Film, Globe, ChefHat, Cpu, BookOpen, Sparkles, Shirt, HeartPulse, Dog, FlaskConical, Briefcase, Home: HomeIcon, Car, Laugh, Star, Scroll
+};
 
 const TopOfWeekSection = dynamic(() => import('@/components/sections/top-of-week').then(mod => mod.TopOfWeekSection), { 
   ssr: false,
@@ -69,7 +102,7 @@ export default function Home() {
   const popularGroups = useMemo(() => {
     return GROUP_CATEGORIES.slice(0, 4).map(cat => ({
       ...cat,
-      online: Math.floor(Math.random() * 50) + 10
+      onlineCount: Math.floor(Math.random() * 50) + 10
     }));
   }, []);
 
@@ -127,34 +160,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Popular Groups Section */}
-        <section className="px-5 pt-8">
-          <div className="flex items-center justify-between mb-4 px-1">
-            <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
-            <Link href="/groups" className="text-[10px] font-black text-primary uppercase tracking-widest">Все</Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {popularGroups.map((group) => (
-              <Link 
-                href={`/groups/${group.id}`} 
-                key={group.id} 
-                className="bg-white p-4 rounded-xl app-shadow border border-white hover:bg-primary/5 transition-all flex flex-col items-center text-center gap-2 group"
-              >
-                <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                  <ShieldCheck size={20} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-xs leading-tight">{language === 'RU' ? group.name_ru : group.name_en}</h4>
-                  <p className="text-[9px] text-green-600 font-bold uppercase mt-1 flex items-center justify-center gap-1">
-                    <span className="w-1 h-1 bg-current rounded-full"></span>
-                    {group.online} {t('chats.online')}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-
         {/* Photo Month Section */}
         <section className="px-5 pt-8">
           <Link href="/contest" prefetch={true} className="block relative h-28 rounded-[2.5rem] overflow-hidden group bg-gradient-to-r from-amber-500 to-orange-600 shadow-xl shadow-amber-500/20">
@@ -174,6 +179,37 @@ export default function Home() {
         <Suspense fallback={<div className="px-5 pt-8 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[4/3] rounded-xl" /><Skeleton className="aspect-[4/3] rounded-xl" /></div></div>}>
           <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
         </Suspense>
+
+        {/* Popular Groups Section - Moved here */}
+        <section className="px-5 pt-8">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
+            <Link href="/groups" className="text-[10px] font-black text-primary uppercase tracking-widest">Все</Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            {popularGroups.map((group) => {
+              const Icon = iconMap[group.icon] || Users;
+              return (
+                <Link 
+                  href={`/groups/${group.id}`} 
+                  key={group.id} 
+                  className="bg-white p-4 rounded-xl app-shadow border border-white hover:bg-primary/5 transition-all flex flex-col items-center text-center gap-2 group"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                    <Icon size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs leading-tight">{language === 'RU' ? group.name_ru : group.name_en}</h4>
+                    <p className="text-[9px] text-green-600 font-bold uppercase mt-1 flex items-center justify-center gap-1">
+                      <span className="w-1 h-1 bg-current rounded-full"></span>
+                      {group.onlineCount} {t('chats.online')}
+                    </p>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </section>
 
         <Suspense fallback={<div className="px-5 pt-10 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[16/10] rounded-xl" /><Skeleton className="aspect-[16/10] rounded-xl" /></div></div>}>
           <RecommendationsSection recommendedUsers={recommendedUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
