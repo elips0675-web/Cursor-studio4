@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useMemo, useCallback, Suspense } from "react";
@@ -68,10 +67,9 @@ export default function Home() {
   const [popularGroups, setPopularGroups] = useState<any[]>([]);
 
   useEffect(() => {
-    // Ждем полной монтировки клиента, чтобы избежать битого контента
     const timer = setTimeout(() => {
       setIsMounted(true);
-    }, 500);
+    }, 800);
 
     const saved = localStorage.getItem('userProfile');
     if (saved) {
@@ -124,33 +122,32 @@ export default function Home() {
     router.push('/search?mode=autosearch');
   }, [currentUser, router]);
 
-  // Чистый Splash Screen до полной готовности
-  if (!isMounted) {
-    return (
-      <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white">
-        <motion.div 
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="relative flex flex-col items-center"
-        >
-          <div className="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center shadow-2xl shadow-primary/20 mb-6">
-            <Zap className="text-white" size={40} fill="currentColor" />
-          </div>
-          <h1 className="text-4xl font-black font-headline tracking-tighter gradient-text">
-            SwiftMatch
-          </h1>
-          <div className="mt-8 flex gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-primary animate-bounce"></div>
-            <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></div>
-            <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0.4s]"></div>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb] relative">
+      <AnimatePresence>
+        {!isMounted && (
+          <motion.div 
+            key="splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white"
+          >
+            <div className="w-20 h-20 rounded-3xl gradient-bg flex items-center justify-center shadow-2xl shadow-primary/20 mb-6">
+              <Zap className="text-white" size={40} fill="currentColor" />
+            </div>
+            <h1 className="text-4xl font-black font-headline tracking-tighter gradient-text">
+              SwiftMatch
+            </h1>
+            <div className="mt-8 flex gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce"></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0.2s]"></div>
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0.4s]"></div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24">
         <section className="px-6 py-10 text-center relative overflow-hidden bg-white border-b border-border/40">
@@ -193,7 +190,6 @@ export default function Home() {
           <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
         </Suspense>
 
-        {/* Популярные группы ПЕРЕМЕЩЕНЫ НАД РЕКОМЕНДАЦИЯМИ */}
         <section className="px-5 pt-10">
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="flex items-center gap-2">

@@ -18,13 +18,15 @@ const EditableList = ({
     onUpdate, 
     noun_ru, 
     noun_en,
-    isSaving
+    isSaving,
+    isAddingAction
 }: { 
     items: string[], 
-    onUpdate: (items: string[]) => void, 
+    onUpdate: (items: string[], isAdding: boolean) => void, 
     noun_ru: string, 
     noun_en: string,
-    isSaving: boolean
+    isSaving: boolean,
+    isAddingAction: boolean
 }) => {
     const { language } = useLanguage();
     const [newItem, setNewItem] = useState("");
@@ -33,14 +35,14 @@ const EditableList = ({
     const handleAddItem = () => {
         if (newItem.trim() && !items.includes(newItem.trim())) {
             const updatedItems = [...items, newItem.trim()];
-            onUpdate(updatedItems);
+            onUpdate(updatedItems, true);
             setNewItem("");
         }
     };
 
     const handleDeleteItem = (itemToDelete: string) => {
         const updatedItems = items.filter(item => item !== itemToDelete);
-        onUpdate(updatedItems);
+        onUpdate(updatedItems, false);
     };
 
     return (
@@ -68,8 +70,8 @@ const EditableList = ({
                     disabled={isSaving}
                     className="h-11 rounded-xl"
                 />
-                <Button onClick={handleAddItem} disabled={isSaving || !newItem.trim()} className="rounded-xl h-11 shrink-0 px-6">
-                    {isSaving ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} className="mr-2" />}
+                <Button onClick={handleAddItem} disabled={isSaving || !newItem.trim()} className="rounded-xl h-11 shrink-0 px-6 min-w-[120px]">
+                    {(isSaving && isAddingAction) ? <Loader2 className="animate-spin" size={16} /> : <Plus size={16} className="mr-2" />}
                     {language === 'RU' ? 'Добавить' : 'Add'}
                 </Button>
             </div>
@@ -81,11 +83,11 @@ export default function ContentManagementPage() {
     const { t, language } = useLanguage();
     const firestore = useFirestore();
     
-    // Initialized with constants for instant display
     const [interests, setInterests] = useState<string[]>(INTEREST_OPTIONS);
     const [datingGoals, setDatingGoals] = useState<string[]>(DATING_GOALS);
     const [educationLevels, setEducationLevels] = useState<string[]>(EDUCATION_OPTIONS);
     const [isSaving, setIsSaving] = useState(false);
+    const [isAddingAction, setIsAddingAction] = useState(false);
 
     const configRef = useMemo(() => {
         if (!firestore) return null;
@@ -107,9 +109,10 @@ export default function ContentManagementPage() {
         return () => unsubscribe();
     }, [configRef]);
 
-    const updateConfig = async (key: string, newItems: string[]) => {
+    const updateConfig = async (key: string, newItems: string[], isAdding: boolean) => {
         if (!configRef) return;
         setIsSaving(true);
+        setIsAddingAction(isAdding);
         try {
             const dataToUpdate = {
                 interests: key === 'interests' ? newItems : interests,
@@ -123,6 +126,7 @@ export default function ContentManagementPage() {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to save content changes.' });
         } finally {
             setIsSaving(false);
+            setIsAddingAction(false);
         }
     };
 
@@ -145,28 +149,31 @@ export default function ContentManagementPage() {
                     <TabsContent value="interests" className="outline-none">
                         <EditableList 
                             items={interests} 
-                            onUpdate={(items) => updateConfig('interests', items)}
+                            onUpdate={(items, isAdding) => updateConfig('interests', items, isAdding)}
                             noun_ru="Интерес"
                             noun_en="Interest"
                             isSaving={isSaving}
+                            isAddingAction={isAddingAction}
                         />
                     </TabsContent>
                     <TabsContent value="goals" className="outline-none">
                         <EditableList 
                             items={datingGoals}
-                            onUpdate={(items) => updateConfig('goals', items)}
+                            onUpdate={(items, isAdding) => updateConfig('goals', items, isAdding)}
                             noun_ru="Цель"
                             noun_en="Goal"
                             isSaving={isSaving}
+                            isAddingAction={isAddingAction}
                         />
                     </TabsContent>
                     <TabsContent value="education" className="outline-none">
                         <EditableList 
                             items={educationLevels}
-                            onUpdate={(items) => updateConfig('education', items)}
+                            onUpdate={(items, isAdding) => updateConfig('education', items, isAdding)}
                             noun_ru="Уровень"
                             noun_en="Level"
                             isSaving={isSaving}
+                            isAddingAction={isAddingAction}
                         />
                     </TabsContent>
                 </Tabs>
