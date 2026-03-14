@@ -119,30 +119,35 @@ export default function Home() {
     router.push('/search?mode=autosearch');
   }, [currentUser, router]);
 
-  // FULL SCREEN SPLASH TO PREVENT FOUC
-  if (!isMounted) {
-    return (
-      <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white">
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="relative flex flex-col items-center"
-        >
-          <div className="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center shadow-2xl shadow-primary/20 mb-6">
-            <Zap className="text-white" size={40} fill="currentColor" />
-          </div>
-          <h1 className="text-4xl font-black font-headline tracking-tighter gradient-text">
-            SwiftMatch
-          </h1>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
+    <div className="flex flex-col min-h-svh bg-[#f8f9fb] relative">
+      <AnimatePresence>
+        {!isMounted && (
+          <motion.div 
+            key="splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white"
+          >
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="relative flex flex-col items-center"
+            >
+              <div className="w-20 h-20 rounded-2xl gradient-bg flex items-center justify-center shadow-2xl shadow-primary/20 mb-6">
+                <Zap className="text-white" size={40} fill="currentColor" />
+              </div>
+              <h1 className="text-4xl font-black font-headline tracking-tighter gradient-text">
+                SwiftMatch
+              </h1>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <AppHeader />
-      <main className="flex-1 overflow-y-auto pb-24">
+      <main className={cn("flex-1 overflow-y-auto pb-24 transition-opacity duration-500", isMounted ? "opacity-100" : "opacity-0")}>
         {/* Hero Section */}
         <section className="px-6 py-10 text-center relative overflow-hidden bg-white border-b border-border/40">
           <Badge variant="secondary" className="mb-4 bg-primary/10 text-primary border-0 gap-1.5 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -185,7 +190,7 @@ export default function Home() {
           <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
         </Suspense>
 
-        {/* Popular Groups Section */}
+        {/* Popular Groups Section - PLACED ABOVE RECOMMENDATIONS */}
         <section className="px-5 pt-10">
           <div className="flex items-center justify-between mb-4 px-1">
             <div className="flex items-center gap-2">
@@ -203,7 +208,7 @@ export default function Home() {
                 <Link 
                   href={`/groups/${group.id}`} 
                   key={group.id} 
-                  className="bg-white rounded-xl app-shadow border border-white overflow-hidden hover:bg-primary/5 transition-all flex flex-col group"
+                  className="bg-white rounded-2xl app-shadow border border-white overflow-hidden hover:bg-primary/5 transition-all flex flex-col group"
                 >
                   <div className="h-16 w-full bg-muted flex items-center justify-center">
                     <Icon size={24} className="text-orange-500 group-hover:scale-110 transition-transform duration-300" />

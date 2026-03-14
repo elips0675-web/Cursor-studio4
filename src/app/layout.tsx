@@ -1,3 +1,4 @@
+
 import type {Metadata, Viewport} from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase';
@@ -10,6 +11,7 @@ import { CookieConsent } from '@/components/shared/cookie-consent';
 import { PwaInstallBanner } from '@/components/shared/pwa-install-banner';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { PwaRegistry } from '@/components/shared/pwa-registry';
+import { ClientOnly } from '@/components/shared/client-only';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -73,10 +75,12 @@ export default function RootLayout({
               <PwaRegistry />
               <AppContainer>
                 {children}
-                <CookieConsent />
-                <PwaInstallBanner />
+                <ClientOnly>
+                  <CookieConsent />
+                  <PwaInstallBanner />
+                  <Toaster />
+                </ClientOnly>
               </AppContainer>
-              <Toaster />
             </FeatureFlagsProvider>
           </FirebaseClientProvider>
         </LanguageProvider>
