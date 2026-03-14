@@ -67,6 +67,7 @@ export default function Home() {
   const [popularGroups, setPopularGroups] = useState<any[]>([]);
 
   useEffect(() => {
+    // Prevent FOUC and Hydration errors by delaying rendering until mounted
     const timer = setTimeout(() => {
       setIsMounted(true);
     }, 800);
@@ -82,6 +83,7 @@ export default function Home() {
       setCurrentUser(ALL_DEMO_USERS[1]);
     }
 
+    // Set stable random data after mount to avoid hydration mismatch
     setPopularGroups(GROUP_CATEGORIES.slice(0, 4).map(cat => ({
       ...cat,
       onlineCount: Math.floor(Math.random() * 50) + 10

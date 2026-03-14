@@ -1,10 +1,10 @@
 const FORBIDDEN_WORD_ROOTS = [
-  // Нецензурная лексика (Swear words)
-  'хуй', 'пизд', 'ебан', 'бля', 'ебл', 'муд', 'сука', 'залуп', 'уеб',
+  // Нецензурная лексика (Swear words) и вариации
+  'хуй', 'хуи', 'хуе', 'хуя', 'хую', 'пизд', 'ебан', 'ебал', 'бля', 'ебл', 'муд', 'сука', 'залуп', 'уеб',
   'fuck', 'cunt', 'shit', 'bitch', 'asshole', 'dick',
 
   // Оскорбления и Дискриминация (Insults & Discrimination)
-  'мразь', 'урод', 'дебил', 'шлюх', 'ниггер', 'хохол', 'кацап', 'жид',
+  'мразь', 'урод', 'дебил', 'шлюх', 'ниггер', 'хохол', 'кацап', 'жид', 'чмо', 'пидор', 'гандон',
   'scum', 'freak', 'moron', 'slut', 'nigger', 
 
   // Призывы к насилию (Calls to violence)
@@ -69,26 +69,15 @@ export const isGibberish = (text: string): boolean => {
     if (letters.length >= 3 && vowelsCount === 0) return true;
 
     // 3. Check for excessive consonant clusters.
-    // Whitelist for common Russian 4-consonant clusters.
     const allowed_4_consonant_clusters = [
-        'взгл', // взгляд
-        'вств', // чувство
-        'вспл', // всплеск
-        'здрв', // здравствуй
-        'кстр', // экстренный
-        'нтрв', // контр-
-        'ртств', // черствый
-        'рвств' // первенство
+        'взгл', 'вств', 'вспл', 'здрв', 'кстр', 'нтрв', 'ртств', 'рвств'
     ];
-    // Find clusters of 4 or more consonants
     const consonantClusters = letters.match(/[bcdfghjklmnpqrstvwxzбвгджзйклмнпрстфхцчшщ]{4,}/g);
     if (consonantClusters) {
       for (const cluster of consonantClusters) {
         if (cluster.length === 4 && allowed_4_consonant_clusters.includes(cluster)) {
-          continue; // It's an allowed cluster, so check the next one
+          continue;
         }
-        // If the cluster has 5+ consonants, or it's a 4-consonant cluster not in the whitelist,
-        // it's gibberish.
         return true;
       }
     }
@@ -98,7 +87,6 @@ export const isGibberish = (text: string): boolean => {
       'asdf', 'sdfg', 'dfgh', 'fghj', 'ghjk', 'hjkl', 'zxcv', 'xcvb',
       'йцук', 'цуке', 'укен', 'кенг', 'фыва', 'ывап', 'вапр', 'апро', 'прол', 'ролд', 'олдж',
       'ячсм', 'чсми', 'смит', 'мить',
-      // User reported patterns
       'ишрл', 'шрлш', 'рлши', 'некн', 'кегн', 'егнн'
     ];
 
