@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { 
-  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, LogOut
+  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, LogOut, ChevronDown
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -61,6 +61,8 @@ const INITIAL_MESSAGES = [
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
+const CHATS_PER_PAGE = 10;
+
 function ChatsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -84,6 +86,9 @@ function ChatsContent() {
   const [isVideoCall, setIsVideoCall] = useState(false);
   const [isVoiceCall, setIsVoiceCall] = useState(false);
 
+  // Pagination state
+  const [visibleCount, setVisibleCount] = useState(CHATS_PER_PAGE);
+
   const allChats = useMemo(() => {
     return ALL_DEMO_USERS.map(u => ({ 
       ...u, 
@@ -99,6 +104,16 @@ function ChatsContent() {
       chat.name.toLowerCase().includes(query)
     );
   }, [searchQuery, allChats]);
+
+  const paginatedChats = useMemo(() => {
+    return filteredChats.slice(0, visibleCount);
+  }, [filteredChats, visibleCount]);
+
+  const hasMore = filteredChats.length > visibleCount;
+
+  const handleLoadMore = () => {
+    setVisibleCount(prev => prev + CHATS_PER_PAGE);
+  };
 
   const handleReportSubmit = () => {
     if (!reportReason) { toast({ variant: 'destructive', title: t('report.toast.no_reason_title'), description: t('report.toast.no_reason_desc') }); return; }
@@ -255,8 +270,8 @@ function ChatsContent() {
           />
         </div>
         <div className="space-y-1 px-1">
-          {filteredChats.length > 0 ? (
-            filteredChats.map((chat) => {
+          {paginatedChats.length > 0 ? (
+            paginatedChats.map((chat) => {
               const hasUnread = chat.id % 3 === 0;
               return (
                 <div key={`user-${chat.id}`} onClick={() => openChat(chat)} className={cn(
@@ -312,6 +327,18 @@ function ChatsContent() {
                 <Info size={24} />
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest">{t('activity.empty')}</p>
+            </div>
+          )}
+
+          {hasMore && (
+            <div className="pt-6 pb-2">
+              <Button 
+                onClick={handleLoadMore}
+                variant="outline"
+                className="w-full h-12 rounded-2xl border-2 border-primary/20 text-primary font-black uppercase text-[10px] tracking-[0.2em] bg-white hover:bg-primary/5 shadow-sm group active:scale-95 transition-all"
+              >
+                {t('button.load_more')} <ChevronDown size={14} className="ml-1 group-hover:translate-y-0.5 transition-transform" />
+              </Button>
             </div>
           )}
         </div>
