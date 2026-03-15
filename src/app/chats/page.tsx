@@ -133,9 +133,21 @@ function ChatsContent() {
   const [reportDescription, setReportDescription] = useState('');
   const [isVideoCall, setIsVideoCall] = useState(false);
   const [isVoiceCall, setIsVoiceCall] = useState(false);
+  
+  const [joinedGroupNames, setJoinedGroupNames] = useState<string[]>([]);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('userProfile');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setJoinedGroupNames(parsed.joinedGroups || []);
+      } catch (e) {}
+    }
+  }, []);
 
   const allDirectChats = useMemo(() => {
     return ALL_DEMO_USERS.filter(u => !u.isSystem).map(u => ({ 
@@ -148,20 +160,27 @@ function ChatsContent() {
   const allGroupChats = useMemo(() => {
     const groups: any[] = [];
     GROUP_CATEGORIES.forEach(cat => {
-      cat.subgroups.slice(0, 3).forEach(sub => {
-        groups.push({
-          ...sub,
-          isGroup: true,
-          img: cat.img,
-          categoryName: language === 'RU' ? cat.name_ru : cat.name_en,
-          name: language === 'RU' ? sub.name_ru : sub.name_en,
-          lastMessage: language === 'RU' ? 'Новое сообщение в группе' : 'New message in group',
-          time: "12:45"
-        });
+      cat.subgroups.forEach(sub => {
+        // Filter: only show groups that user actually joined
+        const isJoined = joinedGroupNames.some(name => 
+          name === sub.name_ru || name === sub.name_en
+        );
+
+        if (isJoined) {
+          groups.push({
+            ...sub,
+            isGroup: true,
+            img: cat.img,
+            categoryName: language === 'RU' ? cat.name_ru : cat.name_en,
+            name: language === 'RU' ? sub.name_ru : sub.name_en,
+            lastMessage: language === 'RU' ? 'Новое сообщение в группе' : 'New message in group',
+            time: "12:45"
+          });
+        }
       });
     });
     return groups;
-  }, [language]);
+  }, [language, joinedGroupNames]);
 
   const filteredData = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -210,15 +229,18 @@ function ChatsContent() {
       }
     } else if (groupId) {
       const id = parseInt(groupId);
-      const allGroups = allGroupChats;
-      const group = allGroups.find(g => g.id === id);
+      // We search all groups here because if a user is redirected they might have just joined
+      const allPossibleGroups: any[] = [];
+      GROUP_CATEGORIES.forEach(c => c.subgroups.forEach(s => allPossibleGroups.push({ ...s, isGroup: true, name: language === 'RU' ? s.name_ru : s.name_en })));
+      
+      const group = allPossibleGroups.find(g => g.id === id);
       if (group) {
         setSelectedChat(group);
         setActiveTab("groups");
         setMessages([{ id: Date.now(), text: language === 'RU' ? "Добро пожаловать в группу!" : "Welcome to the group!", sender: "other", time: "12:00" }]);
       }
     }
-  }, [matchId, groupId, language, loadIcebreakers, allGroupChats]);
+  }, [matchId, groupId, language, loadIcebreakers]);
 
   const handleSendMessage = (textOverride?: string) => {
     const textToSend = textOverride || inputValue;
@@ -353,7 +375,7 @@ function ChatsContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-12 h-12 bg-white border-0 rounded-2xl app-shadow text-sm font-medium" 
-            placeholder={activeTab === 'direct' ? t('chats.search') : (language === 'RU' ? 'Поиск групп...' : 'Search groups...')} 
+            placeholder={activeTab === 'direct' ? t('chats.search') : (language === 'RU' ? 'Поиск ваших групп...' : 'Search your groups...')} 
           />
         </div>
 
@@ -414,6 +436,11 @@ function ChatsContent() {
                 <Info size={24} />
               </div>
               <p className="text-[10px] font-black uppercase tracking-widest">{t('activity.empty')}</p>
+              {activeTab === 'groups' && joinedGroupNames.length === 0 && (
+                <p className="text-[9px] text-muted-foreground max-w-[200px] leading-relaxed">
+                  {language === 'RU' ? 'Вы еще не вступили ни в одну группу.' : 'You haven\'t joined any groups yet.'}
+                </p>
+              )}
             </div>
           )}
 
