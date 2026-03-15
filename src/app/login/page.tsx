@@ -10,7 +10,8 @@ import {
   Sparkles,
   ChevronLeft,
   Chrome,
-  Phone
+  Phone,
+  LayoutTemplate
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -195,12 +196,24 @@ export default function LoginPage() {
             Войти через Google
           </Button>
 
-          <p className="text-center text-xs text-muted-foreground">
-            Нет аккаунта?{" "}
-            <Link href="/register" className="text-primary font-black uppercase tracking-tighter hover:underline">
-              Зарегистрироваться
-            </Link>
-          </p>
+          <div className="flex flex-col gap-4 pt-2">
+            <p className="text-center text-xs text-muted-foreground">
+              Нет аккаунта?{" "}
+              <Link href="/register" className="text-primary font-black uppercase tracking-tighter hover:underline">
+                Зарегистрироваться
+              </Link>
+            </p>
+            <Button 
+              asChild 
+              variant="outline" 
+              className="w-full h-12 rounded-2xl border-2 border-dashed border-primary/20 text-primary font-black uppercase tracking-[0.15em] text-[10px] bg-primary/5 hover:bg-primary/10 transition-all"
+            >
+              <Link href="/onboarding">
+                <LayoutTemplate size={14} className="mr-2" />
+                Демо онбординг
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <div className="mt-auto pt-12 flex flex-col items-center gap-4">
