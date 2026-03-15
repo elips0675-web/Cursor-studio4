@@ -94,7 +94,7 @@ export default function ContestPage() {
     <>
       <AppHeader />
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
-        <header className="mb-8 text-center">
+        <header className="mb-6 text-center">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -110,6 +110,22 @@ export default function ContestPage() {
           </p>
         </header>
 
+        {/* Timer moved under header */}
+        <div className="bg-white rounded-3xl p-5 border border-border/40 app-shadow mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
+              <Timer size={20} />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('contest.ends_in')}</p>
+              <p className="text-lg font-black tracking-tight">{timeLeft}</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground/40">
+            <Info size={18} />
+          </Button>
+        </div>
+
         <Tabs defaultValue="female" className="w-full mb-8" onValueChange={setActiveGender}>
           <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-2xl h-12 mb-6">
             <TabsTrigger value="female" className="rounded-xl font-black uppercase text-[10px] tracking-widest data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm transition-all">
@@ -121,21 +137,6 @@ export default function ContestPage() {
           </TabsList>
           
           <TabsContent value={activeGender} className="mt-0 outline-none">
-            <div className="bg-white rounded-3xl p-5 border border-border/40 app-shadow mb-8 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
-                  <Timer size={20} />
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('contest.ends_in')}</p>
-                  <p className="text-lg font-black tracking-tight">{timeLeft}</p>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground/40">
-                <Info size={18} />
-              </Button>
-            </div>
-
             <section className="mb-10 pt-10 relative">
               <AnimatePresence mode="wait">
                 <motion.div 

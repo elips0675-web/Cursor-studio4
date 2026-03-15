@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check, HelpCircle
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -153,7 +153,11 @@ export default function ProfilePage() {
       <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24 px-5">
         <div className="h-24 gradient-bg relative -mx-5 mb-10">
-          <Link href="/settings" className="absolute top-4 right-6 text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md"><Settings size={18} /></Link>
+          <div className="absolute top-4 right-6 flex gap-2">
+            {/* Added FAQ Button near Settings */}
+            <Link href="/faq" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><HelpCircle size={18} /></Link>
+            <Link href="/settings" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><Settings size={18} /></Link>
+          </div>
         </div>
         
         <div className="-mt-20">
