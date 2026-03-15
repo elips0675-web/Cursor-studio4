@@ -73,10 +73,11 @@ export default function OnboardingPage() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         if (data.interests) {
-            setDynamicInterests(data.interests);
+            const globalInterests = data.interests as string[];
+            setDynamicInterests(globalInterests);
             setFormData(prev => ({
                 ...prev,
-                interests: prev.interests.filter(i => data.interests.includes(i))
+                interests: prev.interests.filter(i => globalInterests.includes(i))
             }));
         }
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
