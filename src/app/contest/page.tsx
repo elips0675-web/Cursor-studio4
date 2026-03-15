@@ -45,6 +45,7 @@ const PAST_WINNERS = [
   { id: 'pw1', name: 'Мария', photo: PlaceHolderImages[6].imageUrl, month: 'Апрель' },
   { id: 'pw2', name: 'Александр', photo: PlaceHolderImages[1].imageUrl, month: 'Апрель' },
   { id: 'pw3', name: 'Елена', photo: PlaceHolderImages[2].imageUrl, month: 'Март' },
+  { id: 'pw4', name: 'Дмитрий', photo: PlaceHolderImages[3].imageUrl, month: 'Февраль' },
 ];
 
 export default function ContestPage() {
@@ -110,7 +111,7 @@ export default function ContestPage() {
           </p>
         </header>
 
-        {/* Minimized Timer Block */}
+        {/* Compact Centered Timer Block */}
         <div className="bg-white rounded-2xl p-4 border border-border/40 app-shadow mb-8 flex items-center justify-center gap-4 max-w-[260px] mx-auto">
           <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
             <Timer size={20} />
@@ -197,6 +198,7 @@ export default function ContestPage() {
           </TabsContent>
         </Tabs>
 
+        {/* Previous Winners Section */}
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-4 px-1">
             <History className="text-blue-500" size={18} />
