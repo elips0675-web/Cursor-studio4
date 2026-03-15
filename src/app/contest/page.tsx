@@ -110,20 +110,15 @@ export default function ContestPage() {
           </p>
         </header>
 
-        {/* Timer under header */}
-        <div className="bg-white rounded-3xl p-5 border border-border/40 app-shadow mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600">
-              <Timer size={20} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{t('contest.ends_in')}</p>
-              <p className="text-lg font-black tracking-tight">{timeLeft}</p>
-            </div>
+        {/* Centered Timer Block */}
+        <div className="bg-white rounded-[2.5rem] p-8 border border-border/40 app-shadow mb-8 flex flex-col items-center justify-center text-center">
+          <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-600 mb-4">
+            <Timer size={28} />
           </div>
-          <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground/40">
-            <Info size={18} />
-          </Button>
+          <div className="space-y-1">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('contest.ends_in')}</p>
+            <p className="text-2xl font-black tracking-tighter">{timeLeft}</p>
+          </div>
         </div>
 
         <Tabs defaultValue="female" className="w-full mb-8" onValueChange={setActiveGender}>
@@ -225,7 +220,7 @@ export default function ContestPage() {
           </div>
         </section>
 
-        {/* Prizes Above Rules */}
+        {/* Prizes block */}
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-4 px-1">
             <Award className="text-primary" size={18} />
