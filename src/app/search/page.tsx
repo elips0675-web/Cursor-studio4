@@ -215,14 +215,14 @@ function SearchContent() {
                 className="object-cover transition-transform duration-700 group-hover:scale-105" 
               />
               
-              {/* Contest Vote Button */}
+              {/* Contest Vote Button - ORANGE AND RIGHT */}
               <button 
                 onClick={(e) => handleVote(e, user.id)}
                 className={cn(
-                  "absolute top-4 left-4 z-30 w-12 h-12 rounded-2xl backdrop-blur-md flex items-center justify-center transition-all active:scale-90 border-2",
+                  "absolute top-4 right-4 z-30 w-12 h-12 rounded-2xl backdrop-blur-md flex items-center justify-center transition-all active:scale-90 border-2",
                   votedEntries.includes(user.id) 
-                    ? "bg-amber-500 text-white border-amber-400 shadow-xl" 
-                    : "bg-black/20 text-white border-white/20 hover:bg-black/40"
+                    ? "bg-orange-500 text-white border-orange-400 shadow-xl" 
+                    : "bg-white/90 text-orange-500 border-orange-100 shadow-lg hover:bg-white"
                 )}
               >
                 <Trophy size={20} fill={votedEntries.includes(user.id) ? "currentColor" : "none"} />

@@ -290,7 +290,7 @@ export default function ProfilePage() {
                 <Trophy size={120} fill="currentColor" />
               </div>
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 border border-amber-100">
+                <div className="w-12 h-12 rounded-2xl bg-amber flex items-center justify-center text-amber-500 border border-amber-100">
                   <Trophy size={24} fill="currentColor" />
                 </div>
                 <div>
