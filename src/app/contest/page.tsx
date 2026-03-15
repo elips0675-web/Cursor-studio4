@@ -7,12 +7,9 @@ import { BottomNav } from "@/components/navigation/bottom-nav";
 import { useLanguage } from "@/context/language-context";
 import { 
   Trophy, 
-  Heart, 
   Timer, 
-  Star, 
   Info, 
   Crown, 
-  Sparkles, 
   Maximize2, 
   X, 
   Award,
@@ -25,8 +22,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   Dialog,
@@ -38,16 +33,12 @@ const FEMALE_ENTRIES = [
   { id: 'f1', userId: 'u1', userName: 'Алина', photo: PlaceHolderImages[6].imageUrl, votes: 1240, rank: 1, gender: 'female' },
   { id: 'f2', userId: 'u5', userName: 'Анна', photo: PlaceHolderImages[0].imageUrl, votes: 980, rank: 2, gender: 'female' },
   { id: 'f3', userId: 'u3', userName: 'Елена', photo: PlaceHolderImages[2].imageUrl, votes: 850, rank: 3, gender: 'female' },
-  { id: 'f4', userId: 'u9', userName: 'Ксения', photo: PlaceHolderImages[8].imageUrl, votes: 420, rank: 4, gender: 'female' },
-  { id: 'f5', userId: 'u11', userName: 'София', photo: PlaceHolderImages[4].imageUrl, votes: 310, rank: 5, gender: 'female' },
 ];
 
 const MALE_ENTRIES = [
   { id: 'm1', userId: 'u2', userName: 'Максим', photo: PlaceHolderImages[1].imageUrl, votes: 1100, rank: 1, gender: 'male' },
   { id: 'm2', userId: 'u8', userName: 'Иван', photo: PlaceHolderImages[7].imageUrl, votes: 950, rank: 2, gender: 'male' },
   { id: 'm3', userId: 'u4', userName: 'Дмитрий', photo: PlaceHolderImages[3].imageUrl, votes: 700, rank: 3, gender: 'male' },
-  { id: 'm4', userId: 'u6', userName: 'Артем', photo: PlaceHolderImages[5].imageUrl, votes: 300, rank: 4, gender: 'male' },
-  { id: 'm5', userId: 'u10', userName: 'Никита', photo: PlaceHolderImages[9].imageUrl, votes: 250, rank: 5, gender: 'male' },
 ];
 
 const PAST_WINNERS = [
@@ -59,7 +50,6 @@ const PAST_WINNERS = [
 export default function ContestPage() {
   const { t, language } = useLanguage();
   const [timeLeft, setTimeLeft] = useState("");
-  const [votedEntries, setVotedEntries] = useState<string[]>([]);
   const [viewerPhoto, setViewerPhoto] = useState<string | null>(null);
   const [activeGender, setActiveGender] = useState<string>("female");
 
@@ -74,7 +64,6 @@ export default function ContestPage() {
       const now = new Date();
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
       const diff = endOfMonth.getTime() - now.getTime();
-      
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       
       if (language === 'RU') {
@@ -88,17 +77,6 @@ export default function ContestPage() {
     const interval = setInterval(updateTimer, 3600000);
     return () => clearInterval(interval);
   }, [language]);
-
-  const handleVote = (entryId: string) => {
-    if (votedEntries.includes(entryId)) return;
-    
-    setVotedEntries([...votedEntries, entryId]);
-    
-    toast({
-      title: language === 'RU' ? "Голос учтен!" : "Vote counted!",
-      description: language === 'RU' ? "Вы проголосовали за участника." : "You have voted for the participant.",
-    });
-  };
 
   const currentEntries = useMemo(() => {
     return activeGender === "female" ? FEMALE_ENTRIES : MALE_ENTRIES;
@@ -220,68 +198,13 @@ export default function ContestPage() {
               </AnimatePresence>
               <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-muted/30 to-transparent -z-0 rounded-b-[3rem]"></div>
             </section>
-
-            <section className="space-y-3 mb-10">
-              <div className="flex items-center justify-between px-1 mb-4">
-                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{t('contest.all_participants')}</h4>
-                <Sparkles className="text-primary/40" size={14} />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <AnimatePresence mode="popLayout">
-                  {currentEntries.map((entry) => (
-                    <motion.div 
-                      layout
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      whileHover={{ y: -4 }}
-                      key={entry.id} 
-                      className="bg-white rounded-3xl overflow-hidden border border-border/40 app-shadow group"
-                    >
-                      <div className="relative aspect-[4/5] bg-muted cursor-pointer" onClick={() => setViewerPhoto(entry.photo)}>
-                        <Image src={entry.photo} alt={entry.userName} fill sizes="(max-width: 480px) 50vw, 240px" className="object-cover transition-transform duration-500 group-hover:scale-105" />
-                        <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Maximize2 className="text-white" size={24} />
-                        </div>
-                        <div className="absolute top-3 left-3">
-                          <Badge className="bg-black/40 backdrop-blur-md text-white border-0 font-bold text-[9px]">#{entry.rank}</Badge>
-                        </div>
-                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-                          <p className="text-white font-bold text-xs truncate">{entry.userName}</p>
-                          <p className="text-white/70 text-[9px] font-medium">{entry.votes} {t('contest.votes_count')}</p>
-                        </div>
-                      </div>
-                      <div className="p-2">
-                        <Button 
-                          onClick={() => handleVote(entry.id)}
-                          disabled={votedEntries.includes(entry.id)}
-                          className={cn(
-                            "w-full h-10 rounded-2xl font-black uppercase text-[9px] tracking-widest transition-all",
-                            votedEntries.includes(entry.id) 
-                              ? "bg-muted text-muted-foreground cursor-default" 
-                              : "gradient-bg text-white shadow-lg shadow-primary/20 active:scale-95"
-                          )}
-                        >
-                          {votedEntries.includes(entry.id) ? (
-                            <span className="flex items-center gap-1.5"><Heart size={10} fill="currentColor" /> {language === 'RU' ? 'Голос' : 'Voted'}</span>
-                          ) : (
-                            t('button.vote')
-                          )}
-                        </Button>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </div>
-            </section>
           </TabsContent>
         </Tabs>
 
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-4 px-1">
             <History className="text-blue-500" size={18} />
-            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">Победители прошлых месяцев</h4>
+            <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">{language === 'RU' ? 'Победители прошлых месяцев' : 'Previous Winners'}</h4>
           </div>
           <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-1">
             {PAST_WINNERS.map((winner) => (
@@ -301,7 +224,6 @@ export default function ContestPage() {
           </div>
         </section>
 
-        {/* Prizes Section - Moved above Rules */}
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-4 px-1">
             <Award className="text-primary" size={18} />

@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -55,6 +55,11 @@ export default function ProfilePage() {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
+  // Contest states
+  const [isSelectionOpen, setIsSelectionOpen] = useState(false);
+  const [selectedPhotoForContest, setSelectedPhotoForContest] = useState<string | null>(null);
+  const [hasParticipated, setHasParticipated] = useState(false);
+
   useEffect(() => {
     setIsMounted(true);
     const savedProfile = localStorage.getItem('userProfile');
@@ -92,6 +97,9 @@ export default function ProfilePage() {
       setPhotos(defaultPhotos);
       localStorage.setItem('userProfileGallery', JSON.stringify(defaultPhotos));
     }
+
+    const participationStatus = localStorage.getItem('contest_participation');
+    if (participationStatus) setHasParticipated(true);
   }, []);
 
   const handleDeletePhoto = () => {
@@ -117,6 +125,17 @@ export default function ProfilePage() {
   const openViewer = (index: number) => {
     setActivePhotoIndex(index);
     setIsViewerOpen(true);
+  };
+
+  const handleSubmitToContest = () => {
+    if (!selectedPhotoForContest) return;
+    setHasParticipated(true);
+    localStorage.setItem('contest_participation', 'true');
+    setIsSelectionOpen(false);
+    toast({
+      title: language === 'RU' ? "Заявка принята!" : "Application accepted!",
+      description: language === 'RU' ? "Ваше фото теперь участвует в конкурсе." : "Your photo is now participating in the contest.",
+    });
   };
 
   if (!isMounted || !profile) return (
@@ -282,8 +301,22 @@ export default function ProfilePage() {
               <p className="text-xs text-muted-foreground/80 mb-6 leading-relaxed font-medium">
                 {t('contest.rules_desc')}
               </p>
-              <Button asChild variant="outline" className="w-full h-12 rounded-xl border-amber-200 text-amber-600 hover:bg-amber-50 font-black uppercase text-[10px] tracking-widest shadow-sm">
-                <Link href="/contest">{t('button.participate')}</Link>
+              <Button 
+                onClick={() => !hasParticipated && setIsSelectionOpen(true)}
+                disabled={hasParticipated}
+                variant={hasParticipated ? "secondary" : "outline"}
+                className={cn(
+                  "w-full h-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-sm transition-all",
+                  hasParticipated 
+                    ? "bg-green-50 text-green-600 border-green-100 cursor-default" 
+                    : "border-amber-200 text-amber-600 hover:bg-amber-50 active:scale-95"
+                )}
+              >
+                {hasParticipated ? (
+                  <span className="flex items-center gap-2"><Check size={14} /> {language === 'RU' ? 'Заявка подана' : 'Application Sent'}</span>
+                ) : (
+                  t('button.participate')
+                )}
               </Button>
             </div>
           </section>
@@ -337,6 +370,51 @@ export default function ProfilePage() {
               >
                   <X size={20} />
               </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contest Photo Selection Dialog */}
+      <Dialog open={isSelectionOpen} onOpenChange={setIsSelectionOpen}>
+        <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow overflow-hidden">
+          <div className="p-6 pb-4">
+            <DialogTitle className="text-xl font-black tracking-tight mb-1">{language === 'RU' ? 'Выбор фото для конкурса' : 'Choose photo for contest'}</DialogTitle>
+            <p className="text-xs text-muted-foreground font-medium">{language === 'RU' ? 'Выберите лучшее фото из вашей галереи.' : 'Select the best photo from your gallery.'}</p>
+          </div>
+          <div className="px-6 py-2">
+            <div className="grid grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-1 no-scrollbar">
+              {photos.map((url, idx) => (
+                <div 
+                  key={`select-${idx}`}
+                  onClick={() => setSelectedPhotoForContest(url)}
+                  className={cn(
+                    "relative aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all border-4",
+                    selectedPhotoForContest === url ? "border-primary shadow-lg scale-[0.98]" : "border-transparent opacity-70 grayscale-[50%] hover:opacity-100 hover:grayscale-0"
+                  )}
+                >
+                  <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
+                  {selectedPhotoForContest === url && (
+                    <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-lg">
+                        <Check size={20} className="text-primary" strokeWidth={4} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="p-6 flex flex-col gap-3">
+            <Button 
+              onClick={handleSubmitToContest}
+              disabled={!selectedPhotoForContest}
+              className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 border-0 active:scale-95 transition-all"
+            >
+              {language === 'RU' ? 'Подать заявку' : 'Submit Entry'}
+            </Button>
+            <Button variant="ghost" onClick={() => setIsSelectionOpen(false)} className="w-full h-10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              {t('button.close')}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
