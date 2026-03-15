@@ -72,7 +72,7 @@ export default function EditProfilePage() {
             const globalInterests = data.interests as string[];
             setDynamicInterests(globalInterests);
             
-            // REAKTIVE CLEANUP: If an interest was deleted in Admin, remove it from profile
+            // REAKTIVE CLEANUP: Remove interests that are no longer in global list
             setProfile((prev: any) => ({
                 ...prev,
                 interests: prev.interests.filter((i: string) => globalInterests.includes(i))
@@ -150,7 +150,6 @@ export default function EditProfilePage() {
         const configRef = doc(firestore, 'config', 'content');
         await setDoc(configRef, { interests: updatedList }, { merge: true });
         
-        // Toggle it for current user too
         setProfile((prev: any) => ({
             ...prev,
             interests: [...prev.interests, trimmedInterest]
@@ -254,8 +253,8 @@ export default function EditProfilePage() {
                 <Select value={profile.gender || ''} onValueChange={(val) => setProfile({...profile, gender: val})}>
                   <SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger>
                   <SelectContent className="rounded-xl border-0 shadow-2xl">
-                    <SelectItem value="male" className="font-bold text-xs">Мужчина</SelectItem>
-                    <SelectItem value="female" className="font-bold text-xs">Женщина</SelectItem>
+                    <SelectItem value="male" className="font-bold text-[11px]">Мужчина</SelectItem>
+                    <SelectItem value="female" className="font-bold text-[11px]">Женщина</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -264,9 +263,9 @@ export default function EditProfilePage() {
                 <Select value={profile.lookingFor || ''} onValueChange={(val) => setProfile({...profile, lookingFor: val})}>
                   <SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger>
                   <SelectContent className="rounded-xl border-0 shadow-2xl">
-                    <SelectItem value="male" className="font-bold text-xs">Мужчину</SelectItem>
-                    <SelectItem value="female" className="font-bold text-xs">Женщину</SelectItem>
-                    <SelectItem value="all" className="font-bold text-xs">Всех</SelectItem>
+                    <SelectItem value="male" className="font-bold text-[11px]">Мужчину</SelectItem>
+                    <SelectItem value="female" className="font-bold text-[11px]">Женщину</SelectItem>
+                    <SelectItem value="all" className="font-bold text-[11px]">Всех</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -279,7 +278,7 @@ export default function EditProfilePage() {
                     <SelectValue placeholder={t('onboarding.step3.goal_placeholder')} />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-0 shadow-2xl">
-                    {dynamicGoals.map(goal => <SelectItem key={goal} value={goal} className="font-bold text-xs">{goal}</SelectItem>)}
+                    {dynamicGoals.map(goal => <SelectItem key={goal} value={goal} className="font-bold text-[11px]">{goal}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -305,7 +304,7 @@ export default function EditProfilePage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">Знак зодиака</Label>
-                <Select value={profile.zodiac || ''} onValueChange={(val) => setProfile({...profile, zodiac: val})}><SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger><SelectContent className="rounded-xl border-0 shadow-2xl">{ZODIAC_SIGNS.map(sign => <SelectItem key={sign} value={sign} className="font-bold text-xs">{t(sign)}</SelectItem>)}</SelectContent></Select>
+                <Select value={profile.zodiac || ''} onValueChange={(val) => setProfile({...profile, zodiac: val})}><SelectTrigger className="rounded-xl bg-muted/30 border-0 h-11 font-bold px-4"><SelectValue /></SelectTrigger><SelectContent className="rounded-xl border-0 shadow-2xl">{ZODIAC_SIGNS.map(sign => <SelectItem key={sign} value={sign} className="font-bold text-[11px]">{t(sign)}</SelectItem>)}</SelectContent></Select>
               </div>
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1 flex items-center gap-1"><GraduationCap size={12}/> Образование</Label>
@@ -314,7 +313,7 @@ export default function EditProfilePage() {
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-0 shadow-2xl">
-                        {dynamicEducation.map(opt => <SelectItem key={opt} value={opt} className="font-bold text-xs">{opt}</SelectItem>)}
+                        {dynamicEducation.map(opt => <SelectItem key={opt} value={opt} className="font-bold text-[11px]">{opt}</SelectItem>)}
                     </SelectContent>
                 </Select>
               </div>

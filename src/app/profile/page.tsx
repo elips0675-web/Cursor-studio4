@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { 
-  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -51,7 +51,6 @@ export default function ProfilePage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   
-  // States for Gallery Management
   const [photoToDelete, setPhotoToDelete] = useState<number | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
@@ -128,6 +127,8 @@ export default function ProfilePage() {
     </div>
   );
 
+  const earnedTitles = getUserTitles(profile, language);
+
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <AppHeader />
@@ -192,6 +193,19 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {earnedTitles.length > 0 && (
+                <div className="pt-2">
+                  <span className="text-[10px] font-black uppercase text-muted-foreground ml-1 block mb-2">Звание</span>
+                  <div className="flex flex-wrap gap-2">
+                    {earnedTitles.map((title) => (
+                      <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm", title.color)}>
+                        <Star size={12} fill="currentColor" className="opacity-70" /> {title.displayName}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="pt-2 flex flex-wrap gap-2">
                 {profile.interests?.map((interest: string) => {
                   const Icon = interestIconsMap[interest] || Heart;
@@ -228,7 +242,6 @@ export default function ProfilePage() {
                 <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border/10 group shadow-sm">
                   <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
                   
-                  {/* Center Reveal Button */}
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
                     <button 
                       onClick={() => openViewer(idx)}
@@ -239,7 +252,6 @@ export default function ProfilePage() {
                     </button>
                   </div>
 
-                  {/* Top Right Trash Icon */}
                   <button 
                     onClick={() => setPhotoToDelete(idx)}
                     className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20 opacity-0 group-hover:opacity-100"
@@ -253,7 +265,6 @@ export default function ProfilePage() {
         </div>
       </main>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={photoToDelete !== null} onOpenChange={(open) => !open && setPhotoToDelete(null)}>
         <AlertDialogContent className="rounded-2xl border-0 p-6 bg-white app-shadow">
           <AlertDialogHeader>
@@ -276,7 +287,6 @@ export default function ProfilePage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Photo Slider Viewer */}
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center [&>button]:hidden">
           <DialogTitle className="sr-only">Галерея</DialogTitle>

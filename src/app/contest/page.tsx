@@ -71,22 +71,30 @@ export default function ContestPage() {
   const [votingProgress, setVotingProgress] = useState(0);
 
   useEffect(() => {
+    const getRussianDays = (n: number) => {
+      const titles = ['день', 'дня', 'дней'];
+      const cases = [2, 0, 1, 1, 1, 2];
+      return titles[(n % 100 > 4 && n % 100 < 20) ? 2 : cases[(n % 10 < 5) ? n % 10 : 5]];
+    };
+
     const updateTimer = () => {
       const now = new Date();
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
       const diff = endOfMonth.getTime() - now.getTime();
       
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       
-      setTimeLeft(`${days}д ${hours}ч ${mins}м`);
+      if (language === 'RU') {
+        setTimeLeft(`${days} ${getRussianDays(days)}`);
+      } else {
+        setTimeLeft(`${days} ${days === 1 ? 'day' : 'days'}`);
+      }
     };
 
     updateTimer();
-    const interval = setInterval(updateTimer, 60000);
+    const interval = setInterval(updateTimer, 3600000); // Update once per hour
     return () => clearInterval(interval);
-  }, []);
+  }, [language]);
 
   const handleVote = (entryId: string) => {
     if (votedEntries.includes(entryId)) return;

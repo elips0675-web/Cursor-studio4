@@ -86,10 +86,10 @@ const interestIcons: Record<string, any> = {
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
 const LifestyleItem = React.memo(({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
-    <div className={cn("flex flex-col gap-1", className)}>
+    <div className={cn("flex flex-col gap-1.5", className)}>
       <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{label}</span>
-      <Badge variant="secondary" className="bg-muted/40 text-foreground border-0 gap-1.5 py-2 px-3 font-bold text-[11px] rounded-lg shadow-sm justify-start w-full transition-all hover:bg-muted/60">
-        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={12} className="text-primary/70" />)}
+      <Badge variant="secondary" className="bg-muted/40 text-foreground border-0 gap-2 py-2.5 px-3.5 font-bold text-[11px] rounded-lg shadow-sm justify-start w-full transition-all hover:bg-muted/60">
+        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={14} className="text-primary/70" />)}
         <span className="truncate">{value}</span>
       </Badge>
     </div>
@@ -281,7 +281,6 @@ function UserProfileContent() {
                 <div key={`${url}-${idx}`} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm border border-border/10">
                   <Image src={url} alt={`Photo ${idx}`} fill sizes="(max-width: 480px) 50vw, 240px" className="object-cover group-hover:scale-105 transition-transform duration-500" />
                   
-                  {/* Center Reveal Overlay */}
                   <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
                     <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 group-hover:scale-100 transition-transform">
                       <Maximize2 size={12} />
