@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -163,7 +162,7 @@ export default function ContestPage() {
                       <motion.div
                         animate={{ y: [0, -8, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute -top-12 left-1/2 -translate-x-1/2 text-amber-500 drop-shadow-xl"
+                        className="absolute -top-8 left-1/2 -translate-x-1/2 text-amber-500 drop-shadow-xl"
                       >
                         <Crown size={40} fill="currentColor" />
                       </motion.div>
