@@ -3,7 +3,7 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { 
-  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, ChevronDown, MessageSquare, ChevronRight, ChevronsLeft, ChevronsRight
+  Search, ChevronLeft, Send, MoreVertical, Sparkles, Smile, Heart, Laugh, Compass, Coffee, Zap, MessageSquareQuote, Flame, Star, Ghost, Rocket, Crown, Music, Phone, Video, Flag, Check, CheckCheck, Info, Users, MessageSquare, ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -135,8 +135,6 @@ function ChatsContent() {
   const [isVoiceCall, setIsVoiceCall] = useState(false);
   
   const [joinedGroupNames, setJoinedGroupNames] = useState<string[]>([]);
-
-  // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
@@ -161,7 +159,6 @@ function ChatsContent() {
     const groups: any[] = [];
     GROUP_CATEGORIES.forEach(cat => {
       cat.subgroups.forEach(sub => {
-        // Filter: only show groups that user actually joined
         const isJoined = joinedGroupNames.some(name => 
           name === sub.name_ru || name === sub.name_en
         );
@@ -172,7 +169,7 @@ function ChatsContent() {
             isGroup: true,
             img: cat.img,
             categoryName: language === 'RU' ? cat.name_ru : cat.name_en,
-            name: language === 'RU' ? sub.name_ru : sub.name_en,
+            name: language === 'RU' ? sub.name_ru : subgroup.name_en,
             lastMessage: language === 'RU' ? 'Новое сообщение в группе' : 'New message in group',
             time: "12:45"
           });
@@ -229,7 +226,6 @@ function ChatsContent() {
       }
     } else if (groupId) {
       const id = parseInt(groupId);
-      // We search all groups here because if a user is redirected they might have just joined
       const allPossibleGroups: any[] = [];
       GROUP_CATEGORIES.forEach(c => c.subgroups.forEach(s => allPossibleGroups.push({ ...s, isGroup: true, name: language === 'RU' ? s.name_ru : s.name_en })));
       

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect, Suspense, useMemo } from "react";
@@ -42,7 +43,6 @@ import {
   Wine,
   Flag,
   Sun,
-  GraduationCap,
   User,
   Info,
   Trophy,
@@ -86,10 +86,6 @@ const interestIcons: Record<string, any> = {
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
-/**
- * Вспомогательный компонент для блоков данных.
- * Стиль со скруглением rounded-lg для более прямоугольного вида.
- */
 const DataBox = React.memo(({ label, value, icon: Icon, color = "default" }: { label: string, value: any, icon?: any, color?: "default" | "primary" }) => (
   <div className="space-y-1.5">
     <span className="text-[10px] font-black uppercase text-muted-foreground/60 ml-1">{label}</span>
@@ -223,7 +219,6 @@ function UserProfileContent() {
         <div className="px-5 space-y-6 -mt-2 relative z-10">
           <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
             
-            {/* 1. Звания (Самый верх) */}
             {earnedTitles.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center gap-2 mb-2">
@@ -240,7 +235,6 @@ function UserProfileContent() {
               </div>
             )}
 
-            {/* 2. О себе */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Info size={14} /></div>
@@ -253,7 +247,6 @@ function UserProfileContent() {
 
             <div className="h-px bg-border/50"></div>
             
-            {/* 3. Lifestyle Сетка (Прямоугольные боксы rounded-lg) */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                  <User size={16} className="text-primary" />
@@ -300,7 +293,6 @@ function UserProfileContent() {
             
             <div className="h-px bg-border/50"></div>
 
-            {/* 4. Интересы */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <Star size={16} className="text-primary" />
@@ -319,7 +311,6 @@ function UserProfileContent() {
             </div>
           </div>
 
-          {/* 5. Галерея - rounded-2xl (более прямоугольная) */}
           <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-4 mb-12">
             <div className="flex items-center gap-2">
                <Camera size={18} className="text-primary" />
