@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -40,11 +41,16 @@ const MALE_ENTRIES = [
   { id: 'm3', userId: 'u4', userName: 'Дмитрий', photo: PlaceHolderImages[3].imageUrl, votes: 700, rank: 3, gender: 'male' },
 ];
 
-const PAST_WINNERS = [
-  { id: 'pw1', name: 'Мария', photo: PlaceHolderImages[6].imageUrl, month: 'Апрель' },
-  { id: 'pw2', name: 'Александр', photo: PlaceHolderImages[1].imageUrl, month: 'Апрель' },
-  { id: 'pw3', name: 'Елена', photo: PlaceHolderImages[2].imageUrl, month: 'Март' },
-  { id: 'pw4', name: 'Дмитрий', photo: PlaceHolderImages[3].imageUrl, month: 'Февраль' },
+const PAST_FEMALE_WINNERS = [
+  { id: 'pfw1', name: 'Мария', photo: PlaceHolderImages[6].imageUrl, month: 'Апрель' },
+  { id: 'pfw2', name: 'Елена', photo: PlaceHolderImages[2].imageUrl, month: 'Март' },
+  { id: 'pfw3', name: 'Ксения', photo: PlaceHolderImages[8].imageUrl, month: 'Февраль' },
+];
+
+const PAST_MALE_WINNERS = [
+  { id: 'pmw1', name: 'Александр', photo: PlaceHolderImages[1].imageUrl, month: 'Апрель' },
+  { id: 'pmw2', name: 'Дмитрий', photo: PlaceHolderImages[3].imageUrl, month: 'Март' },
+  { id: 'pmw3', name: 'Артем', photo: PlaceHolderImages[5].imageUrl, month: 'Февраль' },
 ];
 
 export default function ContestPage() {
@@ -80,6 +86,10 @@ export default function ContestPage() {
 
   const currentEntries = useMemo(() => {
     return activeGender === "female" ? FEMALE_ENTRIES : MALE_ENTRIES;
+  }, [activeGender]);
+
+  const pastWinners = useMemo(() => {
+    return activeGender === "female" ? PAST_FEMALE_WINNERS : PAST_MALE_WINNERS;
   }, [activeGender]);
 
   const topThree = currentEntries.slice(0, 3);
@@ -206,7 +216,7 @@ export default function ContestPage() {
             <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">{language === 'RU' ? 'Победители прошлых месяцев' : 'Previous Winners'}</h4>
           </div>
           <div className="grid grid-cols-3 gap-3 px-1">
-            {PAST_WINNERS.slice(0, 3).map((winner) => (
+            {pastWinners.slice(0, 3).map((winner) => (
               <div key={winner.id} className="w-full">
                 <div className="relative aspect-square rounded-2xl overflow-hidden mb-2 border-2 border-white shadow-sm bg-white">
                   <Image src={winner.photo} alt={winner.name} fill sizes="(max-width: 480px) 33vw, 128px" className="object-cover grayscale hover:grayscale-0 transition-all duration-500" />
