@@ -87,16 +87,23 @@ const interestIcons: Record<string, any> = {
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
-const LifestyleItem = React.memo(({ label, value, icon: Icon, className }: { label: string, value: any, icon?: any, className?: string }) => (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1">{label}</span>
-      <div className="bg-muted/40 text-foreground border-0 flex items-center gap-2 py-2.5 px-3.5 rounded-lg shadow-sm w-full transition-all hover:bg-muted/60">
-        {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={14} className="text-primary/70" />)}
-        <span className="text-[11px] font-bold truncate">{value}</span>
-      </div>
-    </div>
-  ));
-LifestyleItem.displayName = "LifestyleItem";
+// Helper component for the "window" style data boxes
+const DataBox = React.memo(({ label, value, icon: Icon, color = "default" }: { label: string, value: any, icon?: any, color?: "default" | "primary" }) => (
+  <div className="space-y-1">
+    <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{label}</span>
+    <Badge 
+      variant="secondary" 
+      className={cn(
+        "w-full justify-start py-2.5 px-3.5 rounded-lg border-0 font-bold text-[11px] gap-2 shadow-sm transition-all hover:brightness-95",
+        color === "primary" ? "bg-primary/5 text-primary" : "bg-muted/40 text-foreground"
+      )}
+    >
+      {Icon && (typeof Icon === 'string' ? <ZodiacIcon sign={Icon} /> : <Icon size={14} className={cn(color === "primary" ? "text-primary" : "text-primary/70")} />)}
+      <span className="truncate">{value}</span>
+    </Badge>
+  </div>
+));
+DataBox.displayName = "DataBox";
 
 function UserProfileContent() {
   const searchParams = useSearchParams();
@@ -237,49 +244,50 @@ function UserProfileContent() {
 
             <div className="h-px bg-border/50"></div>
             
-            {/* 3. Lifestyle Grid (Gender, Looking for, Goal, etc.) */}
+            {/* 3. Lifestyle Grid (Badge style windows like in Profile) */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                  <User size={16} className="text-primary" />
                  <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground opacity-60">{t('profile.lifestyle')}</h4>
               </div>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-4">
-                {/* Column 1: Gender, Goal, Height, Education */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* Column 1: Gender, Dating Goal, Height, Education */}
                 <div className="space-y-4">
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.gender')} 
                     value={user.gender === 'female' ? t('onboarding.step1.female') : t('onboarding.step1.male')} 
                     icon={VenetianMask} 
                   />
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.goal')} 
                     value={user.goal} 
                     icon={Target} 
+                    color="primary"
                   />
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.height')} 
                     value={`${user.height} ${language === 'RU' ? 'см' : 'cm'}`} 
                     icon={Ruler} 
                   />
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.education')} 
                     value={language === 'RU' ? 'Высшее' : 'Higher'} 
                     icon={GraduationCap} 
                   />
                 </div>
-                {/* Column 2: Looking for, Zodiac, Profession, ... */}
+                {/* Column 2: Looking for, Zodiac, Profession */}
                 <div className="space-y-4">
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.looking_for')} 
                     value={user.lookingFor === 'male' ? t('filter.gender.male') : user.lookingFor === 'female' ? t('filter.gender.female') : t('filter.gender.all')} 
                     icon={Search} 
                   />
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.zodiac')} 
                     value={t(user.zodiac)} 
                     icon={user.zodiac} 
                   />
-                  <LifestyleItem 
+                  <DataBox 
                     label={t('profile.label.job')} 
                     value={language === 'RU' ? 'Дизайнер' : 'Designer'} 
                     icon={Briefcase} 
