@@ -111,7 +111,6 @@ export default function ContestPage() {
           </p>
         </header>
 
-        {/* Compact Centered Timer Block */}
         <div className="bg-white rounded-2xl p-4 border border-border/40 app-shadow mb-8 flex items-center justify-center gap-4 max-w-[260px] mx-auto">
           <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 shrink-0">
             <Timer size={20} />
@@ -133,7 +132,7 @@ export default function ContestPage() {
           </TabsList>
           
           <TabsContent value={activeGender} className="mt-0 outline-none">
-            <section className="mb-10 pt-10 relative">
+            <section className="mb-14 pt-12 relative">
               <AnimatePresence mode="wait">
                 <motion.div 
                   key={activeGender}
@@ -141,52 +140,55 @@ export default function ContestPage() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
                   transition={{ duration: 0.3 }}
-                  className="flex justify-center items-end gap-2 sm:gap-4 relative z-10"
+                  className="flex justify-center items-end gap-2 sm:gap-6 relative z-10"
                 >
-                  <div className="flex flex-col items-center flex-1 max-w-[100px]">
+                  {/* Rank 2 */}
+                  <div className="flex flex-col items-center flex-1 max-w-[120px]">
                     <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[1].photo)}>
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] border-4 border-slate-300 shadow-lg overflow-hidden bg-muted">
-                        <Image src={topThree[1].photo} alt={topThree[1].userName} fill sizes="80px" className="object-cover transition-transform group-hover:scale-110" />
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[1.5rem] border-4 border-slate-300 shadow-xl overflow-hidden bg-muted">
+                        <Image src={topThree[1].photo} alt={topThree[1].userName} fill sizes="112px" className="object-cover transition-transform group-hover:scale-110" />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Maximize2 className="text-white" size={16} />
+                          <Maximize2 className="text-white" size={20} />
                         </div>
                       </div>
-                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-slate-300 rounded-full flex items-center justify-center text-white font-black text-xs shadow-md border-2 border-white">2</div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md border-2 border-white">2</div>
                     </div>
                     <p className="font-bold text-xs truncate w-full text-center">{topThree[1].userName}</p>
                     <Badge variant="secondary" className="mt-1 bg-slate-100 text-slate-600 text-[8px] font-black">{topThree[1].votes}</Badge>
                   </div>
 
-                  <div className="flex flex-col items-center flex-1 max-w-[120px] -mt-8">
+                  {/* Rank 1 */}
+                  <div className="flex flex-col items-center flex-1 max-w-[160px] -mt-12">
                     <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[0].photo)}>
                       <motion.div
-                        animate={{ y: [0, -5, 0] }}
+                        animate={{ y: [0, -8, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute -top-10 left-1/2 -translate-x-1/2 text-amber-500"
+                        className="absolute -top-12 left-1/2 -translate-x-1/2 text-amber-500 drop-shadow-xl"
                       >
-                        <Crown size={32} fill="currentColor" />
+                        <Crown size={40} fill="currentColor" />
                       </motion.div>
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-[2rem] border-4 border-amber-400 shadow-2xl overflow-hidden bg-muted ring-4 ring-amber-400/20">
-                        <Image src={topThree[0].photo} alt={topThree[0].userName} fill sizes="100px" className="object-cover transition-transform group-hover:scale-105" />
+                      <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-[2rem] border-4 border-amber-400 shadow-[0_20px_50px_rgba(251,191,36,0.3)] overflow-hidden bg-muted ring-4 ring-amber-400/20">
+                        <Image src={topThree[0].photo} alt={topThree[0].userName} fill sizes="144px" className="object-cover transition-transform group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Maximize2 className="text-white" size={24} />
+                          <Maximize2 className="text-white" size={32} />
                         </div>
                       </div>
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-400 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md border-2 border-white">1</div>
+                      <div className="absolute -top-2 -right-2 w-10 h-10 bg-amber-400 rounded-full flex items-center justify-center text-white font-black text-lg shadow-md border-2 border-white">1</div>
                     </div>
                     <p className="font-black text-sm truncate w-full text-center">{topThree[0].userName}</p>
-                    <Badge className="mt-1 gradient-bg text-white text-[9px] font-black border-0 shadow-lg shadow-primary/20">{topThree[0].votes}</Badge>
+                    <Badge className="mt-1 gradient-bg text-white text-[10px] font-black border-0 shadow-lg shadow-primary/20 px-3">{topThree[0].votes}</Badge>
                   </div>
 
-                  <div className="flex flex-col items-center flex-1 max-w-[100px]">
+                  {/* Rank 3 */}
+                  <div className="flex flex-col items-center flex-1 max-w-[120px]">
                     <div className="relative mb-3 cursor-pointer group" onClick={() => setViewerPhoto(topThree[2].photo)}>
-                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-[1.5rem] border-4 border-amber-700/40 shadow-lg overflow-hidden bg-muted">
-                        <Image src={topThree[2].photo} alt={topThree[2].userName} fill sizes="80px" className="object-cover transition-transform group-hover:scale-110" />
+                      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-[1.5rem] border-4 border-amber-700/40 shadow-xl overflow-hidden bg-muted">
+                        <Image src={topThree[2].photo} alt={topThree[2].userName} fill sizes="112px" className="object-cover transition-transform group-hover:scale-110" />
                         <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <Maximize2 className="text-white" size={16} />
+                          <Maximize2 className="text-white" size={20} />
                         </div>
                       </div>
-                      <div className="absolute -top-2 -right-2 w-7 h-7 bg-amber-700/60 rounded-full flex items-center justify-center text-white font-black text-xs shadow-md border-2 border-white">3</div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-700/60 rounded-full flex items-center justify-center text-white font-black text-sm shadow-md border-2 border-white">3</div>
                     </div>
                     <p className="font-bold text-xs truncate w-full text-center">{topThree[2].userName}</p>
                     <Badge variant="secondary" className="mt-1 bg-amber-50 text-amber-700 text-[8px] font-black">{topThree[2].votes}</Badge>
@@ -198,20 +200,20 @@ export default function ContestPage() {
           </TabsContent>
         </Tabs>
 
-        {/* Previous Winners Section */}
+        {/* Previous Winners Section - Improved to show 3 by width */}
         <section className="mb-10">
           <div className="flex items-center gap-2 mb-4 px-1">
             <History className="text-blue-500" size={18} />
             <h4 className="text-xs font-black uppercase tracking-widest text-muted-foreground">{language === 'RU' ? 'Победители прошлых месяцев' : 'Previous Winners'}</h4>
           </div>
-          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 px-1">
-            {PAST_WINNERS.map((winner) => (
-              <div key={winner.id} className="flex-shrink-0 w-32">
-                <div className="relative aspect-square rounded-2xl overflow-hidden mb-2 border-2 border-white shadow-sm">
-                  <Image src={winner.photo} alt={winner.name} fill sizes="128px" className="object-cover grayscale hover:grayscale-0 transition-all" />
+          <div className="grid grid-cols-3 gap-3 px-1">
+            {PAST_WINNERS.slice(0, 3).map((winner) => (
+              <div key={winner.id} className="w-full">
+                <div className="relative aspect-square rounded-2xl overflow-hidden mb-2 border-2 border-white shadow-sm bg-white">
+                  <Image src={winner.photo} alt={winner.name} fill sizes="(max-width: 480px) 33vw, 128px" className="object-cover grayscale hover:grayscale-0 transition-all duration-500" />
                   <div className="absolute top-1 right-1">
                     <div className="bg-amber-400 text-white p-1 rounded-full shadow-lg">
-                      <Medal size={12} />
+                      <Medal size={10} />
                     </div>
                   </div>
                 </div>
