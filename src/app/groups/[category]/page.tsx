@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { 
     ChevronLeft, 
+    ChevronRight,
     Users, 
     Plus, 
     Gift, 
@@ -21,6 +22,57 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+
+const ITEMS_PER_PAGE = 10;
+
+function Pagination({ current, total, onChange }: { current: number, total: number, onChange: (p: number) => void }) {
+  if (total <= 1) return null;
+
+  const pages = [];
+  for (let i = 1; i <= total; i++) {
+    pages.push(i);
+  }
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 mt-8 mb-4">
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="w-8 h-8 rounded-lg border-muted bg-white" 
+        disabled={current === 1}
+        onClick={() => onChange(current - 1)}
+      >
+        <ChevronLeft size={14} />
+      </Button>
+      
+      {pages.map(p => (
+        <Button
+          key={p}
+          variant={current === p ? "default" : "outline"}
+          size="icon"
+          className={cn(
+            "w-8 h-8 rounded-lg text-xs font-black transition-all",
+            current === p ? "gradient-bg border-0 text-white shadow-md scale-110" : "bg-white border-muted text-muted-foreground hover:bg-muted/50"
+          )}
+          onClick={() => onChange(p)}
+        >
+          {p}
+        </Button>
+      ))}
+
+      <Button 
+        variant="outline" 
+        size="icon" 
+        className="w-8 h-8 rounded-lg border-muted bg-white" 
+        disabled={current === total}
+        onClick={() => onChange(current + 1)}
+      >
+        <ChevronRight size={14} />
+      </Button>
+    </div>
+  );
+}
 
 function SubGroupsContent() {
     const params = useParams();
@@ -29,8 +81,20 @@ function SubGroupsContent() {
     const categoryId = params?.category as string;
 
     const [showPremiumDialog, setShowPremiumDialog] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const category = useMemo(() => GROUP_CATEGORIES.find(c => c.id === categoryId), [categoryId]);
+
+    const totalPages = useMemo(() => {
+        if (!category) return 0;
+        return Math.ceil(category.subgroups.length / ITEMS_PER_PAGE);
+    }, [category]);
+
+    const paginatedSubgroups = useMemo(() => {
+        if (!category) return [];
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        return category.subgroups.slice(start, start + ITEMS_PER_PAGE);
+    }, [category, currentPage]);
 
     const handleAdWatch = () => {
         toast({ title: t('groups.ad.toast.title'), description: t('groups.ad.toast.description') });
@@ -75,9 +139,9 @@ function SubGroupsContent() {
                     </div>
                 </div>
 
-                {/* Subgroups List - NO ICONS PER USER REQUEST */}
+                {/* Subgroups List */}
                 <div className="space-y-3">
-                    {category.subgroups.map(subgroup => (
+                    {paginatedSubgroups.map(subgroup => (
                         <Link href={`/chats?groupId=${subgroup.id}`} key={subgroup.id} className="flex items-center justify-between p-4 bg-white rounded-xl app-shadow hover:bg-muted/30 transition-all cursor-pointer group border border-white">
                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                 <div className="flex-1 min-w-0">
@@ -102,6 +166,9 @@ function SubGroupsContent() {
                         </Link>
                     ))}
                 </div>
+
+                {/* Pagination */}
+                <Pagination current={currentPage} total={totalPages} onChange={setCurrentPage} />
             </main>
             <BottomNav />
 
@@ -121,7 +188,7 @@ function SubGroupsContent() {
                             <div className="flex items-center gap-2 text-primary"><Play size={14} fill="currentColor" /><span className="text-[11px] font-black uppercase tracking-widest">{t('autosearch.free')}</span></div>
                             <span className="text-[8px] text-muted-foreground font-bold uppercase tracking-tighter opacity-60">{language === 'RU' ? '1 доступ за видео' : '1 access for 1 Video'}</span>
                         </Button>
-                        <div className="relative py-2"><div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted"></span></div><div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest text-muted-foreground bg-white px-4">или</div></div>
+                        <div className="relative py-2"><div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted"></span></div><div className="relative flex justify-center text-[8px] uppercase font-black tracking-widest text-muted-foreground bg-white px-4">{language === 'RU' ? 'или' : 'or'}</div></div>
                         <Button onClick={() => setShowPremiumDialog(false)} className="w-full h-16 rounded-xl gradient-bg text-white shadow-xl shadow-primary/20 flex flex-col items-center justify-center gap-1 active:scale-95 transition-all border-0">
                             <div className="flex items-center gap-2">
                                 <CreditCard size={16} />
