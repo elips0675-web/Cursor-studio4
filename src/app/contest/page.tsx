@@ -94,18 +94,18 @@ export default function ContestPage() {
     <>
       <AppHeader />
       <main className="flex-1 overflow-y-auto px-5 pt-6 pb-24 bg-[#f8f9fb]">
-        <header className="mb-6 text-center">
+        <header className="mb-4 text-center">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex p-3 rounded-2xl bg-amber-500/10 text-amber-600 mb-3 shadow-sm border border-amber-500/20"
+            className="inline-flex p-2 rounded-xl bg-amber-500/10 text-amber-600 mb-2 shadow-sm border border-amber-500/20"
           >
-            <Trophy size={24} fill="currentColor" />
+            <Trophy size={20} fill="currentColor" />
           </motion.div>
-          <h2 className="text-2xl font-black font-headline tracking-tighter text-foreground leading-none">
+          <h2 className="text-xl font-black font-headline tracking-tighter text-foreground leading-none">
             {t('contest.title')}
           </h2>
-          <p className="text-[10px] text-muted-foreground mt-1.5 font-medium uppercase tracking-widest opacity-70">
+          <p className="text-[9px] text-muted-foreground mt-1 font-medium uppercase tracking-widest opacity-70">
             {t('contest.subtitle')}
           </p>
         </header>
@@ -131,7 +131,7 @@ export default function ContestPage() {
           </TabsList>
           
           <TabsContent value={activeGender} className="mt-0 outline-none">
-            <section className="mb-14 pt-12 relative">
+            <section className="mb-14 pt-24 relative">
               <AnimatePresence mode="wait">
                 <motion.div 
                   key={activeGender}
@@ -162,7 +162,7 @@ export default function ContestPage() {
                       <motion.div
                         animate={{ y: [0, -8, 0] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                        className="absolute -top-6 left-1/2 -translate-x-1/2 text-amber-500 drop-shadow-xl"
+                        className="absolute -top-14 left-1/2 -translate-x-1/2 text-amber-500 drop-shadow-xl"
                       >
                         <Crown size={40} fill="currentColor" />
                       </motion.div>
