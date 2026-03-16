@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,9 +24,12 @@ export function PwaInstallBanner() {
 
   useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
+      // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
+      // Stash the event so it can be triggered later.
       const promptEvent = e as BeforeInstallPromptEvent;
       setInstallPrompt(promptEvent);
+      // Check if user has already dismissed it this session
       const dismissed = sessionStorage.getItem('pwa-install-dismissed');
       if (!dismissed) {
         setIsVisible(true);
@@ -42,7 +46,9 @@ export function PwaInstallBanner() {
   const handleInstall = async () => {
     if (!installPrompt) return;
 
+    // Show the install prompt
     installPrompt.prompt();
+    // Wait for the user to respond to the prompt
     const { outcome } = await installPrompt.userChoice;
 
     if (outcome === 'accepted') {

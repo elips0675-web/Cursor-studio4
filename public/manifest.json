@@ -1,23 +1,24 @@
+
 {
   "name": "SwiftMatch - AI Dating",
   "short_name": "SwiftMatch",
-  "description": "Современный опыт знакомств с искусственным интеллектом.",
+  "description": "Find your perfect match with AI power",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#fe3c72",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/app_icon/192/192",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
-      "src": "https://picsum.photos/seed/app_icon/512/512",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
