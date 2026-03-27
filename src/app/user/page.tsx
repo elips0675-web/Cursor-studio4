@@ -76,6 +76,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const HeartConfetti = dynamic(() => import("@/components/animations/heart-confetti").then(mod => mod.HeartConfetti), { ssr: false });
 
@@ -137,7 +138,7 @@ function UserProfileContent() {
 
     const randomPhotos: string[] = [];
     const available = [...PlaceHolderImages].filter(p => p.imageUrl !== user.img);
-    const count = Math.min(2, available.length);
+    const count = Math.min(4, available.length);
     
     for(let i = 0; i < count; i++) {
         const idx = Math.floor(Math.random() * available.length);
@@ -195,8 +196,8 @@ function UserProfileContent() {
           </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-24">
-        <div className="relative aspect-[4/3] w-full">
+      <main className="flex-1 overflow-y-auto pb-32">
+        <div className="relative aspect-[1/1] w-full max-h-[50vh]">
           <Image 
             src={user.img} 
             alt={user.name} 
@@ -205,141 +206,151 @@ function UserProfileContent() {
             priority
             className="object-cover" 
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fb] via-transparent to-black/30"></div>
-          <div className="absolute bottom-0 left-0 right-0 p-6 space-y-2">
-             <h3 className="text-3xl font-black font-headline text-foreground tracking-tight flex items-center gap-2">
-               {user.name}, {user.age} <CheckCircle2 size={24} className="text-primary" fill="currentColor" />
-             </h3>
-             <p className="text-muted-foreground text-[11px] font-black flex items-center gap-1.5 uppercase tracking-[0.15em]">
-                <MapPin size={14} className="text-primary" /> {user.city} • {user.distance} {language === 'RU' ? 'км' : 'km'} {t('user.from_you')}
-             </p>
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#f8f9fb] via-[#f8f9fb]/50 to-black/10"></div>
         </div>
 
-        <div className="px-5 space-y-6 -mt-2 relative z-10">
-          <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-6 text-left space-y-6 overflow-hidden">
-            
-            {earnedTitles.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy size={16} className="text-primary" />
-                  <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.rank')}</h4>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {earnedTitles.map((title) => (
-                    <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-transform hover:scale-105", title.color)}>
-                      <Star size={12} fill="currentColor" className="opacity-70" /> {title.displayName}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Info size={14} /></div>
-                <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.about')}</h4>
-              </div>
-              <p className="text-[14px] text-foreground/80 leading-relaxed font-medium italic pl-1 border-l-2 border-primary/10">
-                "{user.bio}"
+        <div className="px-5 -mt-20 relative z-10">
+          <div className="text-center mb-6">
+              <h3 className="text-3xl font-black font-headline text-foreground tracking-tight flex items-center justify-center gap-2">
+                {user.name}, {user.age} <CheckCircle2 size={24} className="text-primary" fill="currentColor" />
+              </h3>
+              <p className="text-muted-foreground text-[10px] font-black flex items-center justify-center gap-1.5 uppercase tracking-[0.1em]">
+                  <MapPin size={12} className="text-primary" /> {user.city} • {user.distance} {language === 'RU' ? 'км' : 'km'} {t('user.from_you')}
               </p>
-            </div>
-
-            <div className="h-px bg-border/50"></div>
-            
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                 <User size={16} className="text-primary" />
-                 <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.lifestyle')}</h4>
-              </div>
-              <div className="grid grid-cols-2 gap-x-3 gap-y-5">
-                <div className="space-y-5">
-                  <DataBox 
-                    label={t('profile.label.gender')} 
-                    value={user.gender === 'female' ? t('onboarding.step1.female') : t('onboarding.step1.male')} 
-                    icon={VenetianMask} 
-                  />
-                  <DataBox 
-                    label={t('profile.label.goal')} 
-                    value={user.goal} 
-                    icon={Target} 
-                    color="primary"
-                  />
-                  <DataBox 
-                    label={t('profile.label.height')} 
-                    value={`${user.height} ${language === 'RU' ? 'см' : 'cm'}`} 
-                    icon={Ruler} 
-                  />
-                </div>
-                <div className="space-y-5">
-                  <DataBox 
-                    label={t('profile.label.looking_for')} 
-                    value={user.lookingFor === 'male' ? t('filter.gender.male') : user.lookingFor === 'female' ? t('filter.gender.female') : t('filter.gender.all')} 
-                    icon={Search} 
-                  />
-                  <DataBox 
-                    label={t('profile.label.zodiac')} 
-                    value={t(user.zodiac)} 
-                    icon={user.zodiac} 
-                  />
-                  <DataBox 
-                    label={t('profile.label.job')} 
-                    value={language === 'RU' ? 'Дизайнер' : 'Designer'} 
-                    icon={Briefcase} 
-                  />
-                </div>
-              </div>
-            </div>
-            
-            <div className="h-px bg-border/50"></div>
-
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Star size={16} className="text-primary" />
-                <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.interests')}</h4>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {user.interests.map((interest) => {
-                  const Icon = interestIcons[interest] || Heart;
-                  return (
-                    <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70 hover:translate-y-[-1px] shadow-sm">
-                      <Icon size={14} className="text-primary" /> {t(interest)}
-                    </Badge>
-                  );
-                })}
-              </div>
-            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-4 mb-12">
-            <div className="flex items-center gap-2">
-               <Camera size={18} className="text-primary" />
-               <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.gallery')}</h4>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {photos.map((url, idx) => (
-                <div key={`${url}-${idx}`} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm border border-border/10">
-                  <Image 
-                    src={url} 
-                    alt={`Gallery photo`} 
-                    fill 
-                    sizes="(max-width: 480px) 50vw, 240px" 
-                    className="object-cover group-hover:scale-105 transition-transform duration-500" 
-                  />
-                  
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[1px]">
-                    <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 group-hover:scale-100 transition-transform">
-                      <Maximize2 size={12} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-muted p-1 rounded-xl mb-6">
+              <TabsTrigger value="profile">{language === 'RU' ? 'Данные' : 'Data'}</TabsTrigger>
+              <TabsTrigger value="gallery">{language === 'RU' ? 'Галерея' : 'Gallery'}</TabsTrigger>
+            </TabsList>
+            <TabsContent value="profile">
+              <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 text-left space-y-6 overflow-hidden">
+                
+                {earnedTitles.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Trophy size={16} className="text-primary" />
+                      <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.rank')}</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {earnedTitles.map((title) => (
+                        <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm transition-transform hover:scale-105", title.color)}>
+                          <Star size={12} fill="currentColor" className="opacity-70" /> {title.displayName}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Info size={14} /></div>
+                    <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.about')}</h4>
+                  </div>
+                  <p className="text-[14px] text-foreground/80 leading-relaxed font-medium italic pl-2 border-l-2 border-primary/10">
+                    "{user.bio}"
+                  </p>
+                </div>
+
+                <div className="h-px bg-border/50"></div>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <User size={16} className="text-primary" />
+                    <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.lifestyle')}</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-5">
+                    <div className="space-y-5">
+                      <DataBox 
+                        label={t('profile.label.gender')} 
+                        value={user.gender === 'female' ? t('onboarding.step1.female') : t('onboarding.step1.male')} 
+                        icon={VenetianMask} 
+                      />
+                      <DataBox 
+                        label={t('profile.label.goal')} 
+                        value={user.goal} 
+                        icon={Target} 
+                        color="primary"
+                      />
+                      <DataBox 
+                        label={t('profile.label.height')} 
+                        value={`${user.height} ${language === 'RU' ? 'см' : 'cm'}`} 
+                        icon={Ruler} 
+                      />
+                    </div>
+                    <div className="space-y-5">
+                      <DataBox 
+                        label={t('profile.label.looking_for')} 
+                        value={user.lookingFor === 'male' ? t('filter.gender.male') : user.lookingFor === 'female' ? t('filter.gender.female') : t('filter.gender.all')} 
+                        icon={Search} 
+                      />
+                      <DataBox 
+                        label={t('profile.label.zodiac')} 
+                        value={t(user.zodiac)} 
+                        icon={user.zodiac} 
+                      />
+                      <DataBox 
+                        label={t('profile.label.job')} 
+                        value={language === 'RU' ? 'Дизайнер' : 'Designer'} 
+                        icon={Briefcase} 
+                      />
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        </div>
+                
+                <div className="h-px bg-border/50"></div>
 
-        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-6 flex justify-center items-center gap-4 bg-white/80 backdrop-blur-md z-40 safe-pb border-t border-border/40">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Star size={16} className="text-primary" />
+                    <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.interests')}</h4>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {user.interests.map((interest) => {
+                      const Icon = interestIcons[interest] || Heart;
+                      return (
+                        <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-4 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70 hover:translate-y-[-1px] shadow-sm">
+                          <Icon size={14} className="text-primary" /> {t(interest)}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="gallery">
+              <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-4">
+                  <div className="flex items-center gap-2">
+                    <Camera size={18} className="text-primary" />
+                    <h4 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground/60">{t('profile.gallery')}</h4>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {photos.map((url, idx) => (
+                      <div key={`${url}-${idx}`} onClick={() => { setActivePhotoIndex(idx); setIsViewerOpen(true); }} className="relative aspect-square rounded-2xl overflow-hidden bg-muted cursor-pointer group shadow-sm border border-border/10">
+                        <Image 
+                          src={url} 
+                          alt={`Gallery photo`} 
+                          fill 
+                          sizes="(max-width: 480px) 50vw, 240px" 
+                          className="object-cover group-hover:scale-105 transition-transform duration-500" 
+                        />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[1px]">
+                          <div className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 group-hover:scale-100 transition-transform">
+                            <Maximize2 size={12} />
+                            <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </main>
+
+        <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] p-4 flex justify-center items-center gap-4 bg-white/80 backdrop-blur-md z-40 safe-pb border-t border-border/40">
           <Button onClick={() => router.back()} variant="outline" className="w-16 h-16 rounded-full border-2 border-muted hover:bg-muted text-muted-foreground flex items-center justify-center transition-all active:scale-90 shadow-lg bg-white">
             <X size={28} />
           </Button>
@@ -352,7 +363,6 @@ function UserProfileContent() {
             </Link>
           </Button>
         </div>
-      </main>
 
       <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
         <DialogContent className="max-w-[440px] w-[95vw] h-[85vh] p-0 border-0 bg-transparent shadow-none flex flex-col items-center justify-center [&>button]:hidden">

@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useState, useMemo, useCallback, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { MapPin, User, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Flag, Sparkles, Trophy } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Flag, Sparkles, Trophy, User } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -59,6 +59,13 @@ function performAutosearch(filters: any, allUsers: any[], currentUser: any) {
         })
         .filter(user => user.isCandidate)
         .sort((a, b) => {
+            const aIsBoosted = a.boost && a.boost.boostedUntil && new Date(a.boost.boostedUntil) > new Date();
+            const bIsBoosted = b.boost && b.boost.boostedUntil && new Date(b.boost.boostedUntil) > new Date();
+
+            if (aIsBoosted !== bIsBoosted) {
+                return aIsBoosted ? -1 : 1;
+            }
+
             if (a.distance !== b.distance) return a.distance - b.distance;
             if (a.hasMatchingGoal !== b.hasMatchingGoal) return a.hasMatchingGoal ? -1 : 1;
             return b.commonInterests - a.commonInterests;
@@ -84,15 +91,23 @@ function SearchContent() {
 
   useEffect(() => {
     const saved = localStorage.getItem('userProfile');
+    let userToSet;
     if (saved) {
       try {
-        setCurrentUser(JSON.parse(saved));
+        userToSet = JSON.parse(saved);
       } catch (e) {
-        setCurrentUser(ALL_DEMO_USERS[1]);
+        userToSet = ALL_DEMO_USERS[0];
       }
     } else {
-      setCurrentUser(ALL_DEMO_USERS[1]);
+      userToSet = ALL_DEMO_USERS[0];
     }
+    setCurrentUser(userToSet);
+
+    const userIndex = ALL_DEMO_USERS.findIndex(u => u.id === userToSet.id);
+    if (userIndex !== -1) {
+        ALL_DEMO_USERS[userIndex] = userToSet;
+    }
+
   }, []);
 
   useEffect(() => {
@@ -121,21 +136,21 @@ function SearchContent() {
   
   const user = userList[currentIndex] || null;
 
-  const handleNext = useCallback(() => { 
+  const handleNext = () => { 
     if (currentIndex < userList.length - 1) {
       setDirection(1); 
       setCurrentIndex(prev => prev + 1); 
     } else {
       setCurrentIndex(prev => prev + 1);
     }
-  }, [currentIndex, userList.length]);
+  };
 
-  const handlePrev = useCallback(() => { 
+  const handlePrev = () => { 
     if (currentIndex > 0) { 
       setDirection(-1); 
       setCurrentIndex(prev => prev - 1); 
     } 
-  }, [currentIndex]);
+  };
 
   const handleLike = async () => {
     if (!user) return;
@@ -144,6 +159,19 @@ function SearchContent() {
       setMatchUser(user);
     } else {
       handleNext();
+    }
+  };
+  
+  const handleSuperLike = async () => {
+    if (!user) return;
+    if ((currentUser.superLikes || 0) > 0) {
+      const updatedUser = { ...currentUser, superLikes: currentUser.superLikes - 1 };
+      setCurrentUser(updatedUser);
+      localStorage.setItem('userProfile', JSON.stringify(updatedUser));
+      toast({ title: "Супер-лайк! ✨", description: `Вы отправили супер-лайк ${user.name}!` });
+      setMatchUser(user);
+    } else {
+      toast({ variant: 'destructive', title: "Нет супер-лайков", description: "У вас закончились супер-лайки." });
     }
   };
 
@@ -173,7 +201,7 @@ function SearchContent() {
   if (!user) return (
     <div className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full bg-[#f8f9fb]">
       <Sparkles size={48} className="text-muted-foreground opacity-20 mb-4" />
-      <h4 className="text-xl font-black uppercase">{language === 'RU' ? 'Анкеты закончились' : 'No more profiles'}</h4>
+      <h4 className="text-xl font-black uppercase">{'Анкеты закончились'}</h4>
       <Button variant="outline" onClick={() => router.push('/')} className="mt-8 rounded-xl px-8 uppercase text-[10px] font-black">На главную</Button>
     </div>
   );
@@ -211,11 +239,10 @@ function SearchContent() {
                 alt={user.name} 
                 fill 
                 sizes="(max-width: 480px) 100vw, 420px" 
-                priority // Performance: Priority for LCP
+                priority
                 className="object-cover transition-transform duration-700 group-hover:scale-105" 
               />
               
-              {/* Contest Vote Button */}
               <button 
                 onClick={(e) => handleVote(e, user.id)}
                 className={cn(
@@ -254,46 +281,27 @@ function SearchContent() {
           </AnimatePresence>
         </div>
 
-        <div className="flex justify-center items-center gap-4 w-full max-w-[400px]">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" 
-            onClick={handleNext}
-          >
-            <ChevronRight size={32} strokeWidth={3} />
-          </Button>
-
-          <Button 
-            size="icon" 
-            className="w-24 h-24 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" 
-            onClick={handleLike}
-          >
-            <Heart size={48} fill="currentColor" />
-          </Button>
-
-          <Button 
-            asChild 
-            variant="outline" 
-            size="icon" 
-            className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all"
-          >
-            <Link href={`/user?id=${user.id}`} prefetch={true}>
-              <User size={32} strokeWidth={3} />
-            </Link>
-          </Button>
-          
-          <Button 
-            asChild 
-            variant="outline" 
-            size="icon" 
-            className="w-20 h-20 rounded-full bg-white shadow-xl border-0 text-[#2ecc71] hover:text-[#27ae60] active:scale-90 transition-all"
-          >
-            <Link href={`/chats?matchId=${user.id}`} prefetch={true}>
-              <MessageCircle size={36} strokeWidth={3} />
-            </Link>
-
-          </Button>
+        <div className="flex justify-center items-center gap-2 sm:gap-4 w-full max-w-[420px]">
+            <Button variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" onClick={handleNext}>
+                <X size={28} strokeWidth={3} />
+            </Button>
+            <Button size="icon" className="relative w-16 h-16 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none" onClick={handleSuperLike} disabled={(currentUser?.superLikes || 0) === 0}>
+                <Sparkles size={32} fill="currentColor" />
+                <span className="absolute bottom-2 text-xs font-bold">{currentUser?.superLikes || 0}</span>
+            </Button>
+            <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" onClick={handleLike}>
+                <Heart size={40} fill="currentColor" />
+            </Button>
+            <Button asChild variant="outline" size="icon" className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-green-400 hover:text-green-600 active:scale-90 transition-all">
+                <Link href={`/chats?userId=${user.id}`}>
+                    <MessageCircle size={32} />
+                </Link>
+            </Button>
+            <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all">
+                <Link href={`/user?id=${user.id}`} prefetch={true}>
+                    <User size={28} strokeWidth={2} />
+                </Link>
+            </Button>
         </div>
       </main>
       

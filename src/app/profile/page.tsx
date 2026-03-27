@@ -1,8 +1,9 @@
+
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { 
-  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check, HelpCircle
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check, HelpCircle, Rocket, CreditCard, Video
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,6 +39,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const interestIconsMap: Record<string, any> = {
   "Фотография": Camera, "Путешествия": Globe, "Кофе": Coffee, "Музыка": Music, "Спорт": Dumbbell, "Искусство": Palette, "Кино": Film, "Йога": Flower2, "Бизнес": Briefcase, "Игры": Gamepad2, "Кошки": Dog,
@@ -49,15 +51,21 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  const [isBoosted, setIsBoosted] = useState(false);
   
   const [photoToDelete, setPhotoToDelete] = useState<number | null>(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Contest states
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
   const [selectedPhotoForContest, setSelectedPhotoForContest] = useState<string | null>(null);
   const [hasParticipated, setHasParticipated] = useState(false);
+
+  // Boost Dialog
+  const [isBoostDialogOpen, setIsBoostDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -99,7 +107,48 @@ export default function ProfilePage() {
 
     const participationStatus = localStorage.getItem('contest_participation');
     if (participationStatus) setHasParticipated(true);
+
+    // Cleanup blob URLs on unmount
+    return () => {
+      photos.forEach(photo => {
+        if (photo.startsWith('blob:')) {
+          URL.revokeObjectURL(photo);
+        }
+      });
+    };
   }, [t]);
+
+  useEffect(() => {
+    if (profile?.boost?.boostedUntil) {
+        const boostEndDate = new Date(profile.boost.boostedUntil);
+        if (boostEndDate > new Date()) {
+            setIsBoosted(true);
+            const timeLeft = Math.round((boostEndDate.getTime() - new Date().getTime()) / 60000);
+            toast({ title: 'Буст активен! 🚀', description: `Ваш профиль будет показываться первым еще ${timeLeft} минут.` });
+        }
+    }
+  }, [profile]);
+
+  const handleAddPhotoClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      const newPhotoUrl = URL.createObjectURL(file);
+      
+      // Note: This new photo is only stored in browser memory
+      // and will disappear on refresh. 
+      const newPhotosArray = [...photos, newPhotoUrl];
+      setPhotos(newPhotosArray);
+
+      toast({
+        title: language === 'RU' ? "Фото выбрано" : "Photo Selected",
+        description: language === 'RU' ? "Ваше фото добавлено в галерею (только для просмотра)." : "Your photo has been added to the gallery (for preview only).",
+      });
+    }
+  };
 
   const handleDeletePhoto = () => {
     if (photoToDelete === null) return;
@@ -113,10 +162,19 @@ export default function ProfilePage() {
       setPhotoToDelete(null);
       return;
     }
+    
+    const photoUrlToDelete = photos[photoToDelete];
+    if (photoUrlToDelete.startsWith('blob:')) {
+      URL.revokeObjectURL(photoUrlToDelete);
+    }
 
     const newPhotos = photos.filter((_, i) => i !== photoToDelete);
     setPhotos(newPhotos);
-    localStorage.setItem('userProfileGallery', JSON.stringify(newPhotos));
+    
+    // Update localStorage only with persistent URLs
+    const persistentPhotos = newPhotos.filter(p => !p.startsWith('blob:'));
+    localStorage.setItem('userProfileGallery', JSON.stringify(persistentPhotos));
+
     toast({ title: language === 'RU' ? "Фото удалено" : "Photo deleted" });
     setPhotoToDelete(null);
   };
@@ -128,6 +186,10 @@ export default function ProfilePage() {
 
   const handleSubmitToContest = () => {
     if (!selectedPhotoForContest) return;
+    if (selectedPhotoForContest.startsWith('blob:')) {
+        toast({ variant: 'destructive', title: 'Ошибка', description: 'Нельзя отправить на конкурс временное изображение.' })
+        return;
+    }
     setHasParticipated(true);
     localStorage.setItem('contest_participation', 'true');
     setIsSelectionOpen(false);
@@ -135,6 +197,34 @@ export default function ProfilePage() {
       title: language === 'RU' ? "Заявка принята!" : "Application accepted!",
       description: language === 'RU' ? "Ваше фото теперь участвует в конкурсе." : "Your photo is now participating in the contest.",
     });
+  };
+  
+  const activateBoost = () => {
+    if (isBoosted) {
+      toast({ title: "Буст уже активен" });
+      return;
+    }
+    const boostEndTime = new Date(new Date().getTime() + 30 * 60 * 1000);
+    const updatedUser = { ...profile, boost: { boostedUntil: boostEndTime.toISOString() } };
+    setProfile(updatedUser);
+    localStorage.setItem('userProfile', JSON.stringify(updatedUser));
+    setIsBoosted(true);
+    toast({
+      title: "Буст активирован! 🚀",
+      description: "Ваш профиль будет показываться первым в течение 30 минут.",
+    });
+  };
+
+  const handleBoost = (method: 'ad' | 'payment') => {
+    setIsBoostDialogOpen(false);
+    if (method === 'ad') {
+      activateBoost();
+    } else {
+      toast({
+        title: "Оплата",
+        description: "Функция оплаты будет добавлена в ближайшее время!",
+      });
+    }
   };
 
   if (!isMounted || !profile) return (
@@ -149,186 +239,205 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
+       <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleFileSelected} 
+        style={{ display: 'none' }} 
+        accept="image/*"
+      />
       <AppHeader />
-      <main className="flex-1 overflow-y-auto pb-24 px-5">
+      <main className="flex-1 overflow-y-auto pb-24">
         <div className="h-24 gradient-bg relative -mx-5 mb-10">
-          <div className="absolute top-4 right-6 flex gap-2">
+          <div className="absolute top-4 right-6 flex gap-3">
+            <Link href="/profile/edit" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><Edit2 size={18} /></Link>
             <Link href="/faq" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><HelpCircle size={18} /></Link>
             <Link href="/settings" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><Settings size={18} /></Link>
           </div>
         </div>
         
-        <div className="-mt-20">
+        <div className="-mt-20 px-5">
           <div className="text-center mb-6">
             <div className="relative inline-block mb-4">
               <div className="relative w-32 h-32 rounded-2xl border-[6px] border-white app-shadow overflow-hidden bg-muted">
                 <Image src={photos[0] || PlaceHolderImages[0].imageUrl} alt="Profile" fill className="object-cover" />
               </div>
-              <Link href="/profile/edit" className="absolute -bottom-2 -right-2 gradient-bg text-white p-3 rounded-2xl shadow-xl border-4 border-white hover:scale-110 transition-transform active:scale-90"><Edit2 size={18} /></Link>
             </div>
             <h3 className="text-2xl font-black font-headline tracking-tight flex items-center justify-center gap-2">{profile.displayName}, {profile.age} <CheckCircle2 size={20} className="text-primary" fill="currentColor" /></h3>
             <p className="text-muted-foreground text-[10px] font-black uppercase tracking-widest opacity-80 mt-1">{profile.city}</p>
+            <div className="mt-4">
+                <Button 
+                    onClick={() => setIsBoostDialogOpen(true)} 
+                    className={cn("h-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg transition-all text-white active:scale-95 px-6", isBoosted ? "bg-purple-600 shadow-purple-600/40 animate-pulse" : "bg-orange-500 shadow-orange-500/40")}
+                >
+                    <Rocket size={16} className="mr-2"/>
+                    {isBoosted ? 'Буст активен' : 'Поднять профиль'}
+                </Button>
+            </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-6">
-            {/* Звания Section */}
-            {earnedTitles.length > 0 && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy size={16} className="text-primary" />
-                  <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.rank')}</h4>
+          <Tabs defaultValue="profile" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-muted p-1 rounded-xl mb-6">
+              <TabsTrigger value="profile">Данные</TabsTrigger>
+              <TabsTrigger value="gallery">Галерея</TabsTrigger>
+            </TabsList>
+            <TabsContent value="profile">
+              <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 space-y-6">
+                {earnedTitles.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Trophy size={16} className="text-primary" />
+                      <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.rank')}</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {earnedTitles.map((title) => (
+                        <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm", title.color)}>
+                          <Star size={12} fill="currentColor" className="opacity-70" /> {title.displayName}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Info size={14} /></div>
+                    <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4>
+                  </div>
+                  <p className="text-xs text-foreground/80 leading-relaxed font-medium italic">"{profile.bio}"</p>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {earnedTitles.map((title) => (
-                    <Badge key={title.id} variant="secondary" className={cn("border-0 gap-2 py-2 px-3.5 font-bold text-[10px] rounded-lg shadow-sm", title.color)}>
-                      <Star size={12} fill="currentColor" className="opacity-70" /> {title.displayName}
-                    </Badge>
+
+                <div className="h-px bg-border/50"></div>
+
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><User size={14} /></div>
+                    <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.data_interests')}</h4>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.gender')}</span>
+                      <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
+                        <VenetianMask size={12} className="text-primary" />
+                        {profile.gender === 'female' ? (language === 'RU' ? 'Женщина' : 'Female') : (language === 'RU' ? 'Мужчина' : 'Male')}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.looking_for')}</span>
+                      <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
+                        <Search size={12} className="text-primary" />
+                        {profile.lookingFor === 'male' ? (language === 'RU' ? 'Мужчину' : 'Men') : profile.lookingFor === 'female' ? (language === 'RU' ? 'Женщину' : 'Women') : (language === 'RU' ? 'Всех' : 'All')}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.goal')}</span>
+                      <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-primary/5 border-0 font-bold text-[11px] gap-2 text-primary">
+                        <Target size={12} />
+                        {profile.datingGoal}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.zodiac')}</span>
+                      <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
+                        <ZodiacIcon sign={profile.zodiac} />
+                        {t(profile.zodiac)}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.height')}</span>
+                      <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
+                        <Ruler size={12} className="text-primary" />
+                        {profile.height} {language === 'RU' ? 'см' : 'cm'}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 flex flex-wrap gap-2">
+                    {profile.interests?.map((interest: string) => {
+                      const Icon = interestIconsMap[interest] || Heart;
+                      return (
+                        <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-3 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70 shadow-sm">
+                          <Icon size={12} className="text-primary" /> {t(interest)}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value="gallery">
+              <div className="bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-2">
+                    <Camera size={18} className="text-primary" />
+                    <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
+                  </div>
+                  <button onClick={handleAddPhotoClick} className="h-8 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary px-3 bg-primary/5 hover:bg-primary/10 transition-colors">{t('profile.add')}</button>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {photos.map((url, idx) => (
+                    <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border/10 group shadow-sm">
+                      <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
+                      
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
+                        <button 
+                          onClick={() => openViewer(idx)}
+                          className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 hover:scale-100 transition-transform active:scale-95"
+                        >
+                          <Maximize2 size={12} />
+                          <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
+                        </button>
+                      </div>
+
+                      <button 
+                        onClick={() => setPhotoToDelete(idx)}
+                        className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20 opacity-0 group-hover:opacity-100"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* О себе Section */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600"><Info size={14} /></div>
-                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h4>
-              </div>
-              <p className="text-xs text-foreground/80 leading-relaxed font-medium italic">"{profile.bio}"</p>
-            </div>
-
-            <div className="h-px bg-border/50"></div>
-
-            {/* Данные и Интересы Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><User size={14} /></div>
-                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.data_interests')}</h4>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.gender')}</span>
-                  <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
-                    <VenetianMask size={12} className="text-primary" />
-                    {profile.gender === 'female' ? (language === 'RU' ? 'Женщина' : 'Female') : (language === 'RU' ? 'Мужчина' : 'Male')}
-                  </Badge>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.looking_for')}</span>
-                  <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
-                    <Search size={12} className="text-primary" />
-                    {profile.lookingFor === 'male' ? (language === 'RU' ? 'Мужчину' : 'Men') : profile.lookingFor === 'female' ? (language === 'RU' ? 'Женщину' : 'Women') : (language === 'RU' ? 'Всех' : 'All')}
-                  </Badge>
-                </div>
-                {/* Dating Goal */}
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.goal')}</span>
-                  <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-primary/5 border-0 font-bold text-[11px] gap-2 text-primary">
-                    <Target size={12} />
-                    {profile.datingGoal}
-                  </Badge>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.zodiac')}</span>
-                  <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
-                    <ZodiacIcon sign={profile.zodiac} />
-                    {t(profile.zodiac)}
-                  </Badge>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-black uppercase text-muted-foreground ml-1">{t('profile.label.height')}</span>
-                  <Badge variant="secondary" className="w-full justify-start py-2 px-3 rounded-lg bg-muted/40 border-0 font-bold text-[11px] gap-2">
-                    <Ruler size={12} className="text-primary" />
-                    {profile.height} {language === 'RU' ? 'см' : 'cm'}
-                  </Badge>
-                </div>
-              </div>
-
-              <div className="pt-2 flex flex-wrap gap-2">
-                {profile.interests?.map((interest: string) => {
-                  const Icon = interestIconsMap[interest] || Heart;
-                  return (
-                    <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-3 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70 shadow-sm">
-                      <Icon size={12} className="text-primary" /> {t(interest)}
-                    </Badge>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 bg-white rounded-2xl p-6 app-shadow border border-border/40 mb-6">
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center gap-2">
-                <Camera size={18} className="text-primary" />
-                <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">{t('profile.gallery')}</h4>
-              </div>
-              <button className="h-8 rounded-lg text-[9px] font-black uppercase tracking-widest text-primary px-3 bg-primary/5 hover:bg-primary/10 transition-colors">{t('profile.add')}</button>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {photos.map((url, idx) => (
-                <div key={idx} className="relative aspect-square rounded-2xl overflow-hidden bg-muted border border-border/10 group shadow-sm">
-                  <Image src={url} alt={`Gallery ${idx}`} fill className="object-cover transition-transform group-hover:scale-105 duration-500" />
-                  
-                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all">
-                    <button 
-                      onClick={() => openViewer(idx)}
-                      className="bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full px-4 py-1.5 flex items-center gap-1.5 scale-90 hover:scale-100 transition-transform active:scale-95"
-                    >
-                      <Maximize2 size={12} />
-                      <span className="text-[9px] font-black uppercase tracking-widest">{t('button.reveal')}</span>
-                    </button>
+              <section className="mb-10 mt-6">
+                <div className="bg-white rounded-2xl p-6 border-2 border-amber-100 app-shadow relative overflow-hidden group">
+                  <div className="absolute -right-4 -bottom-4 opacity-5 text-amber-500 group-hover:rotate-12 transition-transform duration-500">
+                    <Trophy size={120} fill="currentColor" />
                   </div>
-
-                  <button 
-                    onClick={() => setPhotoToDelete(idx)}
-                    className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20 opacity-0 group-hover:opacity-100"
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 rounded-2xl bg-amber flex items-center justify-center text-amber-500 border border-amber-100">
+                      <Trophy size={24} fill="currentColor" />
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-black tracking-tight">{t('contest.participate_banner')}</h4>
+                      <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('contest.subtitle')}</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground/80 mb-6 leading-relaxed font-medium">
+                    {t('contest.rules_desc')}
+                  </p>
+                  <Button 
+                    onClick={() => !hasParticipated && setIsSelectionOpen(true)}
+                    disabled={hasParticipated}
+                    variant={hasParticipated ? "secondary" : "outline"}
+                    className={cn(
+                      "w-full h-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-sm transition-all",
+                      hasParticipated 
+                        ? "bg-green-50 text-green-600 border-green-100 cursor-default" 
+                        : "border-amber-200 text-amber-600 hover:bg-amber-50 active:scale-95"
+                    )}
                   >
-                    <Trash2 size={16} />
-                  </button>
+                    {hasParticipated ? (
+                      <span className="flex items-center gap-2"><Check size={14} /> {t('profile.application_sent')}</span>
+                    ) : (
+                      t('button.participate')
+                    )}
+                  </Button>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Light-themed Contest Banner */}
-          <section className="mb-10">
-            <div className="bg-white rounded-2xl p-6 border-2 border-amber-100 app-shadow relative overflow-hidden group">
-              <div className="absolute -right-4 -bottom-4 opacity-5 text-amber-500 group-hover:rotate-12 transition-transform duration-500">
-                <Trophy size={120} fill="currentColor" />
-              </div>
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber flex items-center justify-center text-amber-500 border border-amber-100">
-                  <Trophy size={24} fill="currentColor" />
-                </div>
-                <div>
-                  <h4 className="text-lg font-black tracking-tight">{t('contest.participate_banner')}</h4>
-                  <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{t('contest.subtitle')}</p>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground/80 mb-6 leading-relaxed font-medium">
-                {t('contest.rules_desc')}
-              </p>
-              <Button 
-                onClick={() => !hasParticipated && setIsSelectionOpen(true)}
-                disabled={hasParticipated}
-                variant={hasParticipated ? "secondary" : "outline"}
-                className={cn(
-                  "w-full h-12 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-sm transition-all",
-                  hasParticipated 
-                    ? "bg-green-50 text-green-600 border-green-100 cursor-default" 
-                    : "border-amber-200 text-amber-600 hover:bg-amber-50 active:scale-95"
-                )}
-              >
-                {hasParticipated ? (
-                  <span className="flex items-center gap-2"><Check size={14} /> {t('profile.application_sent')}</span>
-                ) : (
-                  t('button.participate')
-                )}
-              </Button>
-            </div>
-          </section>
+              </section>
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
 
@@ -383,7 +492,6 @@ export default function ProfilePage() {
         </DialogContent>
       </Dialog>
 
-      {/* Contest Photo Selection Dialog */}
       <Dialog open={isSelectionOpen} onOpenChange={setIsSelectionOpen}>
         <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow overflow-hidden">
           <div className="p-6 pb-4">
@@ -398,11 +506,12 @@ export default function ProfilePage() {
                   onClick={() => setSelectedPhotoForContest(url)}
                   className={cn(
                     "relative aspect-square rounded-2xl overflow-hidden cursor-pointer transition-all border-4",
-                    selectedPhotoForContest === url ? "border-primary shadow-lg scale-[0.98]" : "border-transparent opacity-70 grayscale-[50%] hover:opacity-100 hover:grayscale-0"
+                    selectedPhotoForContest === url ? "border-primary shadow-lg scale-[0.98]" : "border-transparent opacity-70 grayscale-[50%] hover:opacity-100 hover:grayscale-0",
+                    url.startsWith('blob:') && "opacity-50 grayscale cursor-not-allowed"
                   )}
                 >
                   <Image src={url} alt={`Photo ${idx}`} fill className="object-cover" />
-                  {selectedPhotoForContest === url && (
+                  {selectedPhotoForContest === url && !url.startsWith('blob:') && (
                     <div className="absolute inset-0 bg-primary/10 flex items-center justify-center">
                       <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-lg">
                         <Check size={20} className="text-primary" strokeWidth={4} />
@@ -416,13 +525,38 @@ export default function ProfilePage() {
           <div className="p-6 flex flex-col gap-3">
             <Button 
               onClick={handleSubmitToContest}
-              disabled={!selectedPhotoForContest}
+              disabled={!selectedPhotoForContest || selectedPhotoForContest.startsWith('blob:')}
               className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 border-0 active:scale-95 transition-all"
             >
               {t('profile.contest_submit')}
             </Button>
             <Button variant="ghost" onClick={() => setIsSelectionOpen(false)} className="w-full h-10 rounded-xl text-[10px] font-black uppercase tracking-widest text-muted-foreground">
               {t('button.close')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isBoostDialogOpen} onOpenChange={setIsBoostDialogOpen}>
+        <DialogContent className="max-w-[400px] rounded-3xl border-0 p-0 bg-white app-shadow overflow-hidden">
+          <div className="p-6 pb-4">
+            <DialogTitle className="text-xl font-black tracking-tight mb-1 flex items-center gap-2"><Rocket size={20} className="text-primary"/>Поднять профиль</DialogTitle>
+            <p className="text-xs text-muted-foreground font-medium">Ваш профиль будет показываться первым в поиске в течение 30 минут. Выберите способ активации.</p>
+          </div>
+          <div className="p-6 flex flex-col gap-3">
+            <Button 
+              onClick={() => handleBoost('ad')}
+              className="w-full h-14 rounded-2xl bg-green-500 hover:bg-green-600 text-white font-black uppercase tracking-widest shadow-xl shadow-green-500/20 border-0 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <Video size={20} />
+              Смотреть рекламу (бесплатно)
+            </Button>
+            <Button 
+              onClick={() => handleBoost('payment')}
+              className="w-full h-14 rounded-2xl gradient-bg text-white font-black uppercase tracking-widest shadow-xl shadow-primary/20 border-0 active:scale-95 transition-all flex items-center gap-2"
+            >
+              <CreditCard size={20} />
+              Оплатить (49 ₽)
             </Button>
           </div>
         </DialogContent>

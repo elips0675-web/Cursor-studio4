@@ -27,7 +27,8 @@ import {
   Laugh,
   Star,
   Scroll,
-  Users
+  Users,
+  ChevronLeft
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from 'next/dynamic';
@@ -61,12 +62,10 @@ export default function Home() {
   const [isMounted, setIsMounted] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [popularGroups, setPopularGroups] = useState<any[]>([]);
+  const [view, setView] = useState<'top-users' | 'popular-groups'>('top-users');
 
   useEffect(() => {
-    // Reduce splash timer for faster perceived entry
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-    }, 800);
+    setIsMounted(true);
 
     const saved = localStorage.getItem('userProfile');
     if (saved) {
@@ -83,8 +82,6 @@ export default function Home() {
       ...cat,
       onlineCount: Math.floor(Math.random() * 50) + 10
     })));
-
-    return () => clearTimeout(timer);
   }, []);
 
   const topUsers = useMemo(() => {
@@ -172,45 +169,74 @@ export default function Home() {
           </Link>
         </section>
 
-        <Suspense fallback={<div className="px-5 pt-8 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[4/3] rounded-xl" /></div></div>}>
-          <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
-        </Suspense>
-
-        <section className="px-5 pt-10">
-          <div className="flex items-center justify-between mb-4 px-1">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
-                <Users size={16} />
-              </div>
-              <h2 className="font-black text-lg font-headline tracking-tight">Популярные группы</h2>
-            </div>
-            <Link href="/groups" prefetch={true} className="text-[10px] font-black text-primary uppercase tracking-widest bg-primary/5 px-3 py-1 rounded-full border border-primary/10">Все</Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {popularGroups.map((group) => {
-              const Icon = iconMap[group.icon] || Users;
-              return (
-                <Link 
-                  href={`/groups/${group.id}`} 
-                  key={group.id} 
-                  prefetch={true}
-                  className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden hover:bg-primary/5 transition-all flex flex-col group"
-                >
-                  <div className="h-20 w-full flex items-center justify-center border-b border-slate-200">
-                    <Icon size={32} className="text-orange-500 group-hover:scale-110 transition-transform duration-300" />
-                  </div>
-                  <div className="p-4 text-center">
-                    <h4 className="font-black text-xs uppercase tracking-tight leading-tight truncate">{language === 'RU' ? group.name_ru : group.name_en}</h4>
-                    <p className="text-[10px] text-green-600 font-bold uppercase mt-2 flex items-center justify-center gap-1.5">
-                      <span className="w-1.5 h-1.5 bg-current rounded-full"></span>
-                      {group.onlineCount} {t('chats.online')}
-                    </p>
-                  </div>
-                </Link>
-              )
-            })}
+        <section className="pt-8">
+          <div className="flex justify-center gap-8 mb-6 text-sm">
+            <button
+              onClick={() => setView('top-users')}
+              className={cn(
+                "font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 pb-2 relative",
+                view === 'top-users'
+                  ? "text-primary"
+                  : "text-muted-foreground/60 hover:text-muted-foreground"
+              )}
+            >
+              <Star size={14} /> 
+              <span>{language === 'RU' ? 'Топ недели' : 'Top of the week'}</span>
+              {view === 'top-users' && <motion.div layoutId="active-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></motion.div>}
+            </button>
+            <button
+              onClick={() => setView('popular-groups')}
+              className={cn(
+                "font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-1.5 pb-2 relative",
+                view === 'popular-groups'
+                  ? "text-primary"
+                  : "text-muted-foreground/60 hover:text-muted-foreground"
+              )}
+            >
+              <Users size={14} /> 
+              <span>{language === 'RU' ? 'Популярные группы' : 'Popular Groups'}</span>
+              {view === 'popular-groups' && <motion.div layoutId="active-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></motion.div>}
+            </button>
           </div>
         </section>
+
+        {view === 'top-users' ? (
+          <section>
+            <Suspense fallback={<div className="px-5 pt-2 space-y-4"><Skeleton className="h-8 w-40" /><div className="grid grid-cols-2 gap-4"><Skeleton className="aspect-[4/3] rounded-xl" /></div></div>}>
+              <TopOfWeekSection topUsers={topUsers} onLike={(u) => toast({ title: "Лайк!", description: `Вы лайкнули ${u.name}` })} t={t} />
+            </Suspense>
+          </section>
+        ) : (
+          <section>
+              <div className="px-5">
+                <div className="grid grid-cols-2 gap-3">
+                  {popularGroups.map((group) => {
+                    const Icon = iconMap[group.icon] || Users;
+                    return (
+                      <Link
+                        href={`/groups/${group.id}`}
+                        key={group.id}
+                        prefetch={true}
+                        className="bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden hover:bg-primary/5 transition-all flex flex-col group"
+                      >
+                        <div className="h-20 w-full flex items-center justify-center border-b border-slate-200">
+                          <Icon size={32} className="text-orange-500 group-hover:scale-110 transition-transform duration-300" />
+                        </div>
+                        <div className="p-4 text-center">
+                          <h4 className="font-black text-xs uppercase tracking-tight leading-tight truncate">{language === 'RU' ? group.name_ru : group.name_en}</h4>
+                          <p className="text-[10px] text-green-600 font-bold uppercase mt-2 flex items-center justify-center gap-1.5">
+                            <span className="w-1.5 h-1.5 bg-current rounded-full"></span>
+                            {group.onlineCount} {t('chats.online')}
+                          </p>
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </div>
+          </section>
+        )}
+
       </main>
 
       {showAutosearchDialog && <AutosearchDialog open={showAutosearchDialog} onOpenChange={setShowAutosearchDialog} onAutosearch={runAutosearch} />}

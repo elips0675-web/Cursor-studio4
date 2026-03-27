@@ -62,13 +62,7 @@ FeaturedCard.displayName = "FeaturedCard";
 
 export function TopOfWeekSection({ topUsers, onLike, t }: { topUsers: any[], onLike: (user: any) => void, t: (key: string) => string }) {
     return (
-        <section className="px-5 pt-8">
-            <div className="flex items-center gap-2 mb-4 px-1">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary shadow-sm">
-                    <Trophy size={16} />
-                </div>
-                <h2 className="font-black text-lg font-headline tracking-tight">{t('home.top_week')}</h2>
-            </div>
+        <section className="px-5">
             <div className="grid grid-cols-2 gap-4">
                 {topUsers.map((u, i) => (
                     <FeaturedCard key={u.id} user={u} onLike={() => onLike(u)} priority={i < 2} />
