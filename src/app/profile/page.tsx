@@ -2,8 +2,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { 
-  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check, HelpCircle, Rocket, CreditCard, Video
+  Settings, CheckCircle2, Camera, Coffee, Music, Globe, Dumbbell, Edit2, Palette, Film, Flower2, Briefcase, Gamepad2, Dog, Ruler, Target, User, Info, Trophy, Heart, VenetianMask, Search, Maximize2, Trash2, X, Star, Check, HelpCircle, Rocket, CreditCard, Video, BrainCircuit
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import { AppHeader } from "@/components/layout/app-header";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/context/language-context";
 import { cn, getUserTitles } from "@/lib/utils";
 import { ZodiacIcon } from "@/components/shared/zodiac-icon";
@@ -40,13 +42,17 @@ import {
   CarouselNext,
 } from "@/components/ui/carousel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ATTACHMENT_STYLE_INFO } from "@/lib/attachment-styles";
 
 const interestIconsMap: Record<string, any> = {
   "Фотография": Camera, "Путешествия": Globe, "Кофе": Coffee, "Музыка": Music, "Спорт": Dumbbell, "Искусство": Palette, "Кино": Film, "Йога": Flower2, "Бизнес": Briefcase, "Игры": Gamepad2, "Кошки": Dog,
   "Photography": Camera, "Travel": Globe, "Sports": Dumbbell, "Art": Palette, "Movies": Film, "Yoga": Flower2, "Business": Briefcase, "Gaming": Gamepad2, "Cats": Dog
 };
 
+const BANNED_WORDS = ["Хуй"];
+
 export default function ProfilePage() {
+  const router = useRouter();
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
   const [photos, setPhotos] = useState<string[]>([]);
@@ -78,6 +84,9 @@ export default function ProfilePage() {
     if (savedProfile) {
       try {
         const parsed = JSON.parse(savedProfile);
+        if (parsed.interests && Array.isArray(parsed.interests)) {
+            parsed.interests = parsed.interests.filter((i: string) => !BANNED_WORDS.includes(i));
+        }
         setProfile({
           ...parsed,
           displayName: parsed.displayName || parsed.name || t('profile.someone')
@@ -96,8 +105,9 @@ export default function ProfilePage() {
         datingGoal: "Серьезные отношения",
         zodiac: "Лев",
         bio: "Люблю закаты, хороший кофе и интересные разговоры.",
-        interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"],
-        match: 87
+        interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"].filter(i => !BANNED_WORDS.includes(i)),
+        match: 87,
+        attachmentStyle: null,
       });
     }
     
@@ -417,9 +427,8 @@ export default function ProfilePage() {
                       </Badge>
                     </div>
                   </div>
-
                   <div className="pt-2 flex flex-wrap gap-2">
-                    {profile.interests?.map((interest: string) => {
+                    {profile.interests?.filter((interest: string) => !BANNED_WORDS.includes(interest)).map((interest: string) => {
                       const Icon = interestIconsMap[interest] || Heart;
                       return (
                         <Badge key={interest} variant="secondary" className="bg-muted/50 text-foreground/80 border-0 gap-2 py-2 px-3 font-bold text-[11px] rounded-lg transition-all hover:bg-muted/70 shadow-sm">
@@ -429,6 +438,52 @@ export default function ProfilePage() {
                     })}
                   </div>
                 </div>
+
+                <div className="h-px bg-border/50"></div>
+
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600"><BrainCircuit size={14} /></div>
+                        <h4 className="font-black text-[11px] uppercase tracking-widest text-muted-foreground">Психологические тесты</h4>
+                    </div>
+                    
+                    {profile.attachmentStyle ? (
+                        <div className="p-4 bg-purple-50/50 rounded-xl border border-purple-100 space-y-3">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-purple-800 ml-1 flex items-center gap-1.5"><Heart size={12} /> Тест на стиль привязанности</Label>
+                            <div className="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm">
+                                <div className="text-2xl">{ATTACHMENT_STYLE_INFO[profile.attachmentStyle].emoji}</div>
+                                <div>
+                                    <div className="font-bold">{ATTACHMENT_STYLE_INFO[profile.attachmentStyle].label}</div>
+                                    <p className="text-xs text-muted-foreground">Вы можете пройти тест заново, чтобы обновить результат.</p>
+                                </div>
+                            </div>
+                            <Button onClick={() => router.push('/profile/attachment-test')} className="w-full h-11 rounded-lg bg-white text-purple-800 font-bold shadow-sm border border-purple-100 hover:bg-purple-50">
+                                {'Пройти заново'}
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="rounded-xl bg-gradient-to-tr from-purple-500 to-indigo-600 p-6 text-white relative overflow-hidden app-shadow">
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-3">
+                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center backdrop-blur-sm">
+                                        <BrainCircuit size={22} />
+                                    </div>
+                                    <h3 className="text-lg font-black tracking-tight">Узнайте себя лучше</h3>
+                                </div>
+                                <p className="text-xs text-white/80 mb-6 font-medium leading-relaxed">
+                                    Пройдите тест на стиль привязанности, чтобы лучше понимать свои отношения и находить более совместимых партнеров.
+                                </p>
+                                <Button 
+                                    onClick={() => router.push('/profile/attachment-test')} 
+                                    className="w-full h-12 rounded-xl bg-white text-purple-600 font-black uppercase tracking-widest text-xs shadow-lg active:scale-95 transition-all flex items-center justify-center gap-1.5"
+                                >
+                                    Начать тест
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
               </div>
             </TabsContent>
             <TabsContent value="gallery">
@@ -544,7 +599,7 @@ export default function ProfilePage() {
                                           r="40"
                                           cx="50"
                                           cy="50"
-                                          style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%', transition: 'stroke-dashoffset 0.35s' }}
+                                          style={{ transform: 'rotate(-90deg)', transformOrigin: '50% 50%' }}
                                       />
                                   </svg>
                                   <span className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">

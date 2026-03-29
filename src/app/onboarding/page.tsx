@@ -16,7 +16,9 @@ import {
   Search,
   VenetianMask,
   Upload,
-  Loader2
+  Loader2,
+  Moon,
+  Sun
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -36,7 +38,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { generateProfileBio } from "@/ai/flows/ai-generate-profile-bio";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context/language-context";
-import { INTEREST_OPTIONS, DATING_GOALS } from "@/lib/constants";
+import { INTEREST_OPTIONS, DATING_GOALS, CIRCADIAN_RHYTHM_OPTIONS } from "@/lib/constants";
 
 const GENDER_OPTIONS = [
   { id: 'male', labelKey: 'onboarding.step1.male' },
@@ -101,7 +103,8 @@ export default function OnboardingPage() {
     interests: [] as string[],
     bio: "",
     photo: PlaceHolderImages.find(p => p.id === 'me')?.imageUrl || PlaceHolderImages[10].imageUrl,
-    lookingFor: "all"
+    lookingFor: "all",
+    circadian: "",
   });
 
   const nextStep = () => {
@@ -203,6 +206,7 @@ export default function OnboardingPage() {
             zodiac: formData.zodiac,
             gender: formData.gender,
             lookingFor: formData.lookingFor,
+            circadian: formData.circadian,
             joinedGroups: []
         };
         
@@ -276,6 +280,29 @@ export default function OnboardingPage() {
                     <Navigation size={20} className={cn(isDetectingLocation && "animate-pulse")} fill={isDetectingLocation ? "currentColor" : "none"} />
                   </button>
                 </div>
+              </div>
+              <div className="space-y-2">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1 flex items-center gap-1.5">
+                      {formData.circadian === 'lark' ? <Sun size={12}/> : <Moon size={12}/>}
+                      Режим сна
+                  </Label>
+                  <div className="flex flex-wrap gap-2">
+                      {CIRCADIAN_RHYTHM_OPTIONS.map(opt => (
+                          <Badge
+                              key={opt.value}
+                              onClick={() => setFormData(prev => ({ ...prev, circadian: opt.value }))}
+                              variant={formData.circadian === opt.value ? "default" : "secondary"}
+                              className={cn(
+                                  "cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[11px] uppercase tracking-tight shadow-sm",
+                                  formData.circadian === opt.value
+                                      ? "gradient-bg text-white shadow-md hover:brightness-110"
+                                      : "bg-muted text-muted-foreground hover:bg-border"
+                              )}
+                          >
+                              {opt.label}
+                          </Badge>
+                      ))}
+                  </div>
               </div>
             </div>
           </div>

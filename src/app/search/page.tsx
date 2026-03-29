@@ -3,7 +3,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { MapPin, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Flag, Sparkles, Trophy, User } from "lucide-react";
+import { MapPin, ChevronLeft, ChevronRight, X, Heart, MessageCircle, Flag, Sparkles, Trophy, User, SlidersHorizontal } from "lucide-react";
 import Image from "next/image";
 import dynamic from 'next/dynamic';
 import { AppHeader } from "@/components/layout/app-header";
@@ -28,8 +28,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { AttachmentStyle } from "@/lib/attachment-styles";
 
 const MatchDialog = dynamic(() => import('@/components/dialogs/match-dialog').then(mod => mod.MatchDialog), { ssr: false });
+const FiltersDialog = dynamic(() => import('@/components/dialogs/filters-dialog').then(mod => mod.FiltersDialog), { ssr: false });
 
 const cardVariants = {
   enter: (direction: number) => ({ x: direction > 0 ? 300 : -300, opacity: 0 }),
@@ -39,38 +41,67 @@ const cardVariants = {
 
 const REPORT_REASONS = ['report.reason.spam', 'report.reason.abuse', 'report.reason.fake', 'report.reason.scam', 'report.reason.content'];
 
+const attachmentCompatibilityScores: Record<AttachmentStyle, Record<AttachmentStyle, number>> = {
+    secure: { secure: 2, anxious: 2, avoidant: 2 },
+    anxious: { secure: 2, anxious: 1, avoidant: 0 },
+    avoidant: { secure: 2, avoidant: 1, anxious: 0 },
+};
+
+function calculateAttachmentCompatibility(style1?: AttachmentStyle, style2?: AttachmentStyle): number {
+    if (!style1 || !style2 || !attachmentCompatibilityScores[style1] || attachmentCompatibilityScores[style1][style2] === undefined) {
+        return 0; // No info or invalid style, no bonus
+    }
+    return attachmentCompatibilityScores[style1][style2];
+}
+
 function performAutosearch(filters: any, allUsers: any[], currentUser: any) {
-    if (!filters) return [];
-    const { ageRange, selectedCity, distance, genderPref, selectedDatingGoal, selectedInterests } = filters;
+    if (!filters || !currentUser) return [];
+
+    const { ageRange, selectedCity, distance, selectedDatingGoal, selectedInterests } = filters;
+
     return allUsers
         .filter(user => {
-          if (user.id === (currentUser?.id || 1) || user.isSystem) return false;
-          const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
-          const matchesCity = selectedCity === "Все" || user.city === selectedCity;
-          const matchesGender = genderPref === "all" || user.gender === genderPref;
-          const matchesDistance = user.distance <= distance[0];
-          return matchesAge && matchesCity && matchesGender && matchesDistance;
+            if (user.id === currentUser.id || user.isSystem) return false;
+
+            const userGenderMatch = currentUser.lookingFor === 'all' || user.gender === currentUser.lookingFor;
+            const currentUserGenderMatch = user.lookingFor === 'all' || currentUser.gender === user.lookingFor;
+            if (!userGenderMatch || !currentUserGenderMatch) {
+                return false;
+            }
+            
+            const matchesAge = user.age >= ageRange[0] && user.age <= ageRange[1];
+            const matchesCity = selectedCity === "Все" || user.city === selectedCity;
+            const matchesDistance = user.distance <= distance[0];
+            return matchesAge && matchesCity && matchesDistance;
         })
         .map(user => {
-          const commonInterests = user.interests.filter((i: string) => selectedInterests.includes(i)).length;
-          const hasMatchingGoal = selectedDatingGoal !== "all" && user.goal === selectedDatingGoal;
-          const isCandidate = hasMatchingGoal || (commonInterests > 0);
-          return { ...user, isCandidate, commonInterests, hasMatchingGoal };
+            const commonInterests = user.interests.filter((i: string) => selectedInterests.includes(i)).length;
+            const hasMatchingGoal = selectedDatingGoal !== "all" && user.goal === selectedDatingGoal;
+            const hasMatchingCircadian = currentUser.circadian && user.circadian && currentUser.circadian === user.circadian;
+            const attachmentCompatibility = calculateAttachmentCompatibility(currentUser.attachmentStyle, user.attachmentStyle);
+            const isCandidate = hasMatchingGoal || (commonInterests > 0);
+            return { ...user, isCandidate, commonInterests, hasMatchingGoal, hasMatchingCircadian, attachmentCompatibility };
         })
         .filter(user => user.isCandidate)
         .sort((a, b) => {
             const aIsBoosted = a.boost && a.boost.boostedUntil && new Date(a.boost.boostedUntil) > new Date();
             const bIsBoosted = b.boost && b.boost.boostedUntil && new Date(b.boost.boostedUntil) > new Date();
+            if (aIsBoosted !== bIsBoosted) return aIsBoosted ? -1 : 1;
 
-            if (aIsBoosted !== bIsBoosted) {
-                return aIsBoosted ? -1 : 1;
-            }
+            if (a.hasMatchingGoal !== b.hasMatchingGoal) return a.hasMatchingGoal ? -1 : 1;
+
+            if (b.attachmentCompatibility !== a.attachmentCompatibility) return b.attachmentCompatibility - a.attachmentCompatibility;
 
             if (a.distance !== b.distance) return a.distance - b.distance;
-            if (a.hasMatchingGoal !== b.hasMatchingGoal) return a.hasMatchingGoal ? -1 : 1;
-            return b.commonInterests - a.commonInterests;
+
+            if (b.commonInterests !== a.commonInterests) return b.commonInterests - a.commonInterests;
+
+            if (a.hasMatchingCircadian !== b.hasMatchingCircadian) return a.hasMatchingCircadian ? -1 : 1;
+
+            return 0;
         });
 }
+
 
 function SearchContent() {
   const router = useRouter();
@@ -88,6 +119,9 @@ function SearchContent() {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [votedEntries, setVotedEntries] = useState<number[]>([]);
+
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+  const [searchFilters, setSearchFilters] = useState(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('userProfile');
@@ -118,6 +152,7 @@ function SearchContent() {
     if (mode === 'autosearch') {
         setPageTitle(t('button.autosearch'));
         const filters = JSON.parse(sessionStorage.getItem('autosearchFilters') || 'null');
+        setSearchFilters(filters);
         if (filters) {
             setSelectedInterests(filters.selectedInterests || []);
             initialUsers = performAutosearch(filters, ALL_DEMO_USERS, currentUser);
@@ -134,6 +169,19 @@ function SearchContent() {
     setIsLoading(false);
   }, [searchParams, currentUser, t]);
   
+  const handleApplyFilters = (newFilters: any) => {
+      sessionStorage.setItem('autosearchFilters', JSON.stringify(newFilters));
+      setSearchFilters(newFilters);
+      setIsLoading(true);
+      setSelectedInterests(newFilters.selectedInterests || []);
+      const newUsers = performAutosearch(newFilters, ALL_DEMO_USERS, currentUser);
+      setUserList(newUsers);
+      setCurrentIndex(0);
+      setIsLoading(false);
+      setIsFiltersOpen(false);
+      toast({ title: "Фильтры применены", description: `Найдено ${newUsers.length} анкет.` });
+  }
+
   const user = userList[currentIndex] || null;
 
   const handleNext = () => { 
@@ -198,14 +246,6 @@ function SearchContent() {
 
   if (isLoading) return <div className="flex-1 flex items-center justify-center h-full"><Skeleton className="w-[90%] h-[70vh] rounded-2xl" /></div>;
 
-  if (!user) return (
-    <div className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full bg-[#f8f9fb]">
-      <Sparkles size={48} className="text-muted-foreground opacity-20 mb-4" />
-      <h4 className="text-xl font-black uppercase">{'Анкеты закончились'}</h4>
-      <Button variant="outline" onClick={() => router.push('/')} className="mt-8 rounded-xl px-8 uppercase text-[10px] font-black">На главную</Button>
-    </div>
-  );
-
   return (
     <>
       <AppHeader />
@@ -213,96 +253,112 @@ function SearchContent() {
         <div className="text-center mb-4 flex items-center gap-2">
             <Badge variant="outline" className="text-[8px] font-bold bg-white">{currentIndex + 1} / {userList.length}</Badge>
             <Badge variant="secondary" className="text-[8px] font-bold text-primary bg-primary/5">{pageTitle}</Badge>
+            {searchParams.get('mode') === 'autosearch' && (
+                <button onClick={() => setIsFiltersOpen(true)} className="p-2 bg-white rounded-md shadow-sm">
+                    <SlidersHorizontal size={14} className="text-primary" />
+                </button>
+            )}
         </div>
         
-        <div className="relative w-full flex-1 mb-10 max-w-[420px] flex items-center justify-center">
-          <Button variant="ghost" size="icon" onClick={handlePrev} disabled={currentIndex === 0} className="absolute -left-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronLeft size={24} /></Button>
-          <Button variant="ghost" size="icon" onClick={handleNext} disabled={currentIndex >= userList.length - 1} className="absolute -right-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronRight size={24} /></Button>
+        {!userList.length ? (
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center h-full bg-[#f8f9fb]">
+                <Sparkles size={48} className="text-muted-foreground opacity-20 mb-4" />
+                <h4 className="text-xl font-black uppercase">{'Анкеты закончились'}</h4>
+                <p className="text-sm text-muted-foreground mt-2">Попробуйте изменить фильтры, чтобы найти больше людей.</p>
+                <Button variant="outline" onClick={() => setIsFiltersOpen(true)} className="mt-8 rounded-xl px-8 uppercase text-[10px] font-black">Изменить фильтры</Button>
+            </div>
+        ) : (
+          <>
+            <div className="relative w-full flex-1 mb-10 max-w-[420px] flex items-center justify-center">
+              <Button variant="ghost" size="icon" onClick={handlePrev} disabled={currentIndex === 0} className="absolute -left-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronLeft size={24} /></Button>
+              <Button variant="ghost" size="icon" onClick={handleNext} disabled={currentIndex >= userList.length - 1} className="absolute -right-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronRight size={24} /></Button>
 
-          <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={user.id}
-              custom={direction}
-              variants={cardVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
-              className="absolute w-full h-full bg-white rounded-2xl overflow-hidden app-shadow border-4 border-white cursor-pointer group"
-              onClick={() => router.push(`/user?id=${user.id}`)}
-            >
-              <Image 
-                src={user.img} 
-                alt={user.name} 
-                fill 
-                sizes="(max-width: 480px) 100vw, 420px" 
-                priority
-                className="object-cover transition-transform duration-700 group-hover:scale-105" 
-              />
-              
-              <button 
-                onClick={(e) => handleVote(e, user.id)}
-                className={cn(
-                  "absolute top-4 right-4 z-30 h-12 rounded-2xl backdrop-blur-md flex items-center justify-center transition-all active:scale-90 border-2 gap-2",
-                  votedEntries.includes(user.id) 
-                    ? "bg-orange-500 text-white border-orange-400 shadow-xl w-12"
-                    : "bg-black/40 text-white border-white/20 shadow-lg hover:bg-black/50 px-4"
-                )}
-              >
-                {!votedEntries.includes(user.id) && <span className="font-bold text-sm">Голос</span>}
-                <Trophy size={20} fill={votedEntries.includes(user.id) ? "currentColor" : "none"} />
-              </button>
+              <AnimatePresence mode="wait" custom={direction}>
+                {user && <motion.div
+                  key={user.id}
+                  custom={direction}
+                  variants={cardVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+                  className="absolute w-full h-full bg-white rounded-2xl overflow-hidden app-shadow border-4 border-white cursor-pointer group"
+                  onClick={() => router.push(`/user?id=${user.id}`)}
+                >
+                  <Image 
+                    src={user.img} 
+                    alt={user.name} 
+                    fill 
+                    sizes="(max-width: 480px) 100vw, 420px" 
+                    priority
+                    className="object-cover transition-transform duration-700 group-hover:scale-105" 
+                  />
+                  
+                  <button 
+                    onClick={(e) => handleVote(e, user.id)}
+                    className={cn(
+                      "absolute top-4 right-4 z-30 h-12 rounded-2xl backdrop-blur-md flex items-center justify-center transition-all active:scale-90 border-2 gap-2",
+                      votedEntries.includes(user.id) 
+                        ? "bg-orange-500 text-white border-orange-400 shadow-xl w-12"
+                        : "bg-black/40 text-white border-white/20 shadow-lg hover:bg-black/50 px-4"
+                    )}
+                  >
+                    {!votedEntries.includes(user.id) && <span className="font-bold text-sm">Голос</span>}
+                    <Trophy size={20} fill={votedEntries.includes(user.id) ? "currentColor" : "none"} />
+                  </button>
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
-              <div className="absolute bottom-6 left-6 right-6 text-white text-left">
-                <h3 className="text-3xl font-black font-headline mb-1">{user.name}, {user.age}</h3>
-                <p className="text-white/90 text-xs flex items-center gap-1 font-bold mb-3"><MapPin size={14} /> {user.distance} км</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {user.interests.slice(0, 3).map((interest: string) => {
-                    const isCommon = selectedInterests.includes(interest);
-                    return (
-                      <span key={interest} className={cn(
-                        "px-2.5 py-1 backdrop-blur-md text-[9px] rounded-full font-black uppercase tracking-widest border transition-all flex items-center gap-1",
-                        isCommon 
-                          ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110 z-10" 
-                          : "bg-white/20 text-white border-white/10"
-                      )}>
-                        {isCommon && <Sparkles size={8} className="fill-current" />}
-                        {interest}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent"></div>
+                  <div className="absolute bottom-6 left-6 right-6 text-white text-left">
+                    <h3 className="text-3xl font-black font-headline mb-1">{user.name}, {user.age}</h3>
+                    <p className="text-white/90 text-xs flex items-center gap-1 font-bold mb-3"><MapPin size={14} /> {user.distance} км</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {user.interests.slice(0, 3).map((interest: string) => {
+                        const isCommon = selectedInterests.includes(interest);
+                        return (
+                          <span key={interest} className={cn(
+                            "px-2.5 py-1 backdrop-blur-md text-[9px] rounded-full font-black uppercase tracking-widest border transition-all flex items-center gap-1",
+                            isCommon 
+                              ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-110 z-10" 
+                              : "bg-white/20 text-white border-white/10"
+                          )}>
+                            {isCommon && <Sparkles size={8} className="fill-current" />}
+                            {interest}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>}
+              </AnimatePresence>
+            </div>
 
-        <div className="flex justify-center items-center gap-2 sm:gap-4 w-full max-w-[420px]">
-            <Button variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" onClick={handleNext}>
-                <X size={28} strokeWidth={3} />
-            </Button>
-            <Button size="icon" className="relative w-16 h-16 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none" onClick={handleSuperLike} disabled={(currentUser?.superLikes || 0) === 0}>
-                <Sparkles size={32} fill="currentColor" />
-                <span className="absolute bottom-2 text-xs font-bold">{currentUser?.superLikes || 0}</span>
-            </Button>
-            <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" onClick={handleLike}>
-                <Heart size={40} fill="currentColor" />
-            </Button>
-            <Button asChild variant="outline" size="icon" className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-green-400 hover:text-green-600 active:scale-90 transition-all">
-                <Link href={`/chats?userId=${user.id}`}>
-                    <MessageCircle size={32} />
-                </Link>
-            </Button>
-            <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all">
-                <Link href={`/user?id=${user.id}`} prefetch={true}>
-                    <User size={28} strokeWidth={2} />
-                </Link>
-            </Button>
-        </div>
+            <div className="flex justify-center items-center gap-2 sm:gap-4 w-full max-w-[420px]">
+                <Button variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" onClick={handleNext}>
+                    <X size={28} strokeWidth={3} />
+                </Button>
+                <Button size="icon" className="relative w-16 h-16 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none" onClick={handleSuperLike} disabled={(currentUser?.superLikes || 0) === 0}>
+                    <Sparkles size={32} fill="currentColor" />
+                    <span className="absolute bottom-2 text-xs font-bold">{currentUser?.superLikes || 0}</span>
+                </Button>
+                <Button size="icon" className="w-20 h-20 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0" onClick={handleLike}>
+                    <Heart size={40} fill="currentColor" />
+                </Button>
+                <Button asChild variant="outline" size="icon" className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-green-400 hover:text-green-600 active:scale-90 transition-all">
+                    <Link href={`/chats?userId=${user.id}`}>
+                        <MessageCircle size={32} />
+                    </Link>
+                </Button>
+                <Button asChild variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all">
+                    <Link href={`/user?id=${user.id}`} prefetch={true}>
+                        <User size={28} strokeWidth={2} />
+                    </Link>
+                </Button>
+            </div>
+          </>
+        )}
       </main>
       
       {matchUser && (
@@ -342,6 +398,13 @@ function SearchContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {searchFilters && <FiltersDialog 
+        open={isFiltersOpen} 
+        onOpenChange={setIsFiltersOpen} 
+        currentFilters={searchFilters}
+        onApplyFilters={handleApplyFilters}
+      />}
       
       <BottomNav />
     </>

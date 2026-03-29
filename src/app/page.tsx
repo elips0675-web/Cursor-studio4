@@ -65,7 +65,7 @@ export default function Home() {
   const [view, setView] = useState<'top-users' | 'popular-groups'>('top-users');
 
   useEffect(() => {
-    setIsMounted(true);
+    const timer = setTimeout(() => setIsMounted(true), 1500);
 
     const saved = localStorage.getItem('userProfile');
     if (saved) {
@@ -82,6 +82,8 @@ export default function Home() {
       ...cat,
       onlineCount: Math.floor(Math.random() * 50) + 10
     })));
+
+    return () => clearTimeout(timer);
   }, []);
 
   const topUsers = useMemo(() => {

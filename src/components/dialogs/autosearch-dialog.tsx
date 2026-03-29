@@ -2,7 +2,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Zap, Play, CreditCard } from 'lucide-react';
 import {
   Dialog,

@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUser, useFirestore } from "@/firebase";
 import { doc, setDoc, onSnapshot } from "firebase/firestore";
-import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Briefcase, Target, Heart, Users, Trash2, Loader2, Plus, Ruler } from "lucide-react";
+import { Sparkles, Camera, User, MapPin, Info, GraduationCap, Briefcase, Target, Heart, Users, Trash2, Moon, Sun, BrainCircuit } from "lucide-react";
 import Image from "next/image";
 import { AppHeader } from "@/components/layout/app-header";
 import { Button } from "@/components/ui/button";
@@ -23,9 +24,10 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, EDUCATION_OPTIONS } from "@/lib/constants";
+import { INTEREST_OPTIONS, DATING_GOALS, ZODIAC_SIGNS, EDUCATION_OPTIONS, CIRCADIAN_RHYTHM_OPTIONS } from "@/lib/constants";
 import { GROUP_CATEGORIES } from "@/lib/demo-data";
 import { useLanguage } from "@/context/language-context";
+import { ATTACHMENT_STYLE_INFO } from "@/lib/attachment-styles";
 
 const defaultProfile = {
     displayName: "Анна",
@@ -38,12 +40,15 @@ const defaultProfile = {
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"],
     pets: "Есть собака",
     education: "Высшее",
-    sleepSchedule: "Сова",
+    circadian: "lark",
     work: "Дизайнер",
     gender: "female",
     lookingFor: "male",
     joinedGroups: ["Хип-хоп", "Бег", "UI/UX Дизайн"],
+    attachmentStyle: null,
 };
+
+const BANNED_WORDS = ["Хуй"];
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -55,11 +60,20 @@ export default function EditProfilePage() {
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
   const [profile, setProfile] = useState(defaultProfile as any);
   
-  const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS);
+  const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS.filter(i => !BANNED_WORDS.includes(i)));
   const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
   const [dynamicEducation, setDynamicEducation] = useState<string[]>(EDUCATION_OPTIONS);
-  const [customInterest, setCustomInterest] = useState("");
-  const [isAddingInterest, setIsAddingInterest] = useState(false);
+
+  useEffect(() => {
+    if (!firestore || !user) return;
+    const unsub = onSnapshot(doc(firestore, "users", user.uid), (doc) => {
+        const data = doc.data();
+        if (data) {
+            setProfile((prev: any) => ({ ...prev, ...data }));
+        }
+    });
+    return () => unsub();
+  }, [firestore, user]);
 
   useEffect(() => {
     if (!firestore) return;
@@ -68,13 +82,12 @@ export default function EditProfilePage() {
       if (docSnap.exists()) {
         const data = docSnap.data();
         if (data.interests) {
-            const globalInterests = data.interests as string[];
+            const globalInterests = (data.interests as string[]).filter(i => !BANNED_WORDS.includes(i));
             setDynamicInterests(globalInterests);
             
-            // REAKTIVE CLEANUP: Remove interests that are no longer in global list
             setProfile((prev: any) => ({
                 ...prev,
-                interests: prev.interests.filter((i: string) => globalInterests.includes(i))
+                interests: prev.interests.filter((i: string) => !BANNED_WORDS.includes(i) && globalInterests.includes(i))
             }));
         }
         if (data.datingGoals) setDynamicGoals(data.datingGoals);
@@ -100,6 +113,9 @@ export default function EditProfilePage() {
     if (savedProfile) {
       try {
         const loadedProfile = JSON.parse(savedProfile);
+        if (loadedProfile.interests && Array.isArray(loadedProfile.interests)) {
+            loadedProfile.interests = loadedProfile.interests.filter((i: string) => !BANNED_WORDS.includes(i));
+        }
         setProfile((prev: any) => ({ 
           ...prev, 
           ...loadedProfile,
@@ -131,41 +147,10 @@ export default function EditProfilePage() {
     }
   };
 
-  const handleAddCustomInterest = async () => {
-    if (!customInterest.trim() || !firestore) return;
-    const trimmedInterest = customInterest.trim();
-    
-    if (dynamicInterests.includes(trimmedInterest)) {
-        if (!profile.interests.includes(trimmedInterest)) {
-            toggleInterest(trimmedInterest);
-        }
-        setCustomInterest("");
-        return;
-    }
-
-    setIsAddingInterest(true);
-    try {
-        const updatedList = [...dynamicInterests, trimmedInterest];
-        const configRef = doc(firestore, 'config', 'content');
-        await setDoc(configRef, { interests: updatedList }, { merge: true });
-        
-        setProfile((prev: any) => ({
-            ...prev,
-            interests: [...prev.interests, trimmedInterest]
-        }));
-        
-        setCustomInterest("");
-        toast({ title: language === 'RU' ? "Интерес добавлен и выбран" : "Interest added and selected" });
-    } catch (e) {
-        toast({ variant: 'destructive', title: 'Error', description: 'Failed to add interest' });
-    } finally {
-        setIsAddingInterest(false);
-    }
-  };
-
   const handleSave = async () => {
     const updatedProfile = {
       ...profile,
+      interests: profile.interests.filter((i: string) => !BANNED_WORDS.includes(i)),
       photoURL: mainPhoto,
     };
 
@@ -185,6 +170,7 @@ export default function EditProfilePage() {
   };
 
   const toggleInterest = (interest: string) => {
+    if (BANNED_WORDS.includes(interest)) return;
     setProfile((prev: any) => ({
       ...prev,
       interests: prev.interests.includes(interest) ? prev.interests.filter((i: string) => i !== interest) : [...prev.interests, interest]
@@ -235,6 +221,8 @@ export default function EditProfilePage() {
             <Textarea value={profile.bio || ''} onChange={e => setProfile({...profile, bio: e.target.value})} className="rounded-xl bg-muted/30 border-0 min-h-[90px] text-xs resize-none font-medium p-4" />
           </div>
 
+          <div className="h-px bg-border/50 my-6"></div>
+
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center text-primary"><User size={14} /></div>
             <h3 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">{t('profile.basic_info')}</h3>
@@ -270,7 +258,6 @@ export default function EditProfilePage() {
               </div>
             </div>
             
-            {/* Dating Goal */}
             <div className="space-y-1.5 p-4 bg-primary/5 rounded-xl border border-primary/10">
               <Label className="text-[10px] font-black uppercase tracking-widest text-primary ml-1 flex items-center gap-1.5"><Target size={12} /> {t('profile.label.goal')}</Label>
               <Select value={profile.datingGoal || ''} onValueChange={(val) => setProfile({...profile, datingGoal: val})}>
@@ -318,6 +305,29 @@ export default function EditProfilePage() {
                 </Select>
               </div>
             </div>
+            <div className="space-y-1.5">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-1 flex items-center gap-1.5">
+                    {profile.circadian === 'lark' ? <Sun size={12}/> : <Moon size={12}/>}
+                    Режим сна
+                </Label>
+                <div className="flex flex-wrap gap-2">
+                    {CIRCADIAN_RHYTHM_OPTIONS.map(opt => (
+                        <Badge
+                            key={opt.value}
+                            onClick={() => setProfile((prev: any) => ({ ...prev, circadian: opt.value }))}
+                            variant={profile.circadian === opt.value ? "default" : "secondary"}
+                            className={cn(
+                                "cursor-pointer px-3 py-1.5 rounded-lg transition-all border-0 font-bold text-[11px] uppercase tracking-tight shadow-sm",
+                                profile.circadian === opt.value
+                                    ? "gradient-bg text-white shadow-md hover:brightness-110"
+                                    : "bg-muted text-muted-foreground hover:bg-border"
+                            )}
+                        >
+                            {opt.label}
+                        </Badge>
+                    ))}
+                </div>
+            </div>
           </div>
 
           <div className="space-y-4">
@@ -336,23 +346,6 @@ export default function EditProfilePage() {
                       {t(interest)}
                   </Badge>
               ))}
-            </div>
-            
-            <div className="flex items-center gap-2 pt-2 border-t border-border/40">
-                <Input 
-                    value={customInterest}
-                    onChange={(e) => setCustomInterest(e.target.value)}
-                    placeholder={t('profile.custom_interest_placeholder')}
-                    className="h-9 rounded-lg bg-muted/30 border-0 text-[10px] font-bold"
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddCustomInterest()}
-                />
-                <Button 
-                    onClick={handleAddCustomInterest} 
-                    disabled={isAddingInterest || !customInterest.trim()}
-                    className="h-9 w-9 shrink-0 rounded-lg gradient-bg text-white shadow-lg border-0"
-                >
-                    {isAddingInterest ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-                </Button>
             </div>
           </div>
 

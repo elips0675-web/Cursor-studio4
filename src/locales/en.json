@@ -1,4 +1,3 @@
-
 {
   "nav.groups": "Groups",
   "groups.top_of_week": "Top of the week",
@@ -43,5 +42,15 @@
   "profile.contest_selection_title": "Photo selection for the contest",
   "profile.contest_selection_desc": "Choose the best photo to make an impression.",
   "profile.contest_submit": "Submit to the contest",
-  "button.close": "Close"
+  "button.close": "Close",
+  "autosearch.title": "Autosearch",
+  "autosearch.desc": "Find people based on your interests and goals",
+  "autosearch.free": "Watch Ad",
+  "autosearch.paid": "Pay",
+  "button.not_now": "Not now",
+  "profile.circadian_rhythm": "Sleep schedule",
+  "filter.circadian.lark": "Lark",
+  "filter.circadian.owl": "Owl",
+  "filter.circadian.flexible": "Flexible",
+  "filter.circadian.any": "Any"
 }
