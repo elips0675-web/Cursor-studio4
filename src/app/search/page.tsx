@@ -336,44 +336,44 @@ function SearchContent() {
               </AnimatePresence>
             </div>
 
-            <div className="flex justify-around items-center w-full max-w-sm">
+            <div className="flex justify-center items-center w-full max-w-sm gap-2">
                 <Button
                     variant="outline"
-                    className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all flex items-center justify-center"
+                    className="w-[3.5rem] h-[3.5rem] rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all flex items-center justify-center"
                     onClick={handleNext}
                 >
-                    <X size={30} strokeWidth={3} />
+                    <X size={26} strokeWidth={3} />
                 </Button>
                 <Button
-                    className="relative w-20 h-20 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none flex items-center justify-center"
+                    className="relative w-16 h-16 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none flex items-center justify-center"
                     onClick={handleSuperLike}
                     disabled={(currentUser?.superLikes || 0) === 0}
                 >
-                    <Sparkles size={40} fill="currentColor" />
-                    <span className="absolute bottom-2 text-xs font-bold">{currentUser?.superLikes || 0}</span>
+                    <Sparkles size={32} fill="currentColor" />
+                    <span className="absolute bottom-1.5 text-[10px] font-bold">{currentUser?.superLikes || 0}</span>
                 </Button>
                 <Button
-                    className="w-24 h-24 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0 flex items-center justify-center"
+                    className="w-[4.5rem] h-[4.5rem] rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0 flex items-center justify-center"
                     onClick={handleLike}
                 >
-                    <Heart size={50} fill="currentColor" />
+                    <Heart size={36} fill="currentColor" />
                 </Button>
                 <Button
                     asChild
                     variant="outline"
-                    className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-green-400 hover:text-green-600 active:scale-90 transition-all flex items-center justify-center"
+                    className="w-[3.5rem] h-[3.5rem] rounded-full bg-white shadow-xl border-0 text-green-400 hover:text-green-600 active:scale-90 transition-all flex items-center justify-center"
                 >
                     <Link href={`/chats?userId=${user.id}`}>
-                        <MessageCircle size={30} />
+                        <MessageCircle size={28} />
                     </Link>
                 </Button>
                 <Button
                     asChild
                     variant="outline"
-                    className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all flex items-center justify-center"
+                    className="w-[3.5rem] h-[3.5rem] rounded-full bg-white shadow-xl border-0 text-blue-400 hover:text-blue-600 active:scale-90 transition-all flex items-center justify-center"
                 >
                     <Link href={`/user?id=${user.id}`} prefetch={true}>
-                        <User size={28} strokeWidth={2} />
+                        <User size={26} strokeWidth={2} />
                     </Link>
                 </Button>
             </div>
