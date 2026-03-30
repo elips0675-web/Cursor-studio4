@@ -428,7 +428,7 @@ export function FootballFeed() {
   const [searchQuery, setSearchQuery] = useState("");
   const [commentInputs, setCommentInputs] = useState<{ [key: number]: string }>({});
   const { toast } = useToast();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [newPostText, setNewPostText] = useState("");
   const [newPostImages, setNewPostImages] = useState<string[]>([]);
@@ -490,11 +490,20 @@ export function FootballFeed() {
   }, []);
 
   const handleShare = useCallback(() => {
+    // В шаблоне нет перевода ключей `filter.link_copied.*`, поэтому делаем RU/EN вручную.
+    if (language === 'RU') {
+      toast({
+        title: 'Ссылка скопирована',
+        description: 'Скопируйте ссылку и отправьте другу.',
+      });
+      return;
+    }
+
     toast({
-      title: t('filter.link_copied.title'),
-      description: t('filter.link_copied.description'),
+      title: 'Link copied',
+      description: 'Copy the link and send it to a friend.',
     });
-  }, [toast, t]);
+  }, [toast, language]);
 
   const handleCommentChange = (postId: number, text: string) => {
     setCommentInputs((prev) => ({ ...prev, [postId]: text }));
