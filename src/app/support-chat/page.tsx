@@ -15,7 +15,7 @@ import { toast } from "@/hooks/use-toast";
 
 const SUPPORT_AGENT = { 
   name: 'Support', 
-  img: 'https://picsum.photos/seed/support_agent/100/100', 
+  img: '/demo/people/support-agent.png',
 };
 
 export default function SupportChatPage() {

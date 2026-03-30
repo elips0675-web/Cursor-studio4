@@ -161,15 +161,46 @@ export default function ProfilePage() {
   const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
-      const newPhotoUrl = URL.createObjectURL(file);
-      
-      const newPhotosArray = [...photos, newPhotoUrl];
-      setPhotos(newPhotosArray);
+
+      // `URL.createObjectURL` дает временный `blob:` URL.
+      // Чтобы фото реально "сохранялось", конвертируем его в `data:` URL и persist'им в localStorage.
+      const previewUrl = URL.createObjectURL(file);
+      setPhotos((prev) => [...prev, previewUrl]);
 
       toast({
         title: language === 'RU' ? "Фото выбрано" : "Photo Selected",
-        description: language === 'RU' ? "Ваше фото добавлено в галерею (только для просмотра)." : "Your photo has been added to the gallery (for preview only).",
+        description:
+          language === 'RU'
+            ? "Фото будет сохранено в галерею."
+            : "Photo will be saved to the gallery.",
       });
+
+      const fileToDataUrl = (f: File) =>
+        new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error("Failed to read file"));
+          reader.readAsDataURL(f);
+        });
+
+      fileToDataUrl(file)
+        .then((dataUrl) => {
+          setPhotos((prev) => {
+            const next = [...prev];
+            const idx = next.lastIndexOf(previewUrl);
+            if (idx !== -1) next[idx] = dataUrl;
+
+            localStorage.setItem("userProfileGallery", JSON.stringify(next));
+            return next;
+          });
+        })
+        .catch((e) => {
+          console.error("Photo convert error:", e);
+          // Если конвертация не удалась, оставляем preview, но оно не переживет перезагрузку.
+        })
+        .finally(() => {
+          event.target.value = "";
+        });
     }
   };
 

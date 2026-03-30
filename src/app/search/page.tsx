@@ -269,7 +269,7 @@ function SearchContent() {
             </div>
         ) : (
           <>
-            <div className="relative w-full flex-1 mb-10 max-w-[420px] flex items-center justify-center">
+            <div className="relative w-full flex-1 mb-10 max-w-[360px] flex items-center justify-center">
               <Button variant="ghost" size="icon" onClick={handlePrev} disabled={currentIndex === 0} className="absolute -left-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronLeft size={24} /></Button>
               <Button variant="ghost" size="icon" onClick={handleNext} disabled={currentIndex >= userList.length - 1} className="absolute -right-4 z-20 w-10 h-10 rounded-full bg-white/80 shadow-lg border-0"><ChevronRight size={24} /></Button>
 
@@ -292,8 +292,13 @@ function SearchContent() {
                     src={user.img} 
                     alt={user.name} 
                     fill 
-                    sizes="(max-width: 480px) 100vw, 420px" 
-                    priority
+                    // Реальная ширина карточки в макете ~360px.
+                    // Это помогает Next.js запрашивать только нужный размер и уменьшать трафик.
+                    sizes="(max-width: 360px) 100vw, 360px"
+                    // Компрессия, но без сильной деградации качества.
+                    quality={85}
+                    // Предзагрузка только для первой карточки — меньше лишних загрузок.
+                    priority={currentIndex === 0}
                     className="object-cover transition-transform duration-700 group-hover:scale-105" 
                   />
                   
@@ -335,7 +340,7 @@ function SearchContent() {
               </AnimatePresence>
             </div>
 
-            <div className="flex justify-center items-center gap-2 sm:gap-4 w-full max-w-[420px]">
+            <div className="flex justify-center items-center gap-2 sm:gap-4 w-full max-w-[360px]">
                 <Button variant="outline" size="icon" className="w-14 h-14 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all" onClick={handleNext}>
                     <X size={28} strokeWidth={3} />
                 </Button>
