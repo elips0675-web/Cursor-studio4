@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { AppHeader } from "@/components/layout/app-header";
 import { BottomNav } from "@/components/navigation/bottom-nav";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +30,8 @@ import {
   Car,
   Laugh,
   Scroll,
-  PlusCircle
+  PlusCircle,
+  ChevronUp
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -94,6 +95,62 @@ const GroupList = ({ groups, emptyMessage, language }: { groups: any[], emptyMes
   );
 };
 
+function Pagination({
+  current,
+  total,
+  onChange,
+}: {
+  current: number;
+  total: number;
+  onChange: (p: number) => void;
+}) {
+  if (total <= 1) return null;
+
+  const pages: number[] = [];
+  for (let i = 1; i <= total; i++) pages.push(i);
+
+  return (
+    <div className="flex items-center justify-center gap-1.5 mt-6 mb-2">
+      <Button
+        variant="outline"
+        size="icon"
+        className="w-8 h-8 rounded-lg border-muted bg-white"
+        disabled={current === 1}
+        onClick={() => onChange(current - 1)}
+      >
+        <span className="text-[12px] font-black">‹</span>
+      </Button>
+
+      {pages.map((p) => (
+        <Button
+          key={p}
+          variant={current === p ? "default" : "outline"}
+          size="icon"
+          className={cn(
+            "w-8 h-8 rounded-lg text-xs font-black transition-all",
+            current === p
+              ? "gradient-bg border-0 text-white shadow-md scale-110"
+              : "bg-white border-muted text-muted-foreground hover:bg-muted/50"
+          )}
+          onClick={() => onChange(p)}
+        >
+          {p}
+        </Button>
+      ))}
+
+      <Button
+        variant="outline"
+        size="icon"
+        className="w-8 h-8 rounded-lg border-muted bg-white"
+        disabled={current === total}
+        onClick={() => onChange(current + 1)}
+      >
+        <span className="text-[12px] font-black">›</span>
+      </Button>
+    </div>
+  );
+}
+
 export default function GroupsPage() {
   const { t, language } = useLanguage();
   const [isMounted, setIsMounted] = useState(false);
@@ -101,6 +158,12 @@ export default function GroupsPage() {
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDesc, setNewGroupDesc] = useState("");
   const [newGroupCategory, setNewGroupCategory] = useState("");
+  const mainRef = useRef<HTMLDivElement | null>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  const [activeTab, setActiveTab] = useState<"find" | "top-week" | "my-groups">("find");
+  const ITEMS_PER_PAGE = 6; // 2 колонки => 3 ряда
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Demo data for different tabs
   const myGroupIds = [1, 3, 5];
@@ -110,6 +173,24 @@ export default function GroupsPage() {
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  useEffect(() => {
+    const el = mainRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      setShowScrollTop(el.scrollTop > 300);
+    };
+
+    el.addEventListener("scroll", onScroll);
+    onScroll();
+
+    return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
   const handleCreateGroup = () => {
@@ -167,7 +248,7 @@ export default function GroupsPage() {
   return (
     <div className="flex flex-col min-h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <main className="flex-1 overflow-y-auto pb-24">
+      <main ref={mainRef} className="flex-1 overflow-y-auto pb-24">
         <div className="px-5 pt-6 flex justify-between items-center mb-4">
            <h1 className="text-3xl font-black font-headline tracking-tight">{t('nav.groups')}</h1>
            <Button onClick={() => setIsCreateOpen(true)} className="gap-2 rounded-full shadow-lg shadow-primary/20 border-0 gradient-bg text-white font-bold h-10 px-5 active:scale-95 transition-all">
@@ -176,7 +257,7 @@ export default function GroupsPage() {
            </Button>
         </div>
 
-        <Tabs defaultValue="find" className="w-full">
+        <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)} className="w-full">
           <div className="px-5">
             <TabsList className="grid w-full grid-cols-3 bg-muted p-1 rounded-xl mb-6">
               <TabsTrigger value="find">{t('groups.tabs.find')}</TabsTrigger>
@@ -186,19 +267,63 @@ export default function GroupsPage() {
           </div>
 
           <TabsContent value="find" className="px-5">
-            <GroupList groups={popularGroups} emptyMessage={t('groups.not_found')} language={language} />
+            {(() => {
+              const totalPages = Math.ceil(popularGroups.length / ITEMS_PER_PAGE);
+              const start = (currentPage - 1) * ITEMS_PER_PAGE;
+              const groups = popularGroups.slice(start, start + ITEMS_PER_PAGE);
+
+              return (
+                <>
+                  <GroupList groups={groups} emptyMessage={t('groups.not_found')} language={language} />
+                  <Pagination current={currentPage} total={totalPages} onChange={setCurrentPage} />
+                </>
+              );
+            })()}
           </TabsContent>
           
           <TabsContent value="top-week" className="px-5">
-             <GroupList groups={topGroups} emptyMessage={t('groups.no_top_groups')} language={language} />
+            {(() => {
+              const totalPages = Math.ceil(topGroups.length / ITEMS_PER_PAGE);
+              const start = (currentPage - 1) * ITEMS_PER_PAGE;
+              const groups = topGroups.slice(start, start + ITEMS_PER_PAGE);
+              return (
+                <>
+                  <GroupList groups={groups} emptyMessage={t('groups.no_top_groups')} language={language} />
+                  <Pagination current={currentPage} total={totalPages} onChange={setCurrentPage} />
+                </>
+              );
+            })()}
           </TabsContent>
 
           <TabsContent value="my-groups" className="px-5">
-             <GroupList groups={myGroups} emptyMessage={t('groups.not_joined')} language={language} />
+            {(() => {
+              const totalPages = Math.ceil(myGroups.length / ITEMS_PER_PAGE);
+              const start = (currentPage - 1) * ITEMS_PER_PAGE;
+              const groups = myGroups.slice(start, start + ITEMS_PER_PAGE);
+              return (
+                <>
+                  <GroupList groups={groups} emptyMessage={t('groups.not_joined')} language={language} />
+                  <Pagination current={currentPage} total={totalPages} onChange={setCurrentPage} />
+                </>
+              );
+            })()}
           </TabsContent>
 
         </Tabs>
       </main>
+
+      {showScrollTop && (
+        <Button
+          onClick={() => {
+            mainRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          className="fixed bottom-24 right-5 z-[60] w-12 h-12 rounded-full shadow-xl"
+          size="icon"
+          variant="default"
+        >
+          <ChevronUp size={20} />
+        </Button>
+      )}
 
       <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
         <DialogContent className="max-w-md rounded-3xl p-0 border-0 app-shadow">
