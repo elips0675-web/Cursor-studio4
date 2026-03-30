@@ -19,6 +19,10 @@
 .env.test.local
 .env.production.local
 
+# TypeScript build info (tsc --build)
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
