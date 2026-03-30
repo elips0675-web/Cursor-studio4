@@ -31,12 +31,12 @@ export function BottomNav() {
             href={item.href}
             prefetch={true} // Performance: Prefetch critical nav links
             className={cn(
-              "flex flex-col items-center gap-1 flex-1 transition-all duration-200",
+              "flex flex-col items-center justify-center gap-1 flex-1 h-full transition-all duration-200",
               isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
             )}
           >
             <div className="relative">
-              <Icon size={isActive ? 24 : 22} className={cn(isActive && "translate-y-[-2px]")} />
+              <Icon size={isActive ? 24 : 22} />
               {item.badge && (
                 <span className="absolute -top-1 -right-2 min-w-[16px] h-[16px] bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 border-2 border-white">
                   {item.badge}
