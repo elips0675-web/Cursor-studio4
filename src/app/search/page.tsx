@@ -336,7 +336,7 @@ function SearchContent() {
               </AnimatePresence>
             </div>
 
-            <div className="flex justify-center items-center gap-2 sm:gap-4 w-full max-w-[360px]">
+            <div className="flex justify-around items-center w-full max-w-sm">
                 <Button
                     variant="outline"
                     className="w-16 h-16 rounded-full bg-white shadow-xl border-0 text-slate-400 hover:text-slate-600 active:scale-90 transition-all flex items-center justify-center"
@@ -345,18 +345,18 @@ function SearchContent() {
                     <X size={30} strokeWidth={3} />
                 </Button>
                 <Button
-                    className="relative w-16 h-16 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none flex items-center justify-center"
+                    className="relative w-20 h-20 rounded-full bg-blue-500 text-white shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all border-0 disabled:bg-slate-300 disabled:shadow-none flex items-center justify-center"
                     onClick={handleSuperLike}
                     disabled={(currentUser?.superLikes || 0) === 0}
                 >
-                    <Sparkles size={30} fill="currentColor" />
+                    <Sparkles size={40} fill="currentColor" />
                     <span className="absolute bottom-2 text-xs font-bold">{currentUser?.superLikes || 0}</span>
                 </Button>
                 <Button
-                    className="w-16 h-16 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0 flex items-center justify-center"
+                    className="w-24 h-24 rounded-full gradient-bg text-white shadow-2xl shadow-primary/40 hover:scale-110 active:scale-95 transition-all border-0 flex items-center justify-center"
                     onClick={handleLike}
                 >
-                    <Heart size={34} fill="currentColor" />
+                    <Heart size={50} fill="currentColor" />
                 </Button>
                 <Button
                     asChild
