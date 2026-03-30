@@ -16,7 +16,8 @@ import { cn } from '@/lib/utils';
 
 // --- PostText with Spoiler ---
 const PostText = ({ text, charLimit = 280 }: { text: string, charLimit?: number }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const tr = (ru: string, en: string) => (language === "RU" ? ru : en);
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!text) return null;
@@ -34,7 +35,7 @@ const PostText = ({ text, charLimit = 280 }: { text: string, charLimit?: number 
       <p className="whitespace-pre-wrap">
         {isExpanded ? text : `${text.substring(0, charLimit)}...`}
         <button onClick={toggleExpand} className="text-blue-500 hover:underline ml-1 font-semibold text-sm">
-          {isExpanded ? t('common.hide') : t('common.show_more')}
+          {isExpanded ? tr("Скрыть", "Hide") : tr("Показать больше", "Show more")}
         </button>
       </p>
     </div>
@@ -210,7 +211,8 @@ const PostImageUploader = ({
   newPostImageUrls: string;
   setNewPostImageUrls: (urls: string) => void;
 }) => {
-  const { t } = useLanguage();
+  const { language } = useLanguage();
+  const tr = (ru: string, en: string) => (language === "RU" ? ru : en);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const maxFiles = 14;
 
@@ -242,7 +244,7 @@ const PostImageUploader = ({
     <div className="space-y-4">
       <div className="space-y-2">
         <Label className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
-          {t('feed.uploader.title')} ({images.length}/{maxFiles})
+          {tr("Добавить фото", "Add photos")} ({images.length}/{maxFiles})
         </Label>
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
           {images.map((image, index) => (
@@ -264,7 +266,7 @@ const PostImageUploader = ({
               className="aspect-square rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-500 transition-colors"
             >
               <PlusCircle size={24} />
-              <span className="text-xs font-semibold mt-1">{t('common.add')}</span>
+              <span className="text-xs font-semibold mt-1">{tr("Добавить", "Add")}</span>
             </button>
           )}
         </div>
@@ -279,14 +281,14 @@ const PostImageUploader = ({
       </div>
       <div className="space-y-2">
         <Label htmlFor="post-images-url" className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
-          {t('feed.uploader.or_link')}
+          {tr("Или по ссылке", "Or by link")}
         </Label>
         <Input
           id="post-images-url"
           value={newPostImageUrls}
           onChange={(e) => setNewPostImageUrls(e.target.value)}
           className="h-12 rounded-xl bg-muted/50 border-0"
-          placeholder={t('feed.uploader.url_placeholder')}
+          placeholder={tr("Вставьте ссылку на изображение", "Paste image URL")}
         />
       </div>
     </div>
@@ -531,11 +533,12 @@ export function FootballFeed() {
       return;
     }
 
+    const tr = (ru: string, en: string) => (language === "RU" ? ru : en);
     const newComment = {
       id: Date.now(),
-      author: t('common.you'),
+      author: tr("Вы", "You"),
       avatar: "/demo/people/me.png",
-      time: t('common.just_now'),
+      time: tr("Только что", "Just now"),
       text: commentText,
     };
 
@@ -564,18 +567,21 @@ export function FootballFeed() {
     if (!newPostText.trim() && allImages.length === 0) {
       toast({
         variant: "destructive",
-        title: t('feed.empty_post_error.title'),
-        description: t('feed.empty_post_error.description'),
+        title: language === "RU" ? "Пустой пост" : "Empty post",
+        description:
+          language === "RU"
+            ? "Добавьте текст или изображение."
+            : "Add text or an image.",
       });
       return;
     }
 
     const newPost = {
       id: Date.now(),
-      author: t('common.you'),
+      author: language === "RU" ? "Вы" : "You",
       group: 'PRO Лига',
       avatar: "/demo/people/me.png",
-      time: t('common.just_now'),
+      time: language === "RU" ? "Только что" : "Just now",
       text: newPostText,
       images: allImages,
       likes: 0,
@@ -591,7 +597,9 @@ export function FootballFeed() {
     setNewPostImages([]);
     setNewPostImageUrls("");
 
-    toast({ title: t('feed.post_published') });
+    toast({
+      title: language === "RU" ? "Пост опубликован" : "Post published",
+    });
   };
 
   return (
@@ -604,7 +612,7 @@ export function FootballFeed() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 h-11 bg-white border-gray-200/80 rounded-full shadow-sm text-sm font-medium focus:ring-2 focus:ring-blue-400 transition-all w-full"
-              placeholder={t('feed.search_placeholder')}
+              placeholder={language === "RU" ? "Поиск по постам..." : "Search posts..."}
             />
           </div>
           <Button
@@ -687,7 +695,7 @@ export function FootballFeed() {
                     value={commentInputs[post.id] || ''}
                     onChange={(e) => handleCommentChange(post.id, e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleCommentSubmit(post.id)}
-                    placeholder={t('feed.comment_placeholder')}
+                      placeholder={language === "RU" ? "Напишите комментарий..." : "Write a comment..."}
                     className="w-full bg-gray-100 border-transparent rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
                   />
                   <button
@@ -708,23 +716,27 @@ export function FootballFeed() {
       <Dialog open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen}>
         <DialogContent className="max-w-lg rounded-3xl p-6 border-0 app-shadow">
           <DialogHeader>
-            <DialogTitle className="font-black tracking-tight text-xl">{t('feed.create_post.title')}</DialogTitle>
+            <DialogTitle className="font-black tracking-tight text-xl">
+              {language === "RU" ? "Создать пост" : "Create post"}
+            </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground font-medium pt-1">
-              {t('feed.create_post.description', { group: 'Футбол' })}
+              {language === "RU"
+                ? "Опубликуйте новый пост в ленте «Футбол»."
+                : "Publish a new post in the «Football» feed."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="grid gap-6 pt-4">
             <div className="space-y-2">
               <Label htmlFor="post-text" className="font-bold text-xs uppercase tracking-widest text-muted-foreground">
-                {t('feed.create_post.text_label')}
+                {language === "RU" ? "Текст поста" : "Post text"}
               </Label>
               <Textarea
                 id="post-text"
                 value={newPostText}
                 onChange={(e) => setNewPostText(e.target.value)}
                 className="rounded-xl bg-muted/50 border-0 min-h-[80px]"
-                placeholder={t('feed.create_post.text_placeholder')}
+                placeholder={language === "RU" ? "Напишите что-нибудь..." : "Write something..."}
               />
             </div>
             <PostImageUploader
@@ -740,7 +752,7 @@ export function FootballFeed() {
               onClick={handleCreatePost}
               className="w-full h-12 rounded-xl gradient-bg text-white font-black uppercase tracking-widest shadow-lg shadow-primary/20 border-0"
             >
-              {t('common.publish')}
+              {language === "RU" ? "Опубликовать" : "Publish"}
             </Button>
           </DialogFooter>
         </DialogContent>
