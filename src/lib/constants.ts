@@ -41,6 +41,32 @@ export const INTEREST_OPTIONS: readonly string[] = [
     "Архитектура",
 ];
 
+export const ZODIAC_SIGNS: readonly string[] = [
+    "Овен",
+    "Телец",
+    "Близнецы",
+    "Рак",
+    "Лев",
+    "Дева",
+    "Весы",
+    "Скорпион",
+    "Стрелец",
+    "Козерог",
+    "Водолей",
+    "Рыбы"
+];
+
+export const EDUCATION_OPTIONS: readonly string[] = [
+    "Среднее",
+    "Среднее специальное",
+    "Неоконченное высшее",
+    "Высшее",
+    "Бакалавр",
+    "Магистр",
+    "Кандидат наук",
+    "Доктор наук"
+];
+
 export const CAPITALS: readonly string[] = [
     "Москва", 
     "Санкт-Петербург",

@@ -47,5 +47,17 @@
   "autosearch.desc": "Находите людей на основе ваших интересов и целей",
   "autosearch.free": "Смотреть рекламу",
   "autosearch.paid": "Оплатить",
-  "button.not_now": "Не сейчас"
+  "button.not_now": "Не сейчас",
+  "common.zodiac.aries": "Овен",
+  "common.zodiac.taurus": "Телец",
+  "common.zodiac.gemini": "Близнецы",
+  "common.zodiac.cancer": "Рак",
+  "common.zodiac.leo": "Лев",
+  "common.zodiac.virgo": "Дева",
+  "common.zodiac.libra": "Весы",
+  "common.zodiac.scorpio": "Скорпион",
+  "common.zodiac.sagittarius": "Стрелец",
+  "common.zodiac.capricorn": "Козерог",
+  "common.zodiac.aquarius": "Водолей",
+  "common.zodiac.pisces": "Рыбы"
 }

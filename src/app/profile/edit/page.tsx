@@ -29,13 +29,28 @@ import { GROUP_CATEGORIES } from "@/lib/demo-data";
 import { useLanguage } from "@/context/language-context";
 import { ATTACHMENT_STYLE_INFO } from "@/lib/attachment-styles";
 
+const zodiacNameToKey: { [name: string]: string } = {
+  "Овен": "common.zodiac.aries",
+  "Телец": "common.zodiac.taurus",
+  "Близнецы": "common.zodiac.gemini",
+  "Рак": "common.zodiac.cancer",
+  "Лев": "common.zodiac.leo",
+  "Дева": "common.zodiac.virgo",
+  "Весы": "common.zodiac.libra",
+  "Скорпион": "common.zodiac.scorpio",
+  "Стрелец": "common.zodiac.sagittarius",
+  "Козерог": "common.zodiac.capricorn",
+  "Водолей": "common.zodiac.aquarius",
+  "Рыбы": "common.zodiac.pisces",
+};
+
 const defaultProfile = {
     displayName: "Анна",
     age: 24,
     city: "Москва",
     height: 172,
     datingGoal: "Серьезные отношения",
-    zodiac: "Лев",
+    zodiac: "common.zodiac.leo",
     bio: "Люблю закаты, хороший кофе и интересные разговоры.",
     interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"],
     pets: "Есть собака",
@@ -60,15 +75,18 @@ export default function EditProfilePage() {
   const [mainPhoto, setMainPhoto] = useState(PlaceHolderImages[0].imageUrl);
   const [profile, setProfile] = useState(defaultProfile as any);
   
-  const [dynamicInterests, setDynamicInterests] = useState<string[]>(INTEREST_OPTIONS.filter(i => !BANNED_WORDS.includes(i)));
-  const [dynamicGoals, setDynamicGoals] = useState<string[]>(DATING_GOALS);
-  const [dynamicEducation, setDynamicEducation] = useState<string[]>(EDUCATION_OPTIONS);
+  const [dynamicInterests, setDynamicInterests] = useState<string[]>([...INTEREST_OPTIONS].filter(i => !BANNED_WORDS.includes(i)));
+  const [dynamicGoals, setDynamicGoals] = useState<string[]>([...DATING_GOALS]);
+  const [dynamicEducation, setDynamicEducation] = useState<string[]>([...EDUCATION_OPTIONS]);
 
   useEffect(() => {
     if (!firestore || !user) return;
     const unsub = onSnapshot(doc(firestore, "users", user.uid), (doc) => {
         const data = doc.data();
         if (data) {
+            if (data.zodiac && zodiacNameToKey[data.zodiac]) {
+                data.zodiac = zodiacNameToKey[data.zodiac];
+            }
             setProfile((prev: any) => ({ ...prev, ...data }));
         }
     });
@@ -115,6 +133,9 @@ export default function EditProfilePage() {
         const loadedProfile = JSON.parse(savedProfile);
         if (loadedProfile.interests && Array.isArray(loadedProfile.interests)) {
             loadedProfile.interests = loadedProfile.interests.filter((i: string) => !BANNED_WORDS.includes(i));
+        }
+        if (loadedProfile.zodiac && zodiacNameToKey[loadedProfile.zodiac]) {
+            loadedProfile.zodiac = zodiacNameToKey[loadedProfile.zodiac];
         }
         setProfile((prev: any) => ({ 
           ...prev, 
@@ -215,7 +236,7 @@ export default function EditProfilePage() {
                 <h3 className="font-black text-[10px] uppercase tracking-widest text-muted-foreground">{t('profile.about')}</h3>
               </div>
               <button onClick={handleGenerateBio} disabled={isGeneratingBio} className="text-[9px] font-black text-primary flex items-center gap-1.5 uppercase tracking-tight bg-muted/50 px-3 py-1.5 rounded-full hover:bg-muted transition-colors shadow-sm">
-                <Sparkles size={11} className={isGeneratingBio ? "animate-spin" : ""} /> {t('profile.ai_improve')}
+                <Sparkles size={11} className={isGeneratingBio ? "animate-spin" : "" } /> {t('profile.ai_improve')}
               </button>
             </div>
             <Textarea value={profile.bio || ''} onChange={e => setProfile({...profile, bio: e.target.value})} className="rounded-xl bg-muted/30 border-0 min-h-[90px] text-xs resize-none font-medium p-4" />

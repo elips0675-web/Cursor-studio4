@@ -12,6 +12,18 @@ interface LanguageContextProps {
 
 const translations = {
   RU: {
+    'common.zodiac.aries': 'Овен',
+    'common.zodiac.taurus': 'Телец',
+    'common.zodiac.gemini': 'Близнецы',
+    'common.zodiac.cancer': 'Рак',
+    'common.zodiac.leo': 'Лев',
+    'common.zodiac.virgo': 'Дева',
+    'common.zodiac.libra': 'Весы',
+    'common.zodiac.scorpio': 'Скорпион',
+    'common.zodiac.sagittarius': 'Стрелец',
+    'common.zodiac.capricorn': 'Козерог',
+    'common.zodiac.aquarius': 'Водолей',
+    'common.zodiac.pisces': 'Рыбы',
     // Landing / SEO
     'landing.headline': 'Найди свою идеальную пару сегодня',
     'landing.subheadline': 'SwiftMatch — умный способ познакомиться с интересными людьми рядом.',
@@ -431,6 +443,18 @@ const translations = {
     'groups.create.success_desc_end': '" была успешно создана.',
   },
   EN: {
+    'common.zodiac.aries': 'Aries',
+    'common.zodiac.taurus': 'Taurus',
+    'common.zodiac.gemini': 'Gemini',
+    'common.zodiac.cancer': 'Cancer',
+    'common.zodiac.leo': 'Leo',
+    'common.zodiac.virgo': 'Virgo',
+    'common.zodiac.libra': 'Libra',
+    'common.zodiac.scorpio': 'Scorpio',
+    'common.zodiac.sagittarius': 'Sagittarius',
+    'common.zodiac.capricorn': 'Capricorn',
+    'common.zodiac.aquarius': 'Aquarius',
+    'common.zodiac.pisces': 'Pisces',
     // Landing / SEO
     'landing.headline': 'Find your perfect match today',
     'landing.subheadline': 'SwiftMatch — a smart way to meet interesting people nearby.',
