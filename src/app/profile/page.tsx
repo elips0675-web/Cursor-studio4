@@ -162,8 +162,6 @@ export default function ProfilePage() {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
 
-      // `URL.createObjectURL` дает временный `blob:` URL.
-      // Чтобы фото реально "сохранялось", конвертируем его в `data:` URL и persist'им в localStorage.
       const previewUrl = URL.createObjectURL(file);
       setPhotos((prev) => [...prev, previewUrl]);
 
@@ -196,7 +194,6 @@ export default function ProfilePage() {
         })
         .catch((e) => {
           console.error("Photo convert error:", e);
-          // Если конвертация не удалась, оставляем preview, но оно не переживет перезагрузку.
         })
         .finally(() => {
           event.target.value = "";
@@ -221,7 +218,7 @@ export default function ProfilePage() {
         setUploadProgress(prev => ({ ...prev, [storyId]: 0 }));
         
         const interval = setInterval(() => {
-          progress += Math.random() * 15 + 5; // Simulate 5-15 second upload
+          progress += Math.random() * 15 + 5; 
           if (progress > 100) progress = 100;
           
           setUploadProgress(prev => ({ ...prev, [storyId]: progress }));
