@@ -209,38 +209,65 @@ export default function ProfilePage() {
   const handleStoryFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0];
-        const videoUrl = URL.createObjectURL(file);
+        const previewUrl = URL.createObjectURL(file);
         const storyId = `story_${Date.now()}`;
 
-        const newStory = { id: storyId, url: videoUrl, isUploading: true };
+        const newStory = { id: storyId, url: previewUrl, isUploading: true };
         setStories(prev => [newStory, ...prev]);
 
-        let progress = 0;
-        setUploadProgress(prev => ({ ...prev, [storyId]: 0 }));
-        
-        const interval = setInterval(() => {
-          progress += Math.random() * 15 + 5; 
-          if (progress > 100) progress = 100;
-          
-          setUploadProgress(prev => ({ ...prev, [storyId]: progress }));
+        const fileToDataUrl = (f: File) =>
+            new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(String(reader.result));
+                reader.onerror = () => reject(new Error("Failed to read file"));
+                reader.readAsDataURL(f);
+            });
 
-          if (progress >= 100) {
-            clearInterval(interval);
-            
-            const finalStories = stories.map(s => s.id === storyId ? { ...s, url: videoUrl, isUploading: false } : s);
-            localStorage.setItem('userProfileStories', JSON.stringify(finalStories));
+        fileToDataUrl(file)
+            .then(dataUrl => {
+                let progress = 0;
+                setUploadProgress(prev => ({ ...prev, [storyId]: 0 }));
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 20 + 10;
+                    if (progress > 100) progress = 100;
+                    
+                    setUploadProgress(prev => ({ ...prev, [storyId]: progress }));
 
-            setStories(prev => prev.map(s => s.id === storyId ? { ...s, isUploading: false } : s));
-            
-            setTimeout(() => {
-              setUploadProgress(prev => {
-                const newProgress = { ...prev };
-                delete newProgress[storyId];
-                return newProgress;
-              });
-            }, 1000);
-          }
-        }, 700);
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        
+                        setStories(prevStories => {
+                            const finalStories = prevStories.map(s => {
+                                if (s.id === storyId) {
+                                    URL.revokeObjectURL(s.url); // Clean up blob url
+                                    return { ...s, url: dataUrl, isUploading: false };
+                                }
+                                return s;
+                            });
+                            
+                            const storiesForStorage = finalStories.filter(s => !s.isUploading).map(({ isUploading, ...rest }) => rest);
+                            localStorage.setItem('userProfileStories', JSON.stringify(storiesForStorage));
+
+                            return finalStories;
+                        });
+                        
+                        setTimeout(() => {
+                            setUploadProgress(prev => {
+                                const newProgress = { ...prev };
+                                delete newProgress[storyId];
+                                return newProgress;
+                            });
+                        }, 1000);
+                    }
+                }, 500);
+            })
+            .catch(e => {
+                console.error("Story convert error:", e);
+                toast({ variant: 'destructive', title: 'Ошибка загрузки', description: 'Не удалось обработать видео.' });
+                setStories(prev => prev.filter(s => s.id !== storyId));
+                URL.revokeObjectURL(previewUrl);
+            });
         
         event.target.value = '';
       }
@@ -658,7 +685,7 @@ export default function ProfilePage() {
                         {!isUploading && (
                            <button 
                             onClick={() => setStoryToDelete(story.id)}
-                            className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20 opacity-0 group-hover:opacity-100"
+                            className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20"
                           >
                             <Trash2 size={16} />
                           </button>
