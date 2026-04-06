@@ -69,6 +69,7 @@ export default function ProfilePage() {
   // Stories states
   const [stories, setStories] = useState<any[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [storyToDelete, setStoryToDelete] = useState<string | null>(null);
 
   // Contest states
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
@@ -243,6 +244,22 @@ export default function ProfilePage() {
         
         event.target.value = '';
       }
+  };
+
+  const handleDeleteStory = () => {
+    if (!storyToDelete) return;
+
+    const story = stories.find(s => s.id === storyToDelete);
+    if (story && story.url.startsWith('blob:')) {
+      URL.revokeObjectURL(story.url);
+    }
+
+    const newStories = stories.filter(s => s.id !== storyToDelete);
+    setStories(newStories);
+    localStorage.setItem('userProfileStories', JSON.stringify(newStories));
+
+    toast({ title: "Сторис удалена" });
+    setStoryToDelete(null);
   };
 
 
@@ -637,6 +654,15 @@ export default function ProfilePage() {
                               <span className="text-white/80 text-[10px] mt-2 font-semibold uppercase tracking-wider">Загрузка...</span>
                           </div>
                         )}
+
+                        {!isUploading && (
+                           <button 
+                            onClick={() => setStoryToDelete(story.id)}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20 opacity-0 group-hover:opacity-100"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     );
                   })}
@@ -671,6 +697,28 @@ export default function ProfilePage() {
               className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none"
             >
               {t('dialog.delete_photo.confirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={storyToDelete !== null} onOpenChange={(open) => !open && setStoryToDelete(null)}>
+        <AlertDialogContent className="rounded-2xl border-0 p-6 bg-white app-shadow">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-black tracking-tight">Удалить сторис</AlertDialogTitle>
+            <AlertDialogDescription className="font-medium text-muted-foreground">
+              Вы уверены, что хотите удалить эту сторис? Это действие нельзя будет отменить.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-row gap-3 sm:gap-0 sm:justify-end mt-4">
+            <AlertDialogCancel className="rounded-xl border-muted font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none">
+              Отмена
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteStory}
+              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none"
+            >
+              Удалить
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
