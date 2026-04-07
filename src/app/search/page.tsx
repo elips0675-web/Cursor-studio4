@@ -11,7 +11,7 @@ import { BottomNav } from "@/components/navigation/bottom-nav";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/language-context";
-import MatchDialog from "@/components/match-dialog";
+import MatchDialog from "@/components/dialogs/match-dialog";
 import SearchLoading from "./loading";
 
 const CARD_SWIPE_THRESHOLD = 100;
@@ -183,4 +183,3 @@ function ActionButton({ type, onClick }: { type: 'like' | 'nope', onClick: () =>
     </Button>
   );
 }
-
