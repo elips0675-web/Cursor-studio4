@@ -30,19 +30,59 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<"email" | "phone">("phone");
+  const [loginMethod, setLoginMethod] = useState<"email" | "phone">("email");
 
   const auth = useAuth();
   const firestore = useFirestore();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    toast({
-      title: "В разработке",
-      description: "Вход по email и телефону будет добавлен позже.",
-    });
-    setIsLoading(false);
+
+    if (loginMethod !== 'email') {
+        toast({
+          title: "В разработке",
+          description: "Вход по телефону будет добавлен позже.",
+        });
+        setIsLoading(false);
+        return;
+    }
+
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('authToken', data.token);
+        router.push('/');
+        toast({
+          title: "С возвращением!",
+          description: "Вы успешно вошли в аккаунт.",
+        });
+      } else {
+        toast({
+          title: "Ошибка входа",
+          description: data.message || "Неверный email или пароль.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+      toast({
+        title: "Ошибка сети",
+        description: "Не удалось подключиться к серверу.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {

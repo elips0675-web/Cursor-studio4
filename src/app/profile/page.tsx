@@ -55,6 +55,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [isBoosted, setIsBoosted] = useState(false);
@@ -81,45 +82,61 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setIsMounted(true);
-    const savedProfile = localStorage.getItem('userProfile');
-    if (savedProfile) {
-      try {
-        const parsed = JSON.parse(savedProfile);
-        if (parsed.interests && Array.isArray(parsed.interests)) {
-            parsed.interests = parsed.interests.filter((i: string) => !BANNED_WORDS.includes(i));
+    const token = localStorage.getItem('authToken');
+
+    if (!token) {
+        router.push('/login');
+        return;
+    }
+
+    const fetchProfile = async () => {
+        setIsLoading(true);
+        try {
+            const response = await fetch('/api/profile/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const userProfile = {
+                    ...data,
+                    displayName: data.displayName || t('profile.someone'),
+                    // Добавляем заглушки для полей, которых может не быть
+                    age: data.birthDate ? new Date().getFullYear() - new Date(data.birthDate).getFullYear() : 24, 
+                    city: data.location || 'Москва',
+                    lookingFor: data.lookingFor || 'male',
+                    datingGoal: data.datingGoal || 'Серьезные отношения',
+                    zodiac: data.zodiac || 'Лев',
+                    match: data.match || 87,
+                    attachmentStyle: data.attachmentStyle || null,
+                };
+
+                if (userProfile.interests && Array.isArray(userProfile.interests)) {
+                    userProfile.interests = userProfile.interests.filter((i: string) => !BANNED_WORDS.includes(i));
+                }
+
+                setProfile(userProfile);
+                setPhotos(userProfile.photos || [PlaceHolderImages[0].imageUrl, PlaceHolderImages[2].imageUrl, PlaceHolderImages[4].imageUrl]);
+
+                // Синхронизируем localStorage для обратной совместимости
+                localStorage.setItem('userProfile', JSON.stringify(userProfile));
+                localStorage.setItem('userProfileGallery', JSON.stringify(userProfile.photos || []));
+
+            } else {
+                 toast({ title: "Ошибка загрузки профиля", description: "Не удалось получить данные. Попробуйте снова.", variant: "destructive" });
+                 router.push('/login');
+            }
+        } catch (error) {
+            console.error("Failed to fetch profile", error);
+            toast({ title: "Сетевая ошибка", description: "Проверьте подключение к интернету.", variant: "destructive" });
+        } finally {
+            setIsLoading(false);
         }
-        setProfile({
-          ...parsed,
-          displayName: parsed.displayName || parsed.name || t('profile.someone')
-        });
-      } catch (e) {
-        console.error("Failed to parse profile", e);
-      }
-    } else {
-      setProfile({
-        displayName: "Анна",
-        age: 24,
-        city: "Москва",
-        height: 172,
-        gender: "female",
-        lookingFor: "male",
-        datingGoal: "Серьезные отношения",
-        zodiac: "Лев",
-        bio: "Люблю закаты, хороший кофе и интересные разговоры.",
-        interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"].filter(i => !BANNED_WORDS.includes(i)),
-        match: 87,
-        attachmentStyle: null,
-      });
-    }
-    
-    const savedPhotos = localStorage.getItem('userProfileGallery');
-    if (savedPhotos) {
-      setPhotos(JSON.parse(savedPhotos));
-    } else {
-      const defaultPhotos = [PlaceHolderImages[0].imageUrl, PlaceHolderImages[2].imageUrl, PlaceHolderImages[4].imageUrl];
-      setPhotos(defaultPhotos);
-      localStorage.setItem('userProfileGallery', JSON.stringify(defaultPhotos));
-    }
+    };
+
+    fetchProfile();
 
     const savedStories = localStorage.getItem('userProfileStories');
     if (savedStories) {
@@ -142,7 +159,7 @@ export default function ProfilePage() {
         }
       });
     };
-  }, [t]);
+  }, [router, t]);
 
   useEffect(() => {
     if (profile?.boost?.boostedUntil) {
@@ -366,10 +383,14 @@ export default function ProfilePage() {
     }
   };
 
-  if (!isMounted || !profile) return (
+  if (isLoading || !isMounted || !profile) return (
     <div className="flex flex-col h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <main className="flex-1 p-6"><Skeleton className="h-64 w-full rounded-2xl" /></main>
+      <main className="flex-1 p-6 space-y-6">
+        <div className="flex items-center space-x-4"><Skeleton className="h-24 w-24 rounded-2xl" /><div className="space-y-2"><Skeleton className="h-6 w-48" /><Skeleton className="h-4 w-32" /></div></div>
+        <Skeleton className="h-40 w-full rounded-2xl" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+      </main>
       <BottomNav />
     </div>
   );

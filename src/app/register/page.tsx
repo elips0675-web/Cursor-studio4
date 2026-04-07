@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -15,8 +16,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { useAuth } from "@/firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Badge } from "@/components/ui/badge";
 
 export default function RegisterPage() {
@@ -25,7 +24,6 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const auth = useAuth();
 
   const validateEmail = (email: string) => {
     return String(email)
@@ -56,35 +54,38 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password, displayName: name }), // Отправляем и имя
+        });
 
-      await updateProfile(user, { displayName: name });
-      
-      toast({
-        title: "Успех!",
-        description: `Аккаунт создан! Пожалуйста, расскажите о себе.`,
-      });
-      
-      router.push('/onboarding');
+        const data = await response.json();
 
-    } catch (error: any) {
-      console.error("Registration Error:", error);
-      let errorMessage = "Не удалось создать аккаунт.";
-      if (error.code === 'auth/email-already-in-use') {
-        errorMessage = "Этот email уже используется.";
-      } else if (error.code === 'auth/invalid-email') {
-        errorMessage = "Неверный формат email.";
-      } else if (error.code === 'auth/weak-password') {
-        errorMessage = "Слишком слабый пароль.";
-      }
-      toast({
-        title: "Ошибка регистрации",
-        description: errorMessage,
-        variant: "destructive",
-      });
+        if (response.ok) {
+            toast({
+                title: "Успех!",
+                description: "Аккаунт создан! Теперь вы можете войти.",
+            });
+            router.push('/login'); // Перенаправляем на страницу входа
+        } else {
+            toast({
+                title: "Ошибка регистрации",
+                description: data.message || "Не удалось создать аккаунт.",
+                variant: "destructive",
+            });
+        }
+    } catch (error) {
+        console.error("Registration Error:", error);
+        toast({
+            title: "Ошибка сети",
+            description: "Не удалось подключиться к серверу.",
+            variant: "destructive",
+        });
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
   };
 
