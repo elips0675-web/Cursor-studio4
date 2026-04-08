@@ -59,17 +59,12 @@ export default function Home() {
   const router = useRouter();
   const { t, language } = useLanguage();
   const [showAutosearchDialog, setShowAutosearchDialog] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [popularGroups, setPopularGroups] = useState<any[]>([]);
   const [view, setView] = useState<'top-users' | 'popular-groups'>('top-users');
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsMounted(true);
-      console.log("isMounted is set to true");
-    }, 1500);
-
     const saved = localStorage.getItem('userProfile');
     if (saved) {
       try {
@@ -85,8 +80,6 @@ export default function Home() {
       ...cat,
       onlineCount: Math.floor(Math.random() * 50) + 10
     })));
-
-    return () => clearTimeout(timer);
   }, []);
 
   const topUsers = useMemo(() => {

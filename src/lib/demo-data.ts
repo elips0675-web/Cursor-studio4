@@ -50,7 +50,7 @@ export const GROUP_CATEGORIES = [
   {
     id: 'sports', name_ru: 'Спорт', name_en: 'Sports', icon: 'Dumbbell', img: 'https://picsum.photos/seed/cat_sports/600/400', hint: 'stadium sports',
     subgroups: [
-      { id: 201, name_ru: 'Футбол', name_en: 'Football', members: 400, online: 80 }, { id: 202, name_ru: 'Баскетбол', name_en: 'Basketball', members: 250, online: 50 },
+      { id: 201, name_ru: 'Футбол', name_en: 'Football', members: 400, online: 80, href: '/groups/football' }, { id: 202, name_ru: 'Баскетбол', name_en: 'Basketball', members: 250, online: 50 },
       { id: 203, name_ru: 'Бег', name_en: 'Running', members: 180, online: 35 }, { id: 204, name_ru: 'Йога', name_en: 'Yoga', members: 300, online: 60 },
       { id: 205, name_ru: 'Плавание', name_en: 'Swimming', members: 150, online: 20 }, { id: 206, name_ru: 'Боевые искусства', name_en: 'Martial Arts', members: 120, online: 25 },
       { id: 207, name_ru: 'Теннис', name_en: 'Tennis', members: 100, online: 15 }, { id: 208, name_ru: 'Велоспорт', name_en: 'Cycling', members: 130, online: 18 },

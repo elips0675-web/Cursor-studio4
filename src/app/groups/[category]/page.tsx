@@ -23,6 +23,7 @@ import { toast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { FootballFeed } from "@/components/feeds/football-feed";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -100,6 +101,27 @@ function SubGroupsContent() {
         toast({ title: t('groups.ad.toast.title'), description: t('groups.ad.toast.description') });
         setShowPremiumDialog(false);
     };
+    
+    if (category?.name_ru === 'Футбол') {
+        return (
+            <div className="flex flex-col h-svh bg-[#f8f9fb]">
+                 <header className="flex items-center gap-2 px-3 py-2 border-b border-border sticky top-0 bg-white/90 backdrop-blur-lg z-50 h-16">
+                    <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-full hover:bg-muted/50">
+                        <ChevronLeft size={24} className="text-foreground" />
+                    </Button>
+                    <div className="flex-1 min-w-0">
+                        <h3 className="font-black text-lg leading-tight tracking-tight text-foreground truncate">
+                            Футбол
+                        </h3>
+                    </div>
+                </header>
+                <main className="flex-1 overflow-y-auto">
+                    <FootballFeed />
+                </main>
+                <BottomNav />
+            </div>
+        );
+    }
 
     if (!category) {
         return (

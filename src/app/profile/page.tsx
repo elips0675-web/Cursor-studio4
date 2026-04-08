@@ -55,7 +55,6 @@ export default function ProfilePage() {
   const router = useRouter();
   const { t, language } = useLanguage();
   const [profile, setProfile] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [photos, setPhotos] = useState<string[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   const [isBoosted, setIsBoosted] = useState(false);
@@ -70,7 +69,6 @@ export default function ProfilePage() {
   // Stories states
   const [stories, setStories] = useState<any[]>([]);
   const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
-  const [storyToDelete, setStoryToDelete] = useState<string | null>(null);
 
   // Contest states
   const [isSelectionOpen, setIsSelectionOpen] = useState(false);
@@ -82,61 +80,45 @@ export default function ProfilePage() {
 
   useEffect(() => {
     setIsMounted(true);
-    const token = localStorage.getItem('authToken');
-
-    if (!token) {
-        router.push('/login');
-        return;
-    }
-
-    const fetchProfile = async () => {
-        setIsLoading(true);
-        try {
-            const response = await fetch('/api/profile/me', {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                const userProfile = {
-                    ...data,
-                    displayName: data.displayName || t('profile.someone'),
-                    // Добавляем заглушки для полей, которых может не быть
-                    age: data.birthDate ? new Date().getFullYear() - new Date(data.birthDate).getFullYear() : 24, 
-                    city: data.location || 'Москва',
-                    lookingFor: data.lookingFor || 'male',
-                    datingGoal: data.datingGoal || 'Серьезные отношения',
-                    zodiac: data.zodiac || 'Лев',
-                    match: data.match || 87,
-                    attachmentStyle: data.attachmentStyle || null,
-                };
-
-                if (userProfile.interests && Array.isArray(userProfile.interests)) {
-                    userProfile.interests = userProfile.interests.filter((i: string) => !BANNED_WORDS.includes(i));
-                }
-
-                setProfile(userProfile);
-                setPhotos(userProfile.photos || [PlaceHolderImages[0].imageUrl, PlaceHolderImages[2].imageUrl, PlaceHolderImages[4].imageUrl]);
-
-                // Синхронизируем localStorage для обратной совместимости
-                localStorage.setItem('userProfile', JSON.stringify(userProfile));
-                localStorage.setItem('userProfileGallery', JSON.stringify(userProfile.photos || []));
-
-            } else {
-                 toast({ title: "Ошибка загрузки профиля", description: "Не удалось получить данные. Попробуйте снова.", variant: "destructive" });
-                 router.push('/login');
-            }
-        } catch (error) {
-            console.error("Failed to fetch profile", error);
-            toast({ title: "Сетевая ошибка", description: "Проверьте подключение к интернету.", variant: "destructive" });
-        } finally {
-            setIsLoading(false);
+    const savedProfile = localStorage.getItem('userProfile');
+    if (savedProfile) {
+      try {
+        const parsed = JSON.parse(savedProfile);
+        if (parsed.interests && Array.isArray(parsed.interests)) {
+            parsed.interests = parsed.interests.filter((i: string) => !BANNED_WORDS.includes(i));
         }
-    };
-
-    fetchProfile();
+        setProfile({
+          ...parsed,
+          displayName: parsed.displayName || parsed.name || t('profile.someone')
+        });
+      } catch (e) {
+        console.error("Failed to parse profile", e);
+      }
+    } else {
+      setProfile({
+        displayName: "Анна",
+        age: 24,
+        city: "Москва",
+        height: 172,
+        gender: "female",
+        lookingFor: "male",
+        datingGoal: "Серьезные отношения",
+        zodiac: "Лев",
+        bio: "Люблю закаты, хороший кофе и интересные разговоры.",
+        interests: ["Фотография", "Путешествия", "Кофе", "Музыка", "Спорт"].filter(i => !BANNED_WORDS.includes(i)),
+        match: 87,
+        attachmentStyle: null,
+      });
+    }
+    
+    const savedPhotos = localStorage.getItem('userProfileGallery');
+    if (savedPhotos) {
+      setPhotos(JSON.parse(savedPhotos));
+    } else {
+      const defaultPhotos = [PlaceHolderImages[0].imageUrl, PlaceHolderImages[2].imageUrl, PlaceHolderImages[4].imageUrl];
+      setPhotos(defaultPhotos);
+      localStorage.setItem('userProfileGallery', JSON.stringify(defaultPhotos));
+    }
 
     const savedStories = localStorage.getItem('userProfileStories');
     if (savedStories) {
@@ -159,7 +141,7 @@ export default function ProfilePage() {
         }
       });
     };
-  }, [router, t]);
+  }, [t]);
 
   useEffect(() => {
     if (profile?.boost?.boostedUntil) {
@@ -180,6 +162,8 @@ export default function ProfilePage() {
     if (event.target.files && event.target.files[0]) {
       const file = event.target.files[0];
 
+      // `URL.createObjectURL` дает временный `blob:` URL.
+      // Чтобы фото реально "сохранялось", конвертируем его в `data:` URL и persist'им в localStorage.
       const previewUrl = URL.createObjectURL(file);
       setPhotos((prev) => [...prev, previewUrl]);
 
@@ -212,6 +196,7 @@ export default function ProfilePage() {
         })
         .catch((e) => {
           console.error("Photo convert error:", e);
+          // Если конвертация не удалась, оставляем preview, но оно не переживет перезагрузку.
         })
         .finally(() => {
           event.target.value = "";
@@ -226,84 +211,41 @@ export default function ProfilePage() {
   const handleStoryFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
         const file = event.target.files[0];
-        const previewUrl = URL.createObjectURL(file);
+        const videoUrl = URL.createObjectURL(file);
         const storyId = `story_${Date.now()}`;
 
-        const newStory = { id: storyId, url: previewUrl, isUploading: true };
+        const newStory = { id: storyId, url: videoUrl, isUploading: true };
         setStories(prev => [newStory, ...prev]);
 
-        const fileToDataUrl = (f: File) =>
-            new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(String(reader.result));
-                reader.onerror = () => reject(new Error("Failed to read file"));
-                reader.readAsDataURL(f);
-            });
+        let progress = 0;
+        setUploadProgress(prev => ({ ...prev, [storyId]: 0 }));
+        
+        const interval = setInterval(() => {
+          progress += Math.random() * 15 + 5; // Simulate 5-15 second upload
+          if (progress > 100) progress = 100;
+          
+          setUploadProgress(prev => ({ ...prev, [storyId]: progress }));
 
-        fileToDataUrl(file)
-            .then(dataUrl => {
-                let progress = 0;
-                setUploadProgress(prev => ({ ...prev, [storyId]: 0 }));
-                
-                const interval = setInterval(() => {
-                    progress += Math.random() * 20 + 10;
-                    if (progress > 100) progress = 100;
-                    
-                    setUploadProgress(prev => ({ ...prev, [storyId]: progress }));
+          if (progress >= 100) {
+            clearInterval(interval);
+            
+            const finalStories = stories.map(s => s.id === storyId ? { ...s, url: videoUrl, isUploading: false } : s);
+            localStorage.setItem('userProfileStories', JSON.stringify(finalStories));
 
-                    if (progress >= 100) {
-                        clearInterval(interval);
-                        
-                        setStories(prevStories => {
-                            const finalStories = prevStories.map(s => {
-                                if (s.id === storyId) {
-                                    URL.revokeObjectURL(s.url); // Clean up blob url
-                                    return { ...s, url: dataUrl, isUploading: false };
-                                }
-                                return s;
-                            });
-                            
-                            const storiesForStorage = finalStories.filter(s => !s.isUploading).map(({ isUploading, ...rest }) => rest);
-                            localStorage.setItem('userProfileStories', JSON.stringify(storiesForStorage));
-
-                            return finalStories;
-                        });
-                        
-                        setTimeout(() => {
-                            setUploadProgress(prev => {
-                                const newProgress = { ...prev };
-                                delete newProgress[storyId];
-                                return newProgress;
-                            });
-                        }, 1000);
-                    }
-                }, 500);
-            })
-            .catch(e => {
-                console.error("Story convert error:", e);
-                toast({ variant: 'destructive', title: 'Ошибка загрузки', description: 'Не удалось обработать видео.' });
-                setStories(prev => prev.filter(s => s.id !== storyId));
-                URL.revokeObjectURL(previewUrl);
-            });
+            setStories(prev => prev.map(s => s.id === storyId ? { ...s, isUploading: false } : s));
+            
+            setTimeout(() => {
+              setUploadProgress(prev => {
+                const newProgress = { ...prev };
+                delete newProgress[storyId];
+                return newProgress;
+              });
+            }, 1000);
+          }
+        }, 700);
         
         event.target.value = '';
       }
-  };
-
-  const handleDeleteStory = () => {
-    if (!storyToDelete) return;
-
-    const story = stories.find(s => s.id === storyToDelete);
-    if (story && story.url.startsWith('blob:')) {
-      URL.revokeObjectURL(story.url);
-    }
-
-    const newStories = stories.filter(s => s.id !== storyToDelete);
-    setStories(newStories);
-    localStorage.setItem('userProfileStories', JSON.stringify(newStories));
-
-    toast({ title: "Сторис удалена" });
-    setStoryToDelete(null);
   };
 
 
@@ -383,14 +325,10 @@ export default function ProfilePage() {
     }
   };
 
-  if (isLoading || !isMounted || !profile) return (
+  if (!isMounted || !profile) return (
     <div className="flex flex-col h-svh bg-[#f8f9fb]">
       <AppHeader />
-      <main className="flex-1 p-6 space-y-6">
-        <div className="flex items-center space-x-4"><Skeleton className="h-24 w-24 rounded-2xl" /><div className="space-y-2"><Skeleton className="h-6 w-48" /><Skeleton className="h-4 w-32" /></div></div>
-        <Skeleton className="h-40 w-full rounded-2xl" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-      </main>
+      <main className="flex-1 p-6"><Skeleton className="h-64 w-full rounded-2xl" /></main>
       <BottomNav />
     </div>
   );
@@ -416,7 +354,7 @@ export default function ProfilePage() {
       <AppHeader />
       <main className="flex-1 overflow-y-auto pb-24">
         <div className="h-24 gradient-bg relative -mx-5 mb-10">
-          <div className="absolute top-0 right-8 h-full flex items-center gap-3">
+          <div className="absolute top-4 right-6 flex gap-3">
             <Link href="/profile/edit" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><Edit2 size={18} /></Link>
             <Link href="/faq" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><HelpCircle size={18} /></Link>
             <Link href="/settings" className="text-white/90 p-2 bg-black/10 rounded-full backdrop-blur-md transition-all active:scale-95"><Settings size={18} /></Link>
@@ -702,15 +640,6 @@ export default function ProfilePage() {
                               <span className="text-white/80 text-[10px] mt-2 font-semibold uppercase tracking-wider">Загрузка...</span>
                           </div>
                         )}
-
-                        {!isUploading && (
-                           <button 
-                            onClick={() => setStoryToDelete(story.id)}
-                            className="absolute top-2 right-2 w-8 h-8 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-destructive hover:scale-110 active:scale-95 transition-all z-20"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        )}
                       </div>
                     );
                   })}
@@ -745,28 +674,6 @@ export default function ProfilePage() {
               className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none"
             >
               {t('dialog.delete_photo.confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <AlertDialog open={storyToDelete !== null} onOpenChange={(open) => !open && setStoryToDelete(null)}>
-        <AlertDialogContent className="rounded-2xl border-0 p-6 bg-white app-shadow">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="font-black tracking-tight">Удалить сторис</AlertDialogTitle>
-            <AlertDialogDescription className="font-medium text-muted-foreground">
-              Вы уверены, что хотите удалить эту сторис? Это действие нельзя будет отменить.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="flex-row gap-3 sm:gap-0 sm:justify-end mt-4">
-            <AlertDialogCancel className="rounded-xl border-muted font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none">
-              Отмена
-            </AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={handleDeleteStory}
-              className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 font-bold text-xs uppercase tracking-widest h-11 flex-1 sm:flex-none"
-            >
-              Удалить
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
